@@ -1,0 +1,14 @@
+node_modules/
+.next/
+coverage/
+.env
+.env.local
+.env*.local
+.npm-cache/
+.pnpm-store/
+.tmp/
+artifacts/
+outputs/
+proposals/
+*.log
+*.tsbuildinfo

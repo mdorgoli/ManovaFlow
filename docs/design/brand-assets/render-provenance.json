@@ -1,0 +1,57 @@
+{
+  "source": "C:/Users/mdorg/.codex/generated_images/01a06d7e-0e0f-7b31-aed8-5140908f3415/exec-8570c4f8-e694-42d1-91f0-c838b94b51a3.png",
+  "sourceSha256": "6944629763ed407605e75ac4ab08ad5a71ed69bfe2bcfedb757cc927e63b20f3",
+  "sourceDimensions": {
+    "width": 1717,
+    "height": 916
+  },
+  "crop": {
+    "left": 680,
+    "top": 235,
+    "width": 350,
+    "height": 250
+  },
+  "selected": "Large upper-center MF in 02 / LIGATURE; not the later generated isolates",
+  "masterSha256": "2c87aa1b0b16e9e0fb280a448321b4fd219d7535de836c29856728e92c772941",
+  "inverseSha256": "05ee845ecf9e76284de4918b6a8f1782a1f055b1653acc498c90abecdbd78710",
+  "renderer": {
+    "aom": "3.14.1",
+    "archive": "3.8.9",
+    "cairo": "1.18.4",
+    "cgif": "0.5.3",
+    "exif": "0.6.26",
+    "expat": "2.8.3",
+    "ffi": "3.8.0",
+    "fontconfig": "2.18.3",
+    "freetype": "2.14.3",
+    "fribidi": "1.0.16",
+    "glib": "2.89.4",
+    "harfbuzz": "14.3.1",
+    "heif": "1.23.2",
+    "highway": "1.4.0",
+    "imagequant": "2.4.1",
+    "lcms": "2.19.1",
+    "mozjpeg": "0826579",
+    "pango": "1.58.2",
+    "pixman": "0.46.4",
+    "png": "1.6.58",
+    "proxy-libintl": "0.5",
+    "rsvg": "2.62.91",
+    "tiff": "4.7.2",
+    "uhdr": "2.0.2",
+    "vips": "8.18.6",
+    "webp": "1.6.0",
+    "xml2": "2.15.3",
+    "zlib-ng": "2.3.3",
+    "sharp": "0.35.4"
+  },
+  "transparentPng": {
+    "width": 1400,
+    "height": 1000
+  },
+  "smallPng": {
+    "width": 32,
+    "height": 32
+  },
+  "geometryPolicy": "Same path data for regular and inverse. 32px keeps identical geometry and centers it in a square canvas."
+}

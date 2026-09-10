@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="350" height="250" viewBox="680 235 350 250" fill="none" role="img" aria-labelledby="mf-title mf-desc">
+  <title id="mf-title">ManovaFlow MF symbol</title>
+  <desc id="mf-desc">Light-on-dark color variant of the selected MF ligature, traced from the large upper-center symbol of the approved shortlist. Light M and pale-blue F with an open diagonal separation.</desc>
+  <defs>
+    <linearGradient id="mf-blue" x1="840" y1="401" x2="1008" y2="350" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F8FAFF"/>
+      <stop offset="0.4" stop-color="#EFF5FF"/>
+      <stop offset="0.7" stop-color="#CADCFF"/>
+      <stop offset="0.88" stop-color="#A3C3FF"/>
+      <stop offset="1" stop-color="#82ACFF"/>
+    </linearGradient>
+  </defs>
+  <path id="mf-upper" fill="#F8FAFF" d="M705 258H752.5L809 317.5L851.5 277C866.5 262 879 258 897 258H981C979 282 967 296 941 296H914C891 296 880 310 880 329V338.8C865 344 853 354 840 373V356C840 350 842 344 846 339L837 346C833 349 829 350 824 350L818 357C810 363 801 361 794 355L749 315V460H705Z"/>
+  <path id="mf-lower" fill="url(#mf-blue)" d="M840 460V410C840 374 870 342 914 342H1008C1007 365 991 381 971 381H911C892 381 884 392 884 408V460Z"/>
+</svg>

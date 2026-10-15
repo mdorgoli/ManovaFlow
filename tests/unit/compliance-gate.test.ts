@@ -33,7 +33,8 @@ describe("Legal & Compliance Gate", () => {
             category: "DATA",
             classification: "FACT",
             publisherType: "OFFICIAL",
-            sourceUrl: "https://www.kvkk.gov.tr/Icerik/6649/Personal-Data-Protection-Law",
+            sourceUrl:
+              "https://www.kvkk.gov.tr/Icerik/6649/Personal-Data-Protection-Law",
             checkedAt: "2026-09-04T00:00:00.000Z",
             summary: "KVKK applies; case-specific scope still requires review."
           },

@@ -1,15 +1,17 @@
 import { requireCapability } from "../domain/rbac";
-import { LANE_KEYS, type ActorContext, type LaneKey, type MarketKey } from "../domain/types";
+import {
+  LANE_KEYS,
+  type ActorContext,
+  type LaneKey,
+  type MarketKey
+} from "../domain/types";
 import type { CandidateInput } from "../domain/candidate-schema";
 import { growthManifests } from "../manifests";
 import { marketProfiles } from "../markets";
 import type { GrowthRepository } from "./repository";
 import type { MarketScoutLanguageMetadata } from "./market-scout-contracts";
 import { runLane, type LaneReport } from "./run-lane";
-import {
-  withBoundedRetry,
-  type RetryOptions
-} from "./retry";
+import { withBoundedRetry, type RetryOptions } from "./retry";
 
 export type LaneOutcome =
   | { status: "fulfilled"; report: LaneReport; attempts: number }
@@ -37,10 +39,7 @@ export interface RunAllLanesInput {
   marketKeys?: readonly MarketKey[];
   candidateLanguagesByLane?: Readonly<
     Partial<
-      Record<
-        LaneKey,
-        Readonly<Record<string, MarketScoutLanguageMetadata>>
-      >
+      Record<LaneKey, Readonly<Record<string, MarketScoutLanguageMetadata>>>
     >
   >;
 }
@@ -56,23 +55,22 @@ export async function runAllLanes(
   const attempts = new Map<LaneKey, number>();
   const settled = await Promise.allSettled(
     LANE_KEYS.map((laneKey) =>
-      withBoundedRetry(
-        async (attempt) => {
-          attempts.set(laneKey, attempt);
-          const candidateLanguages =
-            input.candidateLanguagesByLane?.[laneKey];
-          return runLane({
-            actor: input.actor,
-            batchKey: input.batchKey,
-            manifest: growthManifests[laneKey],
-            markets: Object.values(marketProfiles).filter(market => !input.marketKeys || input.marketKeys.includes(market.key)),
-            candidates: input.inputsByLane[laneKey],
-            repository: input.repository,
-            ...(candidateLanguages ? { candidateLanguages } : {})
-          });
-        },
-        input.retry
-      )
+      withBoundedRetry(async (attempt) => {
+        attempts.set(laneKey, attempt);
+        const candidateLanguages = input.candidateLanguagesByLane?.[laneKey];
+        return runLane({
+          actor: input.actor,
+          batchKey: input.batchKey,
+          manifest: growthManifests[laneKey],
+          markets: Object.values(marketProfiles).filter(
+            (market) =>
+              !input.marketKeys || input.marketKeys.includes(market.key)
+          ),
+          candidates: input.inputsByLane[laneKey],
+          repository: input.repository,
+          ...(candidateLanguages ? { candidateLanguages } : {})
+        });
+      }, input.retry)
     )
   );
 

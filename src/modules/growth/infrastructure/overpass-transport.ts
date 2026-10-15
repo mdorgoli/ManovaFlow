@@ -27,10 +27,15 @@ export async function fetchOverpassJson(input: {
   input.onResponse?.(response.status);
   const length = Number(response.headers.get("content-length") ?? "0");
   const contentType = response.headers.get("content-type") ?? "";
-  const failure = !response.ok ? "OVERPASS_HTTP_" + response.status
-    : length > OVERPASS_MAX_RESPONSE_BYTES ? "OVERPASS_RESPONSE_TOO_LARGE"
-      : !contentType.toLowerCase().includes("application/json") ? "OVERPASS_RESPONSE_CONTENT_TYPE_INVALID"
-        : !response.body ? "OVERPASS_RESPONSE_BODY_MISSING" : null;
+  const failure = !response.ok
+    ? "OVERPASS_HTTP_" + response.status
+    : length > OVERPASS_MAX_RESPONSE_BYTES
+      ? "OVERPASS_RESPONSE_TOO_LARGE"
+      : !contentType.toLowerCase().includes("application/json")
+        ? "OVERPASS_RESPONSE_CONTENT_TYPE_INVALID"
+        : !response.body
+          ? "OVERPASS_RESPONSE_BODY_MISSING"
+          : null;
   if (failure) {
     await response.body?.cancel().catch(() => undefined);
     throw new Error(failure);
@@ -45,7 +50,8 @@ export async function fetchOverpassJson(input: {
       const part = await reader.read();
       if (part.done) break;
       bytes += part.value.byteLength;
-      if (bytes > OVERPASS_MAX_RESPONSE_BYTES) throw new Error("OVERPASS_RESPONSE_TOO_LARGE");
+      if (bytes > OVERPASS_MAX_RESPONSE_BYTES)
+        throw new Error("OVERPASS_RESPONSE_TOO_LARGE");
       chunks.push(part.value);
     }
   } catch (error) {

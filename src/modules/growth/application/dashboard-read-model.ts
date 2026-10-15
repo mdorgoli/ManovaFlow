@@ -27,21 +27,14 @@ import {
   type SafeAuditEntryV2,
   type SafeAuditFeedReadModelV2
 } from "./dashboard-contracts";
-import type {
-  DashboardSnapshot,
-  ResearchRunRecord
-} from "./repository";
+import type { DashboardSnapshot, ResearchRunRecord } from "./repository";
 
 const laneRunSummarySchema = z.object({
   runId: z.string().min(1),
   laneKey: z.enum(LANE_KEYS),
   state: z.literal("RESEARCH_ONLY"),
-  marketShortlist: z.array(
-    z.object({ marketKey: z.enum(MARKET_KEYS) })
-  ),
-  companyShortlist: z.array(
-    z.object({ synthetic: z.boolean() })
-  ),
+  marketShortlist: z.array(z.object({ marketKey: z.enum(MARKET_KEYS) })),
+  companyShortlist: z.array(z.object({ synthetic: z.boolean() })),
   metrics: z.object({
     sourceUrlsReviewed: z.number().int().nonnegative(),
     organizationsConsidered: z.number().int().nonnegative(),
@@ -73,8 +66,11 @@ const SAFE_AUDIT_EVENT_TYPES = [
 ] as const satisfies readonly SafeAuditEntryV2["eventType"][];
 
 const PUBLIC_SOURCE_KINDS = new Set([
-  "OFFICIAL_REGISTRY", "PUBLIC_COMPANY_WEBSITE", "OFFICIAL_ASSOCIATION",
-  "OFFICIAL_PROCUREMENT", "OPEN_DATASET"
+  "OFFICIAL_REGISTRY",
+  "PUBLIC_COMPANY_WEBSITE",
+  "OFFICIAL_ASSOCIATION",
+  "OFFICIAL_PROCUREMENT",
+  "OPEN_DATASET"
 ]);
 
 export interface DashboardReadModelInput {
@@ -121,9 +117,7 @@ export function buildDashboardReadModel(
     return buildValidatedDashboardReadModel(input);
   } catch (error) {
     if (error instanceof DashboardReadModelError) throw error;
-    throw new DashboardReadModelError(
-      "DASHBOARD_SOURCE_INTEGRITY_VIOLATION"
-    );
+    throw new DashboardReadModelError("DASHBOARD_SOURCE_INTEGRITY_VIOLATION");
   }
 }
 
@@ -153,10 +147,9 @@ function buildValidatedDashboardReadModel(
       storageMode: present(input.runtime.storageMode, [policy]),
       researchState: present("RESEARCH_ONLY", [policy]),
       tenantScope: present("REQUEST_ACTOR_TENANT", [policy]),
-      outbound: present(
-        { enabled: false, actions: 0, sideEffects: 0 },
-        [policy]
-      )
+      outbound: present({ enabled: false, actions: 0, sideEffects: 0 }, [
+        policy
+      ])
     },
     laneSummary: {
       contractVersion: DASHBOARD_SECTION_VERSIONS.laneSummary,
@@ -174,10 +167,7 @@ function buildValidatedDashboardReadModel(
           latestRun: latestRun
             ? present(runValue(latestRun), [runProvenance(latestRun)])
             : missing("NO_RECORDED_RUN", [
-                derivedProvenance(
-                  "research-runs:" + laneKey,
-                  input.generatedAt
-                )
+                derivedProvenance("research-runs:" + laneKey, input.generatedAt)
               ])
         };
       })
@@ -198,10 +188,7 @@ function buildValidatedDashboardReadModel(
                 [runProvenance(run)]
               )
             : missing("NO_COMPLETED_RUN", [
-                derivedProvenance(
-                  "completed-run:" + laneKey,
-                  input.generatedAt
-                )
+                derivedProvenance("completed-run:" + laneKey, input.generatedAt)
               ]),
           window: missing("LEDGER_NOT_IMPLEMENTED", [policy]),
           limits: limitsFor(laneKey),
@@ -226,10 +213,7 @@ function buildValidatedDashboardReadModel(
                 [runProvenance(run)]
               )
             : missing("NO_COMPLETED_RUN", [
-                derivedProvenance(
-                  "market-run:" + laneKey,
-                  input.generatedAt
-                )
+                derivedProvenance("market-run:" + laneKey, input.generatedAt)
               ]),
           markets: marketRankingFor(
             input.snapshot,
@@ -293,36 +277,47 @@ function assertTenantScope(input: DashboardReadModelInput): void {
       records.some((record) => record.tenantId !== input.actor.tenantId)
     )
   ) {
-    throw new DashboardReadModelError(
-      "DASHBOARD_TENANT_SCOPE_VIOLATION"
-    );
+    throw new DashboardReadModelError("DASHBOARD_TENANT_SCOPE_VIOLATION");
   }
 }
 
-export function dashboardDatasetFor(snapshot: DashboardSnapshot): DashboardDataset {
+export function dashboardDatasetFor(
+  snapshot: DashboardSnapshot
+): DashboardDataset {
   const hasPublicRecords =
     snapshot.companies.some((company) => company.synthetic === false) ||
     snapshot.drafts.some((draft) => draft.synthetic === false) ||
-    snapshot.audit.some((event) => event.eventType === "MARKET_SCOUT_ACTIVITY_SNAPSHOT") ||
+    snapshot.audit.some(
+      (event) => event.eventType === "MARKET_SCOUT_ACTIVITY_SNAPSHOT"
+    ) ||
     snapshot.runs.some((run) => {
       const shortlist = run.summary?.companyShortlist;
-      return Array.isArray(shortlist) && shortlist.some((item) => isRecord(item) && item.synthetic === false);
+      return (
+        Array.isArray(shortlist) &&
+        shortlist.some((item) => isRecord(item) && item.synthetic === false)
+      );
     });
   return hasPublicRecords ? "PUBLIC_RESEARCH" : "SYNTHETIC";
 }
 
-function assertDatasetScope(snapshot: DashboardSnapshot, dataset: DashboardDataset): void {
+function assertDatasetScope(
+  snapshot: DashboardSnapshot,
+  dataset: DashboardDataset
+): void {
   const synthetic = dataset === "SYNTHETIC";
   const errorCode = synthetic
     ? "DASHBOARD_SYNTHETIC_SCOPE_VIOLATION"
     : "DASHBOARD_PUBLIC_SCOPE_VIOLATION";
   if (
-    snapshot.companies.some((company) =>
-      company.synthetic !== synthetic ||
-      (synthetic
-        ? company.sourceKind !== "SYNTHETIC"
-        : !PUBLIC_SOURCE_KINDS.has(company.sourceKind) || !safeHttpsUrl(company.sourceUrl))
-    ) || snapshot.drafts.some((draft) => draft.synthetic !== synthetic)
+    snapshot.companies.some(
+      (company) =>
+        company.synthetic !== synthetic ||
+        (synthetic
+          ? company.sourceKind !== "SYNTHETIC"
+          : !PUBLIC_SOURCE_KINDS.has(company.sourceKind) ||
+            !safeHttpsUrl(company.sourceUrl))
+    ) ||
+    snapshot.drafts.some((draft) => draft.synthetic !== synthetic)
   ) {
     throw new DashboardReadModelError(errorCode);
   }
@@ -348,9 +343,7 @@ function assertOutboundInvariant(snapshot: DashboardSnapshot): void {
       (decision) => decision.authorizationToken !== null
     )
   ) {
-    throw new DashboardReadModelError(
-      "DASHBOARD_OUTBOUND_INVARIANT_VIOLATION"
-    );
+    throw new DashboardReadModelError("DASHBOARD_OUTBOUND_INVARIANT_VIOLATION");
   }
   for (const run of snapshot.runs) {
     if (!isRecord(run.summary)) continue;
@@ -443,8 +436,8 @@ function validateMarketScores(snapshot: DashboardSnapshot): void {
 
   for (const run of snapshot.runs) {
     if (run.status !== "COMPLETED") continue;
-    const summaryMarkets = parseSummary(run).marketShortlist
-      .map((item) => item.marketKey)
+    const summaryMarkets = parseSummary(run)
+      .marketShortlist.map((item) => item.marketKey)
       .sort();
     const scoredMarkets = snapshot.marketScores
       .filter((score) => score.runId === run.id)
@@ -452,7 +445,9 @@ function validateMarketScores(snapshot: DashboardSnapshot): void {
       .sort();
     if (
       summaryMarkets.length !== scoredMarkets.length ||
-      summaryMarkets.some((marketKey, index) => marketKey !== scoredMarkets[index])
+      summaryMarkets.some(
+        (marketKey, index) => marketKey !== scoredMarkets[index]
+      )
     ) {
       throw new Error("Dashboard completed run market scores are incomplete");
     }
@@ -474,25 +469,19 @@ function validateAuditIntegrity(snapshot: DashboardSnapshot): void {
       event.sequence !== index + 1 ||
       !isSafeAuditEventType(event.eventType)
     ) {
-      throw new DashboardReadModelError(
-        "DASHBOARD_AUDIT_INTEGRITY_VIOLATION"
-      );
+      throw new DashboardReadModelError("DASHBOARD_AUDIT_INTEGRITY_VIOLATION");
     }
   }
 }
 
-function validateAuditPage(
-  page: DashboardReadModelInput["auditPage"]
-): void {
+function validateAuditPage(page: DashboardReadModelInput["auditPage"]): void {
   if (
     (page?.limit !== undefined &&
       (!Number.isInteger(page.limit) || page.limit < 1 || page.limit > 100)) ||
     (page?.beforeSequence !== undefined &&
       (!Number.isInteger(page.beforeSequence) || page.beforeSequence < 1))
   ) {
-    throw new DashboardReadModelError(
-      "DASHBOARD_AUDIT_INTEGRITY_VIOLATION"
-    );
+    throw new DashboardReadModelError("DASHBOARD_AUDIT_INTEGRITY_VIOLATION");
   }
 }
 
@@ -554,9 +543,7 @@ function safeAuditEntry(
   event: DashboardSnapshot["audit"][number]
 ): SafeAuditEntryV2 {
   if (!isSafeAuditEventType(event.eventType)) {
-    throw new DashboardReadModelError(
-      "DASHBOARD_AUDIT_INTEGRITY_VIOLATION"
-    );
+    throw new DashboardReadModelError("DASHBOARD_AUDIT_INTEGRITY_VIOLATION");
   }
   return {
     sequence: event.sequence,
@@ -588,12 +575,7 @@ function auditResult(
 }
 
 function auditProvenance(sequence: number, recordedAt: string): Provenance {
-  return provenance(
-    "OBSERVED",
-    "AUDIT_EVENT",
-    "audit:" + sequence,
-    recordedAt
-  );
+  return provenance("OBSERVED", "AUDIT_EVENT", "audit:" + sequence, recordedAt);
 }
 
 function isSafeAuditEventType(
@@ -651,9 +633,7 @@ function evidenceCell(
     return classifiedEvidenceCell(category, "UNKNOWN", unknowns, marketKey);
   }
 
-  const facts = candidates.filter(
-    (item) => item.classification === "FACT"
-  );
+  const facts = candidates.filter((item) => item.classification === "FACT");
   if (facts.length > 0 && !missingCategories.includes(category)) {
     return classifiedEvidenceCell(category, "FACT", facts, marketKey);
   }
@@ -664,12 +644,7 @@ function evidenceCell(
       isFreshSafeEvidence(item, generatedAt)
   );
   if (inferences.length > 0) {
-    return classifiedEvidenceCell(
-      category,
-      "INFERENCE",
-      inferences,
-      marketKey
-    );
+    return classifiedEvidenceCell(category, "INFERENCE", inferences, marketKey);
   }
 
   return {
@@ -837,7 +812,8 @@ function marketRankingFor(
     .filter((score) => score.runId === run.id && score.laneKey === laneKey)
     .sort(
       (left, right) =>
-        right.total - left.total || left.marketKey.localeCompare(right.marketKey)
+        right.total - left.total ||
+        left.marketKey.localeCompare(right.marketKey)
     );
   const ranks = new Map<(typeof MARKET_KEYS)[number], number>();
   let previousScore: number | null = null;
@@ -971,10 +947,7 @@ function missingUsage(
   laneKey: LaneKey,
   generatedAt: string
 ): CapMeasurementsV1 {
-  const source = derivedProvenance(
-    "cap-usage:" + laneKey,
-    generatedAt
-  );
+  const source = derivedProvenance("cap-usage:" + laneKey, generatedAt);
   return {
     sourceUrls: missing("NO_COMPLETED_RUN", [source]),
     organizations: missing("NO_COMPLETED_RUN", [source]),
@@ -994,12 +967,7 @@ function geographicScope(marketKey: (typeof MARKET_KEYS)[number]): string {
 }
 
 function manifestProvenance(laneKey: LaneKey): Provenance {
-  return provenance(
-    "CONFIG",
-    "VERTICAL_MANIFEST",
-    "manifest:" + laneKey,
-    null
-  );
+  return provenance("CONFIG", "VERTICAL_MANIFEST", "manifest:" + laneKey, null);
 }
 
 function derivedProvenance(reference: string, recordedAt: string): Provenance {

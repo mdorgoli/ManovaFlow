@@ -85,7 +85,8 @@ describe("GrowthDashboard Phase 2B.1", () => {
     const serviceFrance = model.marketRanking.lanes
       .find((lane) => lane.laneKey === "serviceflow")
       ?.markets.find((market) => market.marketKey === "fr-france");
-    if (!serviceFrance) throw new Error("Expected the ServiceFlow France market");
+    if (!serviceFrance)
+      throw new Error("Expected the ServiceFlow France market");
     serviceFrance.rank = {
       state: "PRESENT",
       value: 1,
@@ -105,19 +106,33 @@ describe("GrowthDashboard Phase 2B.1", () => {
     render(<GrowthDashboard initialModel={model} />);
 
     const ranking = screen.getByRole("region", { name: "Market Ranking" });
-    expect(within(ranking).getByRole("heading", { name: "Market Ranking" })).toBeInTheDocument();
-    expect(within(ranking).getByRole("columnheader", { name: "Market" })).toBeInTheDocument();
-    expect(within(ranking).getByRole("columnheader", { name: "ServiceFlow" })).toBeInTheDocument();
-    expect(within(ranking).getByRole("columnheader", { name: "BeautyFlow" })).toBeInTheDocument();
-    expect(within(ranking).getByRole("columnheader", { name: "BriefFlow" })).toBeInTheDocument();
+    expect(
+      within(ranking).getByRole("heading", { name: "Market Ranking" })
+    ).toBeInTheDocument();
+    expect(
+      within(ranking).getByRole("columnheader", { name: "Market" })
+    ).toBeInTheDocument();
+    expect(
+      within(ranking).getByRole("columnheader", { name: "ServiceFlow" })
+    ).toBeInTheDocument();
+    expect(
+      within(ranking).getByRole("columnheader", { name: "BeautyFlow" })
+    ).toBeInTheDocument();
+    expect(
+      within(ranking).getByRole("columnheader", { name: "BriefFlow" })
+    ).toBeInTheDocument();
 
     const france = within(ranking).getByRole("row", { name: /France/ });
     expect(within(france).getByText("#1")).toBeInTheDocument();
     expect(within(france).getByText("70")).toBeInTheDocument();
     expect(within(france).getByText("HIGH")).toBeInTheDocument();
-    expect(within(france).getByText("OBSERVED / MARKET_SCORE")).toBeInTheDocument();
+    expect(
+      within(france).getByText("OBSERVED / MARKET_SCORE")
+    ).toBeInTheDocument();
     expect(within(ranking).getAllByText("MISSING").length).toBeGreaterThan(0);
-    expect(within(ranking).getAllByText("NO_COMPLETED_RUN").length).toBeGreaterThan(0);
+    expect(
+      within(ranking).getAllByText("NO_COMPLETED_RUN").length
+    ).toBeGreaterThan(0);
     expect(
       within(ranking).getAllByText("DERIVED / SERVER_POLICY").length
     ).toBeGreaterThan(0);
@@ -128,14 +143,30 @@ describe("GrowthDashboard Phase 2B.1", () => {
     render(<GrowthDashboard initialModel={emptyReadModel()} />);
 
     const matrix = screen.getByRole("region", { name: "Evidence Matrix" });
-    expect(within(matrix).getByRole("heading", { name: "Evidence Matrix" })).toBeInTheDocument();
-    expect(within(matrix).getByText("Human-Send = BLOCKED")).toBeInTheDocument();
-    expect(within(matrix).getByRole("columnheader", { name: "Outreach" })).toBeInTheDocument();
-    expect(within(matrix).getByRole("columnheader", { name: "Data" })).toBeInTheDocument();
-    expect(within(matrix).getByRole("columnheader", { name: "AI disclosure" })).toBeInTheDocument();
-    expect(within(matrix).getByRole("columnheader", { name: "Contract" })).toBeInTheDocument();
-    expect(within(matrix).getByRole("columnheader", { name: "Payment" })).toBeInTheDocument();
-    expect(within(matrix).getByRole("columnheader", { name: "Sanctions / KYC" })).toBeInTheDocument();
+    expect(
+      within(matrix).getByRole("heading", { name: "Evidence Matrix" })
+    ).toBeInTheDocument();
+    expect(
+      within(matrix).getByText("Human-Send = BLOCKED")
+    ).toBeInTheDocument();
+    expect(
+      within(matrix).getByRole("columnheader", { name: "Outreach" })
+    ).toBeInTheDocument();
+    expect(
+      within(matrix).getByRole("columnheader", { name: "Data" })
+    ).toBeInTheDocument();
+    expect(
+      within(matrix).getByRole("columnheader", { name: "AI disclosure" })
+    ).toBeInTheDocument();
+    expect(
+      within(matrix).getByRole("columnheader", { name: "Contract" })
+    ).toBeInTheDocument();
+    expect(
+      within(matrix).getByRole("columnheader", { name: "Payment" })
+    ).toBeInTheDocument();
+    expect(
+      within(matrix).getByRole("columnheader", { name: "Sanctions / KYC" })
+    ).toBeInTheDocument();
     expect(within(matrix).getAllByText("FACT").length).toBeGreaterThan(0);
     expect(within(matrix).getAllByText("INFERENCE").length).toBeGreaterThan(0);
     expect(within(matrix).getAllByText("UNKNOWN").length).toBeGreaterThan(0);

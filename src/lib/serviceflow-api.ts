@@ -30,7 +30,10 @@ const idempotencyConflictMessages = new Set([
 ]);
 
 export function assertLocalServiceFlowDemoApi(): void {
-  if (process.env.NODE_ENV === "production" || process.env.DEMO_MODE !== "true") {
+  if (
+    process.env.NODE_ENV === "production" ||
+    process.env.DEMO_MODE !== "true"
+  ) {
     throw new ServiceFlowApiError(
       503,
       "DEMO_UNAVAILABLE",
@@ -55,7 +58,12 @@ export function serviceFlowApiError(error: unknown): NextResponse {
   }
   if (error instanceof SyntaxError) {
     return NextResponse.json(
-      { error: { code: "VALIDATION_ERROR", message: "Request validation failed" } },
+      {
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "Request validation failed"
+        }
+      },
       { status: 400 }
     );
   }
@@ -73,30 +81,52 @@ export function serviceFlowApiError(error: unknown): NextResponse {
   }
   if (message === APPROVAL_FORBIDDEN || message === LIFECYCLE_FORBIDDEN) {
     return NextResponse.json(
-      { error: { code: "FORBIDDEN", message: "ServiceFlow mutation is forbidden" } },
+      {
+        error: {
+          code: "FORBIDDEN",
+          message: "ServiceFlow mutation is forbidden"
+        }
+      },
       { status: 403 }
     );
   }
   if (idempotencyConflictMessages.has(message)) {
     return NextResponse.json(
-      { error: { code: "IDEMPOTENCY_CONFLICT", message: "Idempotency conflict" } },
+      {
+        error: { code: "IDEMPOTENCY_CONFLICT", message: "Idempotency conflict" }
+      },
       { status: 409 }
     );
   }
   if (serviceFlowConflictMessages.has(message)) {
     return NextResponse.json(
-      { error: { code: "SERVICEFLOW_CONFLICT", message: "ServiceFlow command was rejected" } },
+      {
+        error: {
+          code: "SERVICEFLOW_CONFLICT",
+          message: "ServiceFlow command was rejected"
+        }
+      },
       { status: 409 }
     );
   }
   if (message.startsWith("A valid Idempotency-Key")) {
     return NextResponse.json(
-      { error: { code: "VALIDATION_ERROR", message: "Request validation failed" } },
+      {
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "Request validation failed"
+        }
+      },
       { status: 400 }
     );
   }
   return NextResponse.json(
-    { error: { code: "SERVICEFLOW_UNAVAILABLE", message: "ServiceFlow demo API is unavailable" } },
+    {
+      error: {
+        code: "SERVICEFLOW_UNAVAILABLE",
+        message: "ServiceFlow demo API is unavailable"
+      }
+    },
     { status: 500 }
   );
 }

@@ -10,8 +10,7 @@ import { runLiveMarketScoutPilot } from "./live-market-scout-pilot";
 
 export const SF_DEMO_1B_EXECUTION_VERSION =
   "manovaflow.market-scout.execution.v1" as const;
-export const SF_DEMO_1B_IDEMPOTENCY_KEY =
-  "sf-demo-1b-live-pilot-v1" as const;
+export const SF_DEMO_1B_IDEMPOTENCY_KEY = "sf-demo-1b-live-pilot-v1" as const;
 export const SF_DEMO_1B_SCOPE = Object.freeze({
   id: "SF-DEMO-1B" as const,
   countryCode: "FR" as const,
@@ -42,7 +41,9 @@ export class SfDemo1BExecutionError extends Error {
 export class SfDemo1BExecutor {
   readonly #inFlight = new Map<string, Promise<SfDemo1BExecutionResult>>();
 
-  async execute(input: SfDemo1BExecutionInput): Promise<SfDemo1BExecutionResult> {
+  async execute(
+    input: SfDemo1BExecutionInput
+  ): Promise<SfDemo1BExecutionResult> {
     const key = input.actor.tenantId;
     const pending = this.#inFlight.get(key);
     if (pending) {

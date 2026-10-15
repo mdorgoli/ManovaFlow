@@ -115,8 +115,7 @@ const errorMessage: Readonly<Record<AuthenticationErrorCode, string>> = {
   DEMO_SESSION_FORBIDDEN: "Demo authentication is forbidden in production",
   MEMBERSHIP_REQUIRED: "An active tenant membership is required",
   INVALID_MEMBERSHIP: "The tenant membership is invalid",
-  IDENTITY_SPOOFING_DETECTED:
-    "Client-controlled identity headers are forbidden"
+  IDENTITY_SPOOFING_DETECTED: "Client-controlled identity headers are forbidden"
 };
 
 export class AuthenticationError extends Error {
@@ -188,10 +187,7 @@ export async function authenticateRequest(
   const issuedAtMs = Date.parse(session.issuedAt);
   const expiresAtMs = Date.parse(session.expiresAt);
 
-  if (
-    issuedAtMs > nowMs + skew ||
-    expiresAtMs <= issuedAtMs
-  ) {
+  if (issuedAtMs > nowMs + skew || expiresAtMs <= issuedAtMs) {
     throw new AuthenticationError("INVALID_SESSION");
   }
   if (expiresAtMs <= nowMs) {
@@ -205,17 +201,15 @@ export async function authenticateRequest(
   }
 
   const requiresMfa =
-    input.policy.environment === "production" || input.policy.requireMfa === true;
+    input.policy.environment === "production" ||
+    input.policy.requireMfa === true;
   if (requiresMfa) {
     if (!session.mfa) {
       throw new AuthenticationError("MFA_REQUIRED");
     }
     const mfaVerifiedAtMs = Date.parse(session.mfa.verifiedAt);
     const mfaExpiresAtMs = Date.parse(session.mfa.expiresAt);
-    if (
-      mfaVerifiedAtMs > nowMs + skew ||
-      mfaExpiresAtMs <= mfaVerifiedAtMs
-    ) {
+    if (mfaVerifiedAtMs > nowMs + skew || mfaExpiresAtMs <= mfaVerifiedAtMs) {
       throw new AuthenticationError("INVALID_SESSION");
     }
     if (mfaExpiresAtMs <= nowMs) {

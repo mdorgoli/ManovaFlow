@@ -1,9 +1,6 @@
 import type { Sql } from "postgres";
 import type { ActorContext } from "@/modules/growth/domain/types";
-import {
-  getDatabaseClient,
-  getIdentityDatabaseClient
-} from "@/lib/container";
+import { getDatabaseClient, getIdentityDatabaseClient } from "@/lib/container";
 import { authenticateRequest } from "@/modules/identity/application/auth-port";
 import {
   createDefaultAuthPort,

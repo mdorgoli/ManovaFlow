@@ -40,4 +40,3 @@ describe("identity database credential separation", () => {
     );
   });
 });
-

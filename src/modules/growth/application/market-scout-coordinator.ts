@@ -164,15 +164,17 @@ export async function runMarketScout(
     inputsByLane,
     repository: input.repository,
     candidateLanguagesByLane,
-    ...(input.scope ? { marketKeys: [...new Set(assignments.map(item => item.market.key))] } : {}),
+    ...(input.scope
+      ? { marketKeys: [...new Set(assignments.map((item) => item.market.key))] }
+      : {}),
     ...(input.retry ? { retry: input.retry } : {})
   });
   const internalDrafts = collectInternalDrafts(research);
   const completed = workerOutcomes.filter(
-    (outcome): outcome is Extract<
-      MarketScoutWorkerOutcome,
-      { status: "fulfilled" }
-    > => outcome.status === "fulfilled"
+    (
+      outcome
+    ): outcome is Extract<MarketScoutWorkerOutcome, { status: "fulfilled" }> =>
+      outcome.status === "fulfilled"
   );
 
   return {
@@ -219,15 +221,17 @@ function buildAssignments(scope?: MarketScoutScope): WorkerAssignment[] {
     );
     if (!market) throw new Error("MARKET_SCOUT_COUNTRY_NOT_CONFIGURED");
     const manifest = growthManifests[scope.laneKey];
-    return [{
-      task: { laneKey: scope.laneKey, marketKey: market.key },
-      market,
-      budget: {
-        maxSourceUrls: 1,
-        maxOrganizations: Math.min(3, manifest.dailyCaps.organizations),
-        maxElapsedMs: manifest.dailyCaps.elapsedMs
+    return [
+      {
+        task: { laneKey: scope.laneKey, marketKey: market.key },
+        market,
+        budget: {
+          maxSourceUrls: 1,
+          maxOrganizations: Math.min(3, manifest.dailyCaps.organizations),
+          maxElapsedMs: manifest.dailyCaps.elapsedMs
+        }
       }
-    }];
+    ];
   }
   return LANE_KEYS.flatMap((laneKey) => {
     const manifest = growthManifests[laneKey];
@@ -269,14 +273,14 @@ async function runBounded<TInput, TResult>(
       const index = nextIndex;
       nextIndex += 1;
       const item = inputs[index];
-      if (item === undefined) throw new Error("Missing Market Scout assignment");
+      if (item === undefined)
+        throw new Error("Missing Market Scout assignment");
       results[index] = await operation(item);
     }
   };
   await Promise.all(
-    Array.from(
-      { length: Math.min(concurrency, inputs.length) },
-      async () => runner()
+    Array.from({ length: Math.min(concurrency, inputs.length) }, async () =>
+      runner()
     )
   );
   return results;
@@ -306,11 +310,7 @@ function collectInternalDrafts(
       const company = outcome.report.companyShortlist.find(
         (item) => item.companyId === draft.companyId
       );
-      if (
-        !company?.language ||
-        !company.direction ||
-        !company.languageBasis
-      ) {
+      if (!company?.language || !company.direction || !company.languageBasis) {
         return [];
       }
       return [

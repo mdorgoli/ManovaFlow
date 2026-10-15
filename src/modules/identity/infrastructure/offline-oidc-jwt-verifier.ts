@@ -39,7 +39,9 @@ const configurationSchema = z
         message: "At least one MFA AMR or ACR value is required"
       });
     }
-    if (new Set(value.allowedAlgorithms).size !== value.allowedAlgorithms.length) {
+    if (
+      new Set(value.allowedAlgorithms).size !== value.allowedAlgorithms.length
+    ) {
       context.addIssue({
         code: "custom",
         path: ["allowedAlgorithms"],
@@ -91,13 +93,18 @@ export class OfflineOidcJwtVerifier implements OidcTokenVerifierPort {
       acceptedMfaAmrValues: [...configuration.acceptedMfaAmrValues],
       acceptedMfaAcrValues: [...configuration.acceptedMfaAcrValues]
     });
-    if (!Array.isArray(configuration.jwks.keys) || configuration.jwks.keys.length === 0) {
+    if (
+      !Array.isArray(configuration.jwks.keys) ||
+      configuration.jwks.keys.length === 0
+    ) {
       throw new Error("At least one static OIDC public key is required");
     }
     this.#keys = Object.freeze([...configuration.jwks.keys]);
   }
 
-  async verifyIdToken(input: VerifyIdTokenInput): Promise<VerifiedOidcIdentity> {
+  async verifyIdToken(
+    input: VerifyIdTokenInput
+  ): Promise<VerifiedOidcIdentity> {
     try {
       return this.#verify(input);
     } catch (error) {
@@ -122,7 +129,10 @@ export class OfflineOidcJwtVerifier implements OidcTokenVerifierPort {
     }
 
     const segments = input.idToken.split(".");
-    if (segments.length !== 3 || segments.some((segment) => segment.length === 0)) {
+    if (
+      segments.length !== 3 ||
+      segments.some((segment) => segment.length === 0)
+    ) {
       throw new Error("OIDC token must be a signed compact JWS");
     }
     const [encodedHeader, encodedClaims, encodedSignature] = segments as [
@@ -132,22 +142,27 @@ export class OfflineOidcJwtVerifier implements OidcTokenVerifierPort {
     ];
     const header = protectedHeaderSchema.parse(parseJsonSegment(encodedHeader));
     if (
-      !(this.#configuration.allowedAlgorithms as SupportedOidcAlgorithm[]).includes(
-        header.alg
-      ) ||
+      !(
+        this.#configuration.allowedAlgorithms as SupportedOidcAlgorithm[]
+      ).includes(header.alg) ||
       Object.hasOwn(header, "crit") ||
       Object.hasOwn(header, "b64")
     ) {
       throw new Error("Unsupported OIDC protected header");
     }
 
-    const matches = this.#keys.filter((key) => isEligibleKey(key, header.kid, header.alg));
+    const matches = this.#keys.filter((key) =>
+      isEligibleKey(key, header.kid, header.alg)
+    );
     if (matches.length !== 1) {
       throw new Error("OIDC signing key is missing or ambiguous");
     }
     const publicKey = createPublicKey({ key: matches[0]!, format: "jwk" });
     const signature = decodeBase64Url(encodedSignature);
-    const signingInput = Buffer.from(encodedHeader + "." + encodedClaims, "ascii");
+    const signingInput = Buffer.from(
+      encodedHeader + "." + encodedClaims,
+      "ascii"
+    );
     const validSignature =
       header.alg === "RS256"
         ? verifySignature("RSA-SHA256", signingInput, publicKey, signature)

@@ -28,8 +28,7 @@ const detailValue = z.union([
   z.boolean(),
   z.null()
 ]);
-const forbiddenDetailKey =
-  /(token|cookie|secret|authorization|password|csrf)/i;
+const forbiddenDetailKey = /(token|cookie|secret|authorization|password|csrf)/i;
 const detailsSchema = z
   .record(z.string().regex(/^[A-Za-z][A-Za-z0-9_]{0,63}$/), detailValue)
   .superRefine((details, context) => {

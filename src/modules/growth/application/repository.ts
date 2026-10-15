@@ -5,10 +5,7 @@ import type {
   MarketKey,
   PackState
 } from "../domain/types";
-import type {
-  CandidateScore,
-  ScoreExplanation
-} from "../domain/scoring";
+import type { CandidateScore, ScoreExplanation } from "../domain/scoring";
 import type { MarketScore } from "../domain/market-scoring";
 
 export type ResearchRunStatus = "RUNNING" | "COMPLETED" | "FAILED";
@@ -202,5 +199,9 @@ export interface GrowthRepository {
 }
 
 export function normalizeDomain(domain: string): string {
-  return domain.trim().toLowerCase().replace(/^www\./, "").replace(/\.$/, "");
+  return domain
+    .trim()
+    .toLowerCase()
+    .replace(/^www\./, "")
+    .replace(/\.$/, "");
 }

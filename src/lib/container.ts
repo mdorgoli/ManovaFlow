@@ -20,7 +20,9 @@ export function getGrowthRepository(): GrowthRepository {
   if (shared.manovaFlowRepository) return shared.manovaFlowRepository;
 
   if (process.env.DATABASE_URL) {
-    shared.manovaFlowRepository = new PostgresGrowthRepository(getDatabaseClient());
+    shared.manovaFlowRepository = new PostgresGrowthRepository(
+      getDatabaseClient()
+    );
   } else {
     shared.manovaFlowRepository = new InMemoryGrowthRepository();
   }

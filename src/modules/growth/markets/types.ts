@@ -41,8 +41,20 @@ export const marketCriteria = Object.freeze([
   { key: "language_operability", label: "قابلیت زبانی", weight: 8 },
   { key: "ability_to_pay", label: "توان پرداخت", weight: 10 },
   { key: "competition_gap", label: "شکاف رقابتی", weight: 10 },
-  { key: "contract_from_france", label: "امکان قرارداد با شرکت فرانسوی", weight: 12 },
-  { key: "payment_to_france", label: "امکان پرداخت به شرکت فرانسوی", weight: 10 },
-  { key: "data_marketing_readiness", label: "آمادگی داده و بازاریابی", weight: 7 },
+  {
+    key: "contract_from_france",
+    label: "امکان قرارداد با شرکت فرانسوی",
+    weight: 12
+  },
+  {
+    key: "payment_to_france",
+    label: "امکان پرداخت به شرکت فرانسوی",
+    weight: 10
+  },
+  {
+    key: "data_marketing_readiness",
+    label: "آمادگی داده و بازاریابی",
+    weight: 7
+  },
   { key: "bounded_acquisition", label: "هزینه جذب محدودپذیر", weight: 5 }
 ] as const);

@@ -207,7 +207,9 @@ describe("Dashboard Phase 1 read model", () => {
       (market) => market.marketKey === "fr-france"
     );
 
-    expect(france?.cells.find((cell) => cell.category === "OUTREACH")).toMatchObject({
+    expect(
+      france?.cells.find((cell) => cell.category === "OUTREACH")
+    ).toMatchObject({
       state: "FACT",
       humanSend: "BLOCKED",
       provenance: [{ source: "COMPLIANCE_EVIDENCE" }]
@@ -215,7 +217,9 @@ describe("Dashboard Phase 1 read model", () => {
     expect(
       france?.cells.find((cell) => cell.category === "AI_DISCLOSURE")
     ).toMatchObject({ state: "INFERENCE", humanSend: "BLOCKED" });
-    expect(france?.cells.find((cell) => cell.category === "CONTRACT")).toMatchObject({
+    expect(
+      france?.cells.find((cell) => cell.category === "CONTRACT")
+    ).toMatchObject({
       state: "UNKNOWN",
       humanSend: "BLOCKED"
     });
@@ -350,7 +354,9 @@ describe("Dashboard Phase 1 read model", () => {
     const snapshot = emptySnapshot();
     snapshot.audit.push(auditEvent(1, "RUN_STARTED"));
 
-    const feed = buildDashboardReadModel(input(snapshot, "VIEWER")).safeAuditFeed;
+    const feed = buildDashboardReadModel(
+      input(snapshot, "VIEWER")
+    ).safeAuditFeed;
 
     expect(feed.access).toBe("HEALTH_ONLY");
     expect(feed.entries).toEqual([]);
@@ -361,7 +367,10 @@ describe("Dashboard Phase 1 read model", () => {
 
   it("fails closed on a broken audit sequence or an unrecognized event type", () => {
     const gap = emptySnapshot();
-    gap.audit.push(auditEvent(1, "RUN_STARTED"), auditEvent(3, "RUN_COMPLETED"));
+    gap.audit.push(
+      auditEvent(1, "RUN_STARTED"),
+      auditEvent(3, "RUN_COMPLETED")
+    );
     expectDashboardError(
       () => buildDashboardReadModel(input(gap)),
       "DASHBOARD_AUDIT_INTEGRITY_VIOLATION"

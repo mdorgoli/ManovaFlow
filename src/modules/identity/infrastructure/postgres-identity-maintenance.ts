@@ -42,7 +42,9 @@ export class PostgresIdentityMaintenance {
     this.#sql = sql;
   }
 
-  async cleanup(rawInput: IdentityCleanupInput): Promise<IdentityCleanupResult> {
+  async cleanup(
+    rawInput: IdentityCleanupInput
+  ): Promise<IdentityCleanupResult> {
     const parsed = cleanupInputSchema.safeParse(rawInput);
     if (!parsed.success) throw new Error("Identity cleanup input is invalid");
     const input = parsed.data;

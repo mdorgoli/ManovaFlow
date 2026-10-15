@@ -3,67 +3,43 @@
   "alpha": {
     "manovaflow-mf-transparent.png": {
       "mode": "RGBA",
-      "size": [
-        1400,
-        1000
-      ],
+      "size": [1400, 1000],
       "alphaMin": 0,
       "alphaMax": 255,
       "transparentPixels": 926712,
       "opaquePixels": 469768,
       "partialAlphaPixels": 3520,
-      "componentsAtAlpha128": [
-        330998,
-        140543
-      ]
+      "componentsAtAlpha128": [330998, 140543]
     },
     "manovaflow-mf-inverse-transparent.png": {
       "mode": "RGBA",
-      "size": [
-        1400,
-        1000
-      ],
+      "size": [1400, 1000],
       "alphaMin": 0,
       "alphaMax": 255,
       "transparentPixels": 926712,
       "opaquePixels": 469768,
       "partialAlphaPixels": 3520,
-      "componentsAtAlpha128": [
-        330998,
-        140543
-      ]
+      "componentsAtAlpha128": [330998, 140543]
     },
     "manovaflow-mf-32.png": {
       "mode": "RGBA",
-      "size": [
-        32,
-        32
-      ],
+      "size": [32, 32],
       "alphaMin": 0,
       "alphaMax": 255,
       "transparentPixels": 699,
       "opaquePixels": 168,
       "partialAlphaPixels": 157,
-      "componentsAtAlpha128": [
-        166,
-        76
-      ]
+      "componentsAtAlpha128": [166, 76]
     },
     "manovaflow-mf-inverse-32.png": {
       "mode": "RGBA",
-      "size": [
-        32,
-        32
-      ],
+      "size": [32, 32],
       "alphaMin": 0,
       "alphaMax": 255,
       "transparentPixels": 699,
       "opaquePixels": 168,
       "partialAlphaPixels": 157,
-      "componentsAtAlpha128": [
-        166,
-        76
-      ]
+      "componentsAtAlpha128": [166, 76]
     }
   },
   "vector": {
@@ -79,49 +55,23 @@
     "boundaryMeanDistanceSourcePixels": 0.1962852163980635,
     "boundary95PercentileSourcePixels": 1.0,
     "boundaryMaxDistanceSourcePixels": 2.0,
-    "sourceMaskBBoxInCrop": [
-      25,
-      23,
-      327,
-      224
-    ],
-    "renderMaskBBoxInCrop": [
-      25,
-      23,
-      327,
-      224
-    ],
+    "sourceMaskBBoxInCrop": [25, 23, 327, 224],
+    "renderMaskBBoxInCrop": [25, 23, 327, 224],
     "interiorRgbMeanAbsoluteErrorPerChannel": [
-      0.7618018018018018,
-      1.8113713713713713,
-      4.513793793793794
+      0.7618018018018018, 1.8113713713713713, 4.513793793793794
     ],
     "interiorRgbMeanAbsoluteError": 2.3623223223223224,
-    "sourceComponents": [
-      20691,
-      8784
-    ],
-    "renderedComponents": [
-      20690,
-      8779
-    ]
+    "sourceComponents": [20691, 8784],
+    "renderedComponents": [20690, 8779]
   },
   "contrast": {
     "manovaflow-mf-transparent.png": {
       "minimumOpaqueFillContrast": 5.47936463558876,
-      "background": [
-        248,
-        246,
-        242
-      ]
+      "background": [248, 246, 242]
     },
     "manovaflow-mf-inverse-transparent.png": {
       "minimumOpaqueFillContrast": 7.427498896399904,
-      "background": [
-        8,
-        29,
-        60
-      ]
+      "background": [8, 29, 60]
     }
   },
   "checks": {

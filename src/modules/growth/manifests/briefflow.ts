@@ -9,13 +9,33 @@ export const briefflowManifest = Object.freeze({
   scoring: {
     threshold: 60,
     signals: [
-      { key: "non_regulated_service", label: "خدمت حرفه‌ای غیررگوله", weight: 25 },
-      { key: "packaged_repeatable_service", label: "خدمت بسته‌بندی‌شده و تکرارشونده", weight: 20 },
+      {
+        key: "non_regulated_service",
+        label: "خدمت حرفه‌ای غیررگوله",
+        weight: 25
+      },
+      {
+        key: "packaged_repeatable_service",
+        label: "خدمت بسته‌بندی‌شده و تکرارشونده",
+        weight: 20
+      },
       { key: "public_brief_path", label: "مسیر عمومی brief", weight: 15 },
-      { key: "approval_steps_visible", label: "گام‌های تأیید قابل مشاهده", weight: 10 },
+      {
+        key: "approval_steps_visible",
+        label: "گام‌های تأیید قابل مشاهده",
+        weight: 10
+      },
       { key: "small_team_visible", label: "شاهد تیم کوچک", weight: 10 },
-      { key: "supported_public_language", label: "زبان عمومی قابل پشتیبانی", weight: 10 },
-      { key: "country_research_ready", label: "آمادگی صرفاً پژوهشی بازار", weight: 10 }
+      {
+        key: "supported_public_language",
+        label: "زبان عمومی قابل پشتیبانی",
+        weight: 10
+      },
+      {
+        key: "country_research_ready",
+        label: "آمادگی صرفاً پژوهشی بازار",
+        weight: 10
+      }
     ],
     prohibitedRiskFlags: [
       "legal_advice",
@@ -49,6 +69,7 @@ export const briefflowManifest = Object.freeze({
     paidSpend: 0
   },
   draftKind: "WAITLIST_PREVIEW",
-  draftTemplate: "پیش‌نویس داخلی فهرست انتظار BriefFlow برای {company}؛ محصول آماده نیست و پیام ارسال نشده است.",
+  draftTemplate:
+    "پیش‌نویس داخلی فهرست انتظار BriefFlow برای {company}؛ محصول آماده نیست و پیام ارسال نشده است.",
   killRules: ["هر اثر بیرونی", "هر سند محرمانه", "هر توصیه تخصصی رگوله"]
 } satisfies VerticalManifest);

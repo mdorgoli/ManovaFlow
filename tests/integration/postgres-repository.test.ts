@@ -136,14 +136,28 @@ describe("PostgresGrowthRepository integration", () => {
   });
 
   it("reuses duplicate run keys and keeps suppression tenant-wide", async () => {
-    const first = await repository.beginRun(actorA, "serviceflow", "pg-idempotent");
-    const replay = await repository.beginRun(actorA, "serviceflow", "pg-idempotent");
-    await repository.suppressDomain(actorA, "blocked.example", "integration DNC");
+    const first = await repository.beginRun(
+      actorA,
+      "serviceflow",
+      "pg-idempotent"
+    );
+    const replay = await repository.beginRun(
+      actorA,
+      "serviceflow",
+      "pg-idempotent"
+    );
+    await repository.suppressDomain(
+      actorA,
+      "blocked.example",
+      "integration DNC"
+    );
 
     expect(replay.reused).toBe(true);
     expect(replay.run.id).toBe(first.run.id);
     expect(await repository.isSuppressed(actorA, "blocked.example")).toBe(true);
-    expect(await repository.isSuppressed(actorB, "blocked.example")).toBe(false);
+    expect(await repository.isSuppressed(actorB, "blocked.example")).toBe(
+      false
+    );
   });
 
   it("blocks update and delete of audit events at the database boundary", async () => {

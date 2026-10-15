@@ -63,7 +63,9 @@ describe("Postgres opaque session lifecycle", () => {
 
   it("resolves a provider subject only through the server-owned identity link", async () => {
     const port = new PostgresIdentityLinkPort(admin);
-    await expect(port.resolveActor({ issuer, subject })).resolves.toEqual({ actorId });
+    await expect(port.resolveActor({ issuer, subject })).resolves.toEqual({
+      actorId
+    });
     await expect(
       port.resolveActor({ issuer, subject: "unknown-subject" })
     ).resolves.toBeNull();
@@ -159,7 +161,9 @@ describe("Postgres opaque session lifecycle", () => {
   });
 
   it("serializes concurrent rotation and invalidates the winning token after reuse", async () => {
-    const issued = await store.issue(issueInput(oidcHash("concurrent-rotation")));
+    const issued = await store.issue(
+      issueInput(oidcHash("concurrent-rotation"))
+    );
     const results = await Promise.allSettled([
       store.rotate({
         sessionToken: issued.sessionToken,
@@ -173,8 +177,11 @@ describe("Postgres opaque session lifecycle", () => {
       })
     ]);
     const fulfilled = results.filter(
-      (result): result is PromiseFulfilledResult<Awaited<ReturnType<typeof store.rotate>>> =>
-        result.status === "fulfilled"
+      (
+        result
+      ): result is PromiseFulfilledResult<
+        Awaited<ReturnType<typeof store.rotate>>
+      > => result.status === "fulfilled"
     );
     const rejected = results.filter(
       (result): result is PromiseRejectedResult => result.status === "rejected"
@@ -182,7 +189,9 @@ describe("Postgres opaque session lifecycle", () => {
 
     expect(fulfilled).toHaveLength(1);
     expect(rejected).toHaveLength(1);
-    expect(rejected[0]?.reason).toMatchObject({ code: "SESSION_REPLAY_DETECTED" });
+    expect(rejected[0]?.reason).toMatchObject({
+      code: "SESSION_REPLAY_DETECTED"
+    });
     await expect(
       store.authenticate({
         sessionToken: fulfilled[0]!.value.sessionToken,
@@ -241,9 +250,7 @@ describe("Postgres opaque session lifecycle", () => {
       now: new Date("2026-09-04T12:07:00.000Z")
     });
 
-    const rows = await admin<
-      { idle_expires_at: Date; expires_at: Date }[]
-    >`
+    const rows = await admin<{ idle_expires_at: Date; expires_at: Date }[]>`
       select idle_expires_at, expires_at
       from auth_sessions
       where id = ${issued.sessionId}::uuid
@@ -251,9 +258,7 @@ describe("Postgres opaque session lifecycle", () => {
     expect(rows[0]?.idle_expires_at.toISOString()).toBe(
       "2026-09-04T12:10:00.000Z"
     );
-    expect(rows[0]?.expires_at.toISOString()).toBe(
-      "2026-09-04T12:10:00.000Z"
-    );
+    expect(rows[0]?.expires_at.toISOString()).toBe("2026-09-04T12:10:00.000Z");
   });
 
   it("enforces absolute expiry despite recent activity", async () => {
@@ -282,7 +287,9 @@ describe("Postgres opaque session lifecycle", () => {
   });
 
   it("expires rather than revokes when revoke is presented after idle timeout", async () => {
-    const issued = await store.issue(issueInput(oidcHash("revoke-idle-timeout")));
+    const issued = await store.issue(
+      issueInput(oidcHash("revoke-idle-timeout"))
+    );
 
     await expect(
       store.revoke({
@@ -323,5 +330,7 @@ function issueInput(oidcTokenHash: string): IssueSessionInput {
 }
 
 function oidcHash(testName: string): string {
-  return createHash("sha256").update(testRunId + ":" + testName).digest("hex");
+  return createHash("sha256")
+    .update(testRunId + ":" + testName)
+    .digest("hex");
 }

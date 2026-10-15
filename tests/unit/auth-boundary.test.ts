@@ -12,9 +12,7 @@ const now = new Date("2026-09-04T08:00:00.000Z");
 const tenantA = "10000000-0000-4000-8000-000000000001";
 const tenantB = "10000000-0000-4000-8000-000000000002";
 
-function session(
-  overrides: Partial<VerifiedSession> = {}
-): VerifiedSession {
+function session(overrides: Partial<VerifiedSession> = {}): VerifiedSession {
   return {
     source: "SERVER_VERIFIED_SESSION",
     sessionId: "session-00000000000000000000000000000001",

@@ -18,11 +18,16 @@ export async function getPublicCache(): Promise<RedisClient | undefined> {
   if (!url) return undefined;
   if (!shared.manovaPublicRedis) {
     const client = createPublicRedis(url);
-    client.on("error", () => { /* Cache errors must not expose credentials. */ });
-    shared.manovaPublicRedis = client.connect().then(() => client).catch((error: unknown) => {
-      delete shared.manovaPublicRedis;
-      throw error;
+    client.on("error", () => {
+      /* Cache errors must not expose credentials. */
     });
+    shared.manovaPublicRedis = client
+      .connect()
+      .then(() => client)
+      .catch((error: unknown) => {
+        delete shared.manovaPublicRedis;
+        throw error;
+      });
   }
   const client = await shared.manovaPublicRedis;
   if (!client.isReady) {
@@ -47,6 +52,8 @@ export async function cachedPublicLocales<T>(load: () => T): Promise<{
       await client.set(key, JSON.stringify(value), { EX: 60 });
       return { value, cache: "MISS" };
     }
-  } catch { /* Public data remains available if optional Redis cache is down. */ }
+  } catch {
+    /* Public data remains available if optional Redis cache is down. */
+  }
   return { value: load(), cache: "BYPASS" };
 }

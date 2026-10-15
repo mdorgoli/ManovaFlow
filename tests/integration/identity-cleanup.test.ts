@@ -158,9 +158,7 @@ async function eligibleArtifactCounts(sql: Sql): Promise<{
   rateBuckets: number;
 }> {
   const retentionCutoff = new Date(cleanupNow.getTime() - 3_600_000);
-  const rows = await sql<
-    { oidc_digests: number; rate_buckets: number }[]
-  >`
+  const rows = await sql<{ oidc_digests: number; rate_buckets: number }[]>`
     select
       (
         select count(*)::integer

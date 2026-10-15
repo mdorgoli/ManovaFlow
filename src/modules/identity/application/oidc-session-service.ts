@@ -4,10 +4,7 @@ import {
   verifiedMembershipSchema,
   type MembershipPort
 } from "./auth-port";
-import type {
-  OidcTokenVerifierPort,
-  VerifiedOidcIdentity
-} from "./oidc-port";
+import type { OidcTokenVerifierPort, VerifiedOidcIdentity } from "./oidc-port";
 import type { IssuedSession, SessionStorePort } from "./session-port";
 import { readSessionRequestCredentials } from "../infrastructure/session-cookie";
 

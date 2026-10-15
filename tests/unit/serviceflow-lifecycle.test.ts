@@ -12,13 +12,21 @@ import {
 const tenantA = "tenant-demo-a";
 const tenantB = "tenant-demo-b";
 const intakeActor = { tenantId: tenantA, actorId: "intake-demo-a" };
-const owner: ApprovalActor = { tenantId: tenantA, actorId: "owner-demo-a", role: "OWNER" };
+const owner: ApprovalActor = {
+  tenantId: tenantA,
+  actorId: "owner-demo-a",
+  role: "OWNER"
+};
 const operator: ApprovalActor = {
   tenantId: tenantA,
   actorId: "operator-demo-a",
   role: "OPERATOR"
 };
-const viewer: ApprovalActor = { tenantId: tenantA, actorId: "viewer-demo-a", role: "VIEWER" };
+const viewer: ApprovalActor = {
+  tenantId: tenantA,
+  actorId: "viewer-demo-a",
+  role: "VIEWER"
+};
 const otherTenantOwner: ApprovalActor = {
   tenantId: tenantB,
   actorId: "owner-demo-b",
@@ -51,17 +59,29 @@ describe("ServiceFlow request lifecycle", () => {
     );
     const completed = await service.completeRequest(
       operator,
-      commandFor(evidenceResult.request, "DEMO: synthetic work and evidence verified."),
+      commandFor(
+        evidenceResult.request,
+        "DEMO: synthetic work and evidence verified."
+      ),
       "complete-happy-001"
     );
     const closed = await service.closeRequest(
       owner,
-      commandFor(completed.request, "DEMO: owner reviewed completion and closes the request."),
+      commandFor(
+        completed.request,
+        "DEMO: owner reviewed completion and closes the request."
+      ),
       "close-happy-001"
     );
 
-    expect(started.request).toMatchObject({ state: "IN_PROGRESS", revision: 3 });
-    expect(evidenceResult.request).toMatchObject({ state: "IN_PROGRESS", revision: 4 });
+    expect(started.request).toMatchObject({
+      state: "IN_PROGRESS",
+      revision: 3
+    });
+    expect(evidenceResult.request).toMatchObject({
+      state: "IN_PROGRESS",
+      revision: 4
+    });
     expect(evidenceResult.evidence).toMatchObject({
       tenantId: tenantA,
       requestId: assigned.id,
@@ -71,7 +91,10 @@ describe("ServiceFlow request lifecycle", () => {
       attachedBy: operator.actorId,
       createdAt: "2026-05-30T00:13:20.009Z"
     });
-    expect(completed.request).toMatchObject({ state: "COMPLETED", revision: 5 });
+    expect(completed.request).toMatchObject({
+      state: "COMPLETED",
+      revision: 5
+    });
     expect(closed.request).toMatchObject({ state: "CLOSED", revision: 6 });
     expect(closed.outboundActionCount).toBe(0);
 
@@ -79,7 +102,10 @@ describe("ServiceFlow request lifecycle", () => {
       expect.objectContaining({
         type: "REQUEST_STARTED",
         actorId: operator.actorId,
-        details: expect.objectContaining({ fromState: "ASSIGNED", toState: "IN_PROGRESS" })
+        details: expect.objectContaining({
+          fromState: "ASSIGNED",
+          toState: "IN_PROGRESS"
+        })
       }),
       expect.objectContaining({
         type: "COMPLETION_EVIDENCE_ATTACHED",
@@ -117,18 +143,25 @@ describe("ServiceFlow request lifecycle", () => {
 
     const blocked = await service.blockRequest(
       operator,
-      commandFor(inProgress, "DEMO: synthetic access to the work area is temporarily blocked."),
+      commandFor(
+        inProgress,
+        "DEMO: synthetic access to the work area is temporarily blocked."
+      ),
       "block-work-001"
     );
     expect(blocked.request).toMatchObject({
       state: "BLOCKED",
       revision: 4,
-      operationalBlockReason: "DEMO: synthetic access to the work area is temporarily blocked."
+      operationalBlockReason:
+        "DEMO: synthetic access to the work area is temporarily blocked."
     });
 
     const resumed = await service.resumeRequest(
       owner,
-      commandFor(blocked.request, "DEMO: owner confirms the synthetic access issue is resolved."),
+      commandFor(
+        blocked.request,
+        "DEMO: owner confirms the synthetic access issue is resolved."
+      ),
       "resume-work-001"
     );
     expect(resumed.request).toMatchObject({
@@ -140,7 +173,8 @@ describe("ServiceFlow request lifecycle", () => {
       expect.objectContaining({
         type: "REQUEST_BLOCKED",
         details: expect.objectContaining({
-          reason: "DEMO: synthetic access to the work area is temporarily blocked."
+          reason:
+            "DEMO: synthetic access to the work area is temporarily blocked."
         })
       }),
       expect.objectContaining({
@@ -169,7 +203,10 @@ describe("ServiceFlow request lifecycle", () => {
 
     const blocked = await service.blockRequest(
       operator,
-      commandFor(inProgress, "DEMO: synthetic dependency is temporarily unavailable."),
+      commandFor(
+        inProgress,
+        "DEMO: synthetic dependency is temporarily unavailable."
+      ),
       "block-valid-reason"
     );
     const beforeResumeAudit = await service.listAudit(owner);
@@ -180,54 +217,76 @@ describe("ServiceFlow request lifecycle", () => {
         "resume-missing-reason"
       )
     ).rejects.toThrow();
-    expect(await service.getRequest(owner, blocked.request.id)).toEqual(blocked.request);
+    expect(await service.getRequest(owner, blocked.request.id)).toEqual(
+      blocked.request
+    );
     expect(await service.listAudit(owner)).toEqual(beforeResumeAudit);
   });
 
   it.each([
     [
       "emergency signal",
-      { ...safeInput, description: "DEMO: there is a gas leak and an immediate hazard." },
+      {
+        ...safeInput,
+        description: "DEMO: there is a gas leak and an immediate hazard."
+      },
       "POSSIBLE_EMERGENCY"
     ],
-    ["unknown safety", { ...safeInput, safetyAssessment: "UNKNOWN" as const }, "SAFETY_UNKNOWN"]
-  ] as const)("never resumes or advances a request blocked by %s", async (_name, input, reason) => {
-    const service = createService();
-    const hazardous = await service.createAndEvaluate(
-      intakeActor,
-      input,
-      `create-hazardous-lifecycle-${reason.toLowerCase()}`
-    );
-    expect(hazardous.request.state).toBe("BLOCKED");
+    [
+      "unknown safety",
+      { ...safeInput, safetyAssessment: "UNKNOWN" as const },
+      "SAFETY_UNKNOWN"
+    ]
+  ] as const)(
+    "never resumes or advances a request blocked by %s",
+    async (_name, input, reason) => {
+      const service = createService();
+      const hazardous = await service.createAndEvaluate(
+        intakeActor,
+        input,
+        `create-hazardous-lifecycle-${reason.toLowerCase()}`
+      );
+      expect(hazardous.request.state).toBe("BLOCKED");
 
-    await expect(
-      service.resumeRequest(
-        owner,
-        commandFor(hazardous.request, "DEMO: unsafe intake blocks cannot be bypassed."),
-        `resume-hazardous-${reason.toLowerCase()}`
-      )
-    ).rejects.toThrow("Safety-blocked ServiceFlow request cannot resume");
-    await expect(
-      service.attachCompletionEvidence(
-        owner,
-        evidenceFor(hazardous.request),
-        `evidence-hazardous-${reason.toLowerCase()}`
-      )
-    ).rejects.toThrow("Invalid ServiceFlow transition");
+      await expect(
+        service.resumeRequest(
+          owner,
+          commandFor(
+            hazardous.request,
+            "DEMO: unsafe intake blocks cannot be bypassed."
+          ),
+          `resume-hazardous-${reason.toLowerCase()}`
+        )
+      ).rejects.toThrow("Safety-blocked ServiceFlow request cannot resume");
+      await expect(
+        service.attachCompletionEvidence(
+          owner,
+          evidenceFor(hazardous.request),
+          `evidence-hazardous-${reason.toLowerCase()}`
+        )
+      ).rejects.toThrow("Invalid ServiceFlow transition");
 
-    expect((await service.getRequest(owner, hazardous.request.id)).state).toBe("BLOCKED");
-    expect(await service.listCompletionEvidence(owner)).toEqual([]);
-    expect(await service.listAudit(owner)).toContainEqual(
-      expect.objectContaining({
-        type: "LIFECYCLE_COMMAND_REJECTED",
-        details: expect.objectContaining({ reasonCode: "SAFETY_BLOCK_CANNOT_RESUME" })
-      })
-    );
-  });
+      expect(
+        (await service.getRequest(owner, hazardous.request.id)).state
+      ).toBe("BLOCKED");
+      expect(await service.listCompletionEvidence(owner)).toEqual([]);
+      expect(await service.listAudit(owner)).toContainEqual(
+        expect.objectContaining({
+          type: "LIFECYCLE_COMMAND_REJECTED",
+          details: expect.objectContaining({
+            reasonCode: "SAFETY_BLOCK_CANNOT_RESUME"
+          })
+        })
+      );
+    }
+  );
 
   it("rejects completion without evidence and preserves the in-progress state", async () => {
     const service = createService();
-    const inProgress = await prepareInProgress(service, "complete-without-evidence");
+    const inProgress = await prepareInProgress(
+      service,
+      "complete-without-evidence"
+    );
 
     await expect(
       service.completeRequest(
@@ -324,14 +383,18 @@ describe("ServiceFlow request lifecycle", () => {
 
     await expect(
       service.attachCompletionEvidence(operator, command, "evidence-replay-001")
-    ).rejects.toThrow("Lifecycle idempotency key is already bound to a different principal or command");
+    ).rejects.toThrow(
+      "Lifecycle idempotency key is already bound to a different principal or command"
+    );
     await expect(
       service.attachCompletionEvidence(
         owner,
         { ...command, evidenceAssetId: "DEMO_EVIDENCE_FIXTURE_COMPLETION_02" },
         "evidence-replay-001"
       )
-    ).rejects.toThrow("Lifecycle idempotency key is already bound to a different principal or command");
+    ).rejects.toThrow(
+      "Lifecycle idempotency key is already bound to a different principal or command"
+    );
     expect(await service.listCompletionEvidence(owner)).toHaveLength(1);
     expect(await service.listAudit(owner)).toEqual(auditAfterFirst);
   });
@@ -340,13 +403,16 @@ describe("ServiceFlow request lifecycle", () => {
     const service = createService();
     const assigned = await prepareAssigned(service, "stale-start");
     const command = {
-      ...commandFor(assigned, "DEMO: stale lifecycle command must not start work."),
+      ...commandFor(
+        assigned,
+        "DEMO: stale lifecycle command must not start work."
+      ),
       requestRevision: assigned.revision - 1
     };
 
-    await expect(service.startRequest(owner, command, "start-stale-001")).rejects.toThrow(
-      "ServiceFlow request revision is stale"
-    );
+    await expect(
+      service.startRequest(owner, command, "start-stale-001")
+    ).rejects.toThrow("ServiceFlow request revision is stale");
     const auditAfterFirst = await service.listAudit(owner);
     expect(await service.getRequest(owner, assigned.id)).toEqual(assigned);
     expect(auditAfterFirst.at(-1)).toMatchObject({
@@ -354,9 +420,9 @@ describe("ServiceFlow request lifecycle", () => {
       details: { reasonCode: "STALE_REQUEST_REVISION" }
     });
 
-    await expect(service.startRequest(owner, command, "start-stale-001")).rejects.toThrow(
-      "ServiceFlow request revision is stale"
-    );
+    await expect(
+      service.startRequest(owner, command, "start-stale-001")
+    ).rejects.toThrow("ServiceFlow request revision is stale");
     expect(await service.listAudit(owner)).toEqual(auditAfterFirst);
   });
 
@@ -381,7 +447,10 @@ describe("ServiceFlow request lifecycle", () => {
 
   it("does not let re-evaluation bypass an active or terminal lifecycle state", async () => {
     const service = createService();
-    const inProgress = await prepareInProgress(service, "lifecycle-re-evaluate");
+    const inProgress = await prepareInProgress(
+      service,
+      "lifecycle-re-evaluate"
+    );
     const beforeAudit = await service.listAudit(owner);
 
     await expect(service.reEvaluate(owner, inProgress.id)).rejects.toThrow(
@@ -432,8 +501,15 @@ function createService(id: () => string = serialId()): ServiceFlowService {
   );
 }
 
-async function prepareAssigned(service: ServiceFlowService, suffix: string): Promise<ServiceRequest> {
-  const created = await service.createAndEvaluate(intakeActor, safeInput, `create-${suffix}`);
+async function prepareAssigned(
+  service: ServiceFlowService,
+  suffix: string
+): Promise<ServiceRequest> {
+  const created = await service.createAndEvaluate(
+    intakeActor,
+    safeInput,
+    `create-${suffix}`
+  );
   const proposal = created.evaluation.proposal!;
   const approved = await service.approveProposal(
     owner,

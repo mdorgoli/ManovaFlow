@@ -10,12 +10,36 @@ export const beautyflowManifest = Object.freeze({
     threshold: 60,
     signals: [
       { key: "non_medical_beauty", label: "خدمت زیبایی غیرپزشکی", weight: 25 },
-      { key: "catalog_hours_visible", label: "کاتالوگ و ساعات عمومی", weight: 15 },
-      { key: "multi_operator_or_location", label: "چند اپراتور یا محل", weight: 15 },
-      { key: "booking_path_visible", label: "مسیر رزرو قابل مشاهده", weight: 15 },
-      { key: "confirmation_gap_visible", label: "شکاف تأیید قابل مشاهده", weight: 10 },
-      { key: "supported_public_language", label: "زبان عمومی قابل پشتیبانی", weight: 10 },
-      { key: "country_research_ready", label: "آمادگی صرفاً پژوهشی بازار", weight: 10 }
+      {
+        key: "catalog_hours_visible",
+        label: "کاتالوگ و ساعات عمومی",
+        weight: 15
+      },
+      {
+        key: "multi_operator_or_location",
+        label: "چند اپراتور یا محل",
+        weight: 15
+      },
+      {
+        key: "booking_path_visible",
+        label: "مسیر رزرو قابل مشاهده",
+        weight: 15
+      },
+      {
+        key: "confirmation_gap_visible",
+        label: "شکاف تأیید قابل مشاهده",
+        weight: 10
+      },
+      {
+        key: "supported_public_language",
+        label: "زبان عمومی قابل پشتیبانی",
+        weight: 10
+      },
+      {
+        key: "country_research_ready",
+        label: "آمادگی صرفاً پژوهشی بازار",
+        weight: 10
+      }
     ],
     prohibitedRiskFlags: [
       "medical_treatment",
@@ -49,6 +73,7 @@ export const beautyflowManifest = Object.freeze({
     paidSpend: 0
   },
   draftKind: "WAITLIST_PREVIEW",
-  draftTemplate: "پیش‌نویس داخلی فهرست انتظار BeautyFlow برای {company}؛ محصول آماده نیست و پیام ارسال نشده است.",
+  draftTemplate:
+    "پیش‌نویس داخلی فهرست انتظار BeautyFlow برای {company}؛ محصول آماده نیست و پیام ارسال نشده است.",
   killRules: ["هر اثر بیرونی", "هر داده سلامت یا بیومتریک", "هر رزرو واقعی"]
 } satisfies VerticalManifest);

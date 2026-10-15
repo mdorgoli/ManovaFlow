@@ -21,11 +21,7 @@ export interface ActorContext {
 
 export type PackState = "ACTIVE_DEVELOPMENT" | "VALIDATION_BACKLOG";
 export type LaneState =
-  | "RESEARCH_ONLY"
-  | "HUMAN_SEND"
-  | "BOUNDED_AUTOMATION"
-  | "PAUSED"
-  | "KILLED";
+  "RESEARCH_ONLY" | "HUMAN_SEND" | "BOUNDED_AUTOMATION" | "PAUSED" | "KILLED";
 
 export interface EvidenceReference {
   sourceUrl: string;

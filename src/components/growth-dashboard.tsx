@@ -93,7 +93,8 @@ export function GrowthDashboard({ initialModel }: GrowthDashboardProps) {
 
 function Dashboard({ model }: { model: DashboardReadModelV2 }) {
   const outbound = model.safetyContext.outbound;
-  const publicResearch = model.safetyContext.dataset.value === "PUBLIC_RESEARCH";
+  const publicResearch =
+    model.safetyContext.dataset.value === "PUBLIC_RESEARCH";
   const laneNames = Object.fromEntries(
     model.laneSummary.lanes.map((lane) => [lane.laneKey, lane.displayName])
   ) as Record<LaneKey, string>;
@@ -103,14 +104,18 @@ function Dashboard({ model }: { model: DashboardReadModelV2 }) {
       <section aria-label="Safety Context" className="safety-context">
         <div className="safety-badges" dir="ltr">
           <span>{model.safetyContext.mode.value}</span>
-          <span>{publicResearch ? "PUBLIC-SOURCE RESEARCH" : "SYNTHETIC DATA"}</span>
+          <span>
+            {publicResearch ? "PUBLIC-SOURCE RESEARCH" : "SYNTHETIC DATA"}
+          </span>
           <span>{researchLabel(model.safetyContext.researchState.value)}</span>
           <span>
-            Outbound = {outbound.state === "PRESENT" ? outbound.value.actions : "MISSING"}
+            Outbound ={" "}
+            {outbound.state === "PRESENT" ? outbound.value.actions : "MISSING"}
           </span>
         </div>
         <p>
-          No messages, calls, ads, bookings, purchases, or external actions are allowed in this environment.
+          No messages, calls, ads, bookings, purchases, or external actions are
+          allowed in this environment.
         </p>
       </section>
 
@@ -130,14 +135,27 @@ function Dashboard({ model }: { model: DashboardReadModelV2 }) {
 
       <section className="dashboard-context" aria-label="Snapshot provenance">
         <div>
-          <span>Storage: <strong>{model.safetyContext.storageMode.value}</strong></span>
-          <span>Snapshot: <time dateTime={model.generatedAt}>{model.generatedAt}</time></span>
+          <span>
+            Storage: <strong>{model.safetyContext.storageMode.value}</strong>
+          </span>
+          <span>
+            Snapshot:{" "}
+            <time dateTime={model.generatedAt}>{model.generatedAt}</time>
+          </span>
         </div>
-        <Link href="/market-scout" prefetch={false}>Website review evidence</Link>
-        <Link href="/market-scout#marketing-workflow" prefetch={false}>Marketing workflow</Link>
+        <Link href="/market-scout" prefetch={false}>
+          Website review evidence
+        </Link>
+        <Link href="/market-scout#marketing-workflow" prefetch={false}>
+          Marketing workflow
+        </Link>
         <p>
-          {publicResearch ? "Public research records, not confirmed customers. " : "Synthetic demonstration records. "}
-          Usage below belongs to the scoring stage of the last completed run; website reviews are recorded separately. Completed records do not mean agents are working now.
+          {publicResearch
+            ? "Public research records, not confirmed customers. "
+            : "Synthetic demonstration records. "}
+          Usage below belongs to the scoring stage of the last completed run;
+          website reviews are recorded separately. Completed records do not mean
+          agents are working now.
         </p>
       </section>
 
@@ -182,13 +200,17 @@ function LanePanel({
     >
       <header className="lane-header">
         <div className="lane-heading">
-          <span className="lane-index" dir="ltr">{LANE_INDEX[lane.laneKey]}</span>
+          <span className="lane-index" dir="ltr">
+            {LANE_INDEX[lane.laneKey]}
+          </span>
           <div>
             <h3 id={`lane-${lane.laneKey}`}>{lane.displayName}</h3>
             <p>{researchLabel(lane.researchState.value)}</p>
           </div>
         </div>
-        <span className="lane-signal">{packStateLabel(lane.packState.value)}</span>
+        <span className="lane-signal">
+          {packStateLabel(lane.packState.value)}
+        </span>
       </header>
 
       <dl className="run-ledger">
@@ -196,7 +218,11 @@ function LanePanel({
           <RunValue lane={lane} />
         </LedgerRow>
         <LedgerRow label="Usage source">
-          {capUsage ? <SourceRunValue value={capUsage.sourceRun} /> : <Missing />}
+          {capUsage ? (
+            <SourceRunValue value={capUsage.sourceRun} />
+          ) : (
+            <Missing />
+          )}
         </LedgerRow>
         <LedgerRow label="Stop reason">
           <StopReasonValue lane={lane} />
@@ -213,15 +239,18 @@ function LanePanel({
             <dt>{label}</dt>
             <dd>
               <ReadNumber value={capUsage?.usage[key] ?? null} />
-              <span className="cap-divider" aria-hidden="true">/</span>
+              <span className="cap-divider" aria-hidden="true">
+                /
+              </span>
               <strong>
-                {capUsage ? formatNumber(capUsage.limits[key].value) : "MISSING"}
+                {capUsage
+                  ? formatNumber(capUsage.limits[key].value)
+                  : "MISSING"}
               </strong>
             </dd>
           </div>
         ))}
       </dl>
-
     </article>
   );
 }
@@ -253,13 +282,13 @@ function RunValue({ lane }: { lane: LaneSummaryItemV1 }) {
   );
 }
 
-function SourceRunValue({
-  value
-}: {
-  value: CapUsageItemV1["sourceRun"];
-}) {
+function SourceRunValue({ value }: { value: CapUsageItemV1["sourceRun"] }) {
   if (value.state === "MISSING") return <Missing reason={value.reason} />;
-  return <span className="present-value" dir="ltr">{value.value.runReference}</span>;
+  return (
+    <span className="present-value" dir="ltr">
+      {value.value.runReference}
+    </span>
+  );
 }
 
 function StopReasonValue({ lane }: { lane: LaneSummaryItemV1 }) {
@@ -267,8 +296,13 @@ function StopReasonValue({ lane }: { lane: LaneSummaryItemV1 }) {
     return <Missing reason={lane.latestRun.reason} />;
   }
   const stopReason = lane.latestRun.value.stopReason;
-  if (stopReason.state === "MISSING") return <Missing reason={stopReason.reason} />;
-  return <span className="present-value" dir="ltr">{stopReason.value}</span>;
+  if (stopReason.state === "MISSING")
+    return <Missing reason={stopReason.reason} />;
+  return (
+    <span className="present-value" dir="ltr">
+      {stopReason.value}
+    </span>
+  );
 }
 
 function ReadNumber({ value }: { value: ReadValue<number> | null }) {
@@ -335,7 +369,10 @@ function isSafetyContext(value: unknown): boolean {
   return (
     value.contractVersion === DASHBOARD_SECTION_VERSIONS.safetyContext &&
     isPresent(value.mode, (item) => item === "DEMO") &&
-    isPresent(value.dataset, (item) => item === "SYNTHETIC" || item === "PUBLIC_RESEARCH") &&
+    isPresent(
+      value.dataset,
+      (item) => item === "SYNTHETIC" || item === "PUBLIC_RESEARCH"
+    ) &&
     isPresent(
       value.storageMode,
       (item) => item === "POSTGRESQL" || item === "MEMORY_DEMO"
@@ -362,8 +399,7 @@ function isLaneSummary(value: unknown): boolean {
       !isPresent(lane.researchState, (item) => item === "RESEARCH_ONLY") ||
       !isPresent(
         lane.packState,
-        (item) =>
-          item === "ACTIVE_DEVELOPMENT" || item === "VALIDATION_BACKLOG"
+        (item) => item === "ACTIVE_DEVELOPMENT" || item === "VALIDATION_BACKLOG"
       ) ||
       !isReadValue(lane.latestRun, isLaneRun)
     ) {
@@ -406,7 +442,10 @@ function isMarketRanking(value: unknown): boolean {
   for (const lane of value.lanes) {
     if (!isRecord(lane) || !isLaneKey(lane.laneKey)) return false;
     laneKeys.add(lane.laneKey);
-    if (!isReadValue(lane.sourceRun, isSourceRun) || !Array.isArray(lane.markets)) {
+    if (
+      !isReadValue(lane.sourceRun, isSourceRun) ||
+      !Array.isArray(lane.markets)
+    ) {
       return false;
     }
     if (lane.markets.length !== MARKET_KEYS.length) return false;
@@ -467,7 +506,9 @@ function isEvidenceMatrix(value: unknown): boolean {
       if (!isRecord(cell) || !isComplianceCategory(cell.category)) return false;
       categories.add(cell.category);
       if (
-        !["FACT", "INFERENCE", "UNKNOWN", "MISSING"].includes(String(cell.state)) ||
+        !["FACT", "INFERENCE", "UNKNOWN", "MISSING"].includes(
+          String(cell.state)
+        ) ||
         cell.humanSend !== "BLOCKED" ||
         !hasProvenance(cell)
       ) {
@@ -485,28 +526,51 @@ function isSafeAuditFeed(value: unknown): boolean {
     value.contractVersion !== DASHBOARD_SECTION_VERSIONS.safeAuditFeed ||
     !["DETAIL", "HEALTH_ONLY"].includes(String(value.access)) ||
     !isReadValue(value.integrity, (item) => item === "CONTIGUOUS_SEQUENCE") ||
-    !isPresent(value.totalEvents, (item) => isNonNegativeNumber(item) && Number.isSafeInteger(item)) ||
+    !isPresent(
+      value.totalEvents,
+      (item) => isNonNegativeNumber(item) && Number.isSafeInteger(item)
+    ) ||
     !isReadValue(value.lastSequence, isPositiveInteger) ||
-    !Array.isArray(value.entries) || value.entries.length > 100 ||
-    !(value.nextCursor === null || (typeof value.nextCursor === "string" && /^[1-9]\d*$/.test(value.nextCursor)))
-  ) return false;
-  if (value.access === "HEALTH_ONLY" && (value.entries.length !== 0 || value.nextCursor !== null)) return false;
+    !Array.isArray(value.entries) ||
+    value.entries.length > 100 ||
+    !(
+      value.nextCursor === null ||
+      (typeof value.nextCursor === "string" &&
+        /^[1-9]\d*$/.test(value.nextCursor))
+    )
+  )
+    return false;
+  if (
+    value.access === "HEALTH_ONLY" &&
+    (value.entries.length !== 0 || value.nextCursor !== null)
+  )
+    return false;
   const results: Record<string, string> = {
-    RUN_STARTED: "STARTED", RUN_RETRIED: "STARTED", RUN_COMPLETED: "SUCCEEDED",
-    RUN_FAILED: "FAILED", DRAFT_DECIDED_INTERNAL_ONLY: "RECORDED",
-    TENANT_DOMAIN_SUPPRESSED: "RECORDED", MARKET_SCOUT_ACTIVITY_SNAPSHOT: "RECORDED"
+    RUN_STARTED: "STARTED",
+    RUN_RETRIED: "STARTED",
+    RUN_COMPLETED: "SUCCEEDED",
+    RUN_FAILED: "FAILED",
+    DRAFT_DECIDED_INTERNAL_ONLY: "RECORDED",
+    TENANT_DOMAIN_SUPPRESSED: "RECORDED",
+    MARKET_SCOUT_ACTIVITY_SNAPSHOT: "RECORDED"
   };
   let previousSequence = Infinity;
   return value.entries.every((entry) => {
     if (
-      !isRecord(entry) || !isPositiveInteger(entry.sequence) ||
-      typeof entry.sequence !== "number" || entry.sequence >= previousSequence ||
-      typeof entry.occurredAt !== "string" || !Number.isFinite(Date.parse(entry.occurredAt)) ||
+      !isRecord(entry) ||
+      !isPositiveInteger(entry.sequence) ||
+      typeof entry.sequence !== "number" ||
+      entry.sequence >= previousSequence ||
+      typeof entry.occurredAt !== "string" ||
+      !Number.isFinite(Date.parse(entry.occurredAt)) ||
       !(entry.laneKey === null || isLaneKey(entry.laneKey)) ||
-      typeof entry.eventType !== "string" || !Object.hasOwn(results, entry.eventType) ||
-      entry.result !== results[entry.eventType] || entry.eventReference !== `audit:${entry.sequence}` ||
+      typeof entry.eventType !== "string" ||
+      !Object.hasOwn(results, entry.eventType) ||
+      entry.result !== results[entry.eventType] ||
+      entry.eventReference !== `audit:${entry.sequence}` ||
       !hasProvenance(entry)
-    ) return false;
+    )
+      return false;
     previousSequence = entry.sequence;
     return true;
   });
@@ -578,7 +642,9 @@ function isReadValue(
   if (value.state === "MISSING") {
     return typeof value.reason === "string" && hasProvenance(value);
   }
-  return value.state === "PRESENT" && validate(value.value) && hasProvenance(value);
+  return (
+    value.state === "PRESENT" && validate(value.value) && hasProvenance(value)
+  );
 }
 
 function hasProvenance(value: Record<string, unknown>): boolean {
@@ -588,7 +654,9 @@ function hasProvenance(value: Record<string, unknown>): boolean {
     value.provenance.every((item) => {
       if (!isRecord(item)) return false;
       return (
-        ["CONFIG", "OBSERVED", "DERIVED", "INVARIANT"].includes(String(item.basis)) &&
+        ["CONFIG", "OBSERVED", "DERIVED", "INVARIANT"].includes(
+          String(item.basis)
+        ) &&
         [
           "SERVER_POLICY",
           "VERTICAL_MANIFEST",
@@ -618,7 +686,10 @@ function isLaneKey(value: unknown): value is LaneKey {
 }
 
 function isMarketKey(value: unknown): value is (typeof MARKET_KEYS)[number] {
-  return typeof value === "string" && MARKET_KEYS.includes(value as (typeof MARKET_KEYS)[number]);
+  return (
+    typeof value === "string" &&
+    MARKET_KEYS.includes(value as (typeof MARKET_KEYS)[number])
+  );
 }
 
 function isComplianceCategory(

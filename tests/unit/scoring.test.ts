@@ -37,14 +37,24 @@ describe("deterministic scoring", () => {
     expect(score.total).toBe(65);
     expect(score.status).toBe("ELIGIBLE");
     expect(score.explanation).toEqual([
-      { key: "vertical_match", label: "تطابق عمودی", matched: true, awarded: 40 },
+      {
+        key: "vertical_match",
+        label: "تطابق عمودی",
+        matched: true,
+        awarded: 40
+      },
       {
         key: "repeatable_flow",
         label: "گردش‌کار تکرارشونده",
         matched: false,
         awarded: 0
       },
-      { key: "public_language", label: "زبان عمومی", matched: true, awarded: 25 }
+      {
+        key: "public_language",
+        label: "زبان عمومی",
+        matched: true,
+        awarded: 25
+      }
     ]);
   });
 

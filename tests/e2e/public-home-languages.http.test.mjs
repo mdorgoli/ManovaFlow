@@ -12,7 +12,10 @@ for (const { path, locale, direction, title } of [
     const response = await fetch(`${origin}${path}`);
     assert.equal(response.status, 200);
     const html = await response.text();
-    assert.match(html, new RegExp(`<html[^>]*lang="${locale}"[^>]*dir="${direction}"`));
+    assert.match(
+      html,
+      new RegExp(`<html[^>]*lang="${locale}"[^>]*dir="${direction}"`)
+    );
     assert.match(html, new RegExp(`<h1[^>]*>${title}`));
     assert.match(html, /hrefLang="fr"/i);
     assert.match(html, /hrefLang="ar"/i);

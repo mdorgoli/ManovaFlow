@@ -15,31 +15,72 @@ import {
 const OVERPASS_QUERY_MEMORY_BYTES = 16_777_216;
 
 const marketSamples = Object.freeze({
-  "fr-france": { countryCode: "FR", bbox: [48.8476, 2.3385, 48.8656, 2.3663], label: "Central Paris ~1 km bounding-box sample; not representative of all France" },
-  "tr-istanbul": { countryCode: "TR", bbox: [40.9992, 28.9664, 41.0172, 28.9904], label: "Central Istanbul ~1 km bounding-box sample" },
-  "iq-kri-erbil": { countryCode: "IQ", bbox: [36.1821, 43.9981, 36.2001, 44.0203], label: "Central Erbil ~1 km bounding-box sample; not representative of all Iraq" },
-  "ae-dubai": { countryCode: "AE", bbox: [25.1958, 55.2609, 25.2138, 55.2807], label: "Central Dubai ~1 km bounding-box sample; not representative of all UAE" },
-  "ir-tehran": { countryCode: "IR", bbox: [35.68, 51.36, 35.75, 51.45], label: "Central Tehran bounded sample (35.68,51.36–35.75,51.45); not representative of all Iran" }
+  "fr-france": {
+    countryCode: "FR",
+    bbox: [48.8476, 2.3385, 48.8656, 2.3663],
+    label:
+      "Central Paris ~1 km bounding-box sample; not representative of all France"
+  },
+  "tr-istanbul": {
+    countryCode: "TR",
+    bbox: [40.9992, 28.9664, 41.0172, 28.9904],
+    label: "Central Istanbul ~1 km bounding-box sample"
+  },
+  "iq-kri-erbil": {
+    countryCode: "IQ",
+    bbox: [36.1821, 43.9981, 36.2001, 44.0203],
+    label:
+      "Central Erbil ~1 km bounding-box sample; not representative of all Iraq"
+  },
+  "ae-dubai": {
+    countryCode: "AE",
+    bbox: [25.1958, 55.2609, 25.2138, 55.2807],
+    label:
+      "Central Dubai ~1 km bounding-box sample; not representative of all UAE"
+  },
+  "ir-tehran": {
+    countryCode: "IR",
+    bbox: [35.68, 51.36, 35.75, 51.45],
+    label:
+      "Central Tehran bounded sample (35.68,51.36–35.75,51.45); not representative of all Iran"
+  }
 } satisfies Record<MarketKey, MarketSample>);
 
 const laneSelectors = Object.freeze({
-  serviceflow: { tag: "craft", values: ["air_conditioning", "electrician", "heating_engineer", "hvac", "locksmith", "plumber"] },
+  serviceflow: {
+    tag: "craft",
+    values: [
+      "air_conditioning",
+      "electrician",
+      "heating_engineer",
+      "hvac",
+      "locksmith",
+      "plumber"
+    ]
+  },
   beautyflow: { tag: "shop", values: ["beauty", "hairdresser", "nail_salon"] },
-  briefflow: { tag: "office", values: ["advertising_agency", "graphic_design", "web_design"] }
+  briefflow: {
+    tag: "office",
+    values: ["advertising_agency", "graphic_design", "web_design"]
+  }
 } satisfies Record<LaneKey, LaneSelector>);
 
 const overpassResponseSchema = z.object({
-  elements: z.array(z.object({
-    type: z.literal("candidate"),
-    id: z.number().int().nonnegative(),
-    tags: z.strictObject({
-      osm_type: z.enum(["node", "way", "relation"]),
-      name: z.string(),
-      website: z.string(),
-      category: z.string(),
-      opening_hours: z.string().optional()
-    }).optional()
-  }))
+  elements: z.array(
+    z.object({
+      type: z.literal("candidate"),
+      id: z.number().int().nonnegative(),
+      tags: z
+        .strictObject({
+          osm_type: z.enum(["node", "way", "relation"]),
+          name: z.string(),
+          website: z.string(),
+          category: z.string(),
+          opening_hours: z.string().optional()
+        })
+        .optional()
+    })
+  )
 });
 
 interface MarketSample {
@@ -65,7 +106,10 @@ export class OverpassMarketScoutSource implements MarketScoutSource {
   }
 
   async discover(request: MarketScoutDiscoveryRequest): Promise<unknown> {
-    if (request.budget.maxSourceUrls < 1 || request.budget.maxOrganizations < 1) {
+    if (
+      request.budget.maxSourceUrls < 1 ||
+      request.budget.maxOrganizations < 1
+    ) {
       return { sourceUrlsReviewed: 0, paidSpend: 0, candidates: [] };
     }
     const sample = marketSamples[request.task.marketKey];
@@ -89,7 +133,9 @@ export class OverpassMarketScoutSource implements MarketScoutSource {
       const category = tags.category.trim();
       const website = safePublicWebsite(tags.website);
       if (!name || name.length < 3 || !category || !website) continue;
-      const domain = new URL(website).hostname.toLowerCase().replace(/^www\./, "");
+      const domain = new URL(website).hostname
+        .toLowerCase()
+        .replace(/^www\./, "");
       if (seenDomains.has(domain)) continue;
       seenDomains.add(domain);
       candidates.push({
@@ -103,7 +149,11 @@ export class OverpassMarketScoutSource implements MarketScoutSource {
           reportedPublicWebsiteUrl: website,
           sourceKind: "OPEN_DATASET",
           synthetic: false,
-          signalKeys: signalKeysFor(request.task.laneKey, tags, sample.countryCode),
+          signalKeys: signalKeysFor(
+            request.task.laneKey,
+            tags,
+            sample.countryCode
+          ),
           marketSignalKeys: [],
           riskFlags: []
         },
@@ -144,7 +194,10 @@ function buildQuery(
   );
   const values = selector.values.join("|");
   const bbox = sample.bbox.join(",");
-  const outputLimit = Math.min(27, Math.max(3, request.budget.maxOrganizations * 3));
+  const outputLimit = Math.min(
+    27,
+    Math.max(3, request.budget.maxOrganizations * 3)
+  );
   return (
     `[out:json][timeout:${timeoutSeconds}][maxsize:${OVERPASS_QUERY_MEMORY_BYTES}];` +
     `nwr(${bbox})["${selector.tag}"~"^(${values})$"]["name"]["website"];` +
@@ -158,11 +211,12 @@ function signalKeysFor(
   tags: Readonly<{ opening_hours?: string | undefined }>,
   countryCode: string
 ): string[] {
-  const base = laneKey === "serviceflow"
-    ? "non_emergency_maintenance"
-    : laneKey === "beautyflow"
-      ? "non_medical_beauty"
-      : "non_regulated_service";
+  const base =
+    laneKey === "serviceflow"
+      ? "non_emergency_maintenance"
+      : laneKey === "beautyflow"
+        ? "non_medical_beauty"
+        : "non_regulated_service";
   const signals = [base];
   if (laneKey === "beautyflow" && tags.opening_hours?.trim()) {
     signals.push("catalog_hours_visible");
@@ -180,7 +234,12 @@ function safePublicWebsite(value: string | undefined): string | null {
     const url = new URL(value.trim());
     if (url.protocol !== "https:" || url.username || url.password) return null;
     const hostname = url.hostname.toLowerCase();
-    if (!hostname || hostname === "localhost" || hostname.endsWith(".localhost") || isPrivateAddress(hostname)) {
+    if (
+      !hostname ||
+      hostname === "localhost" ||
+      hostname.endsWith(".localhost") ||
+      isPrivateAddress(hostname)
+    ) {
       return null;
     }
     url.hash = "";
@@ -194,15 +253,26 @@ function isPrivateAddress(hostname: string): boolean {
   const version = isIP(hostname);
   if (version === 4) {
     const [first = 0, second = 0] = hostname.split(".").map(Number);
-    return first === 0 || first === 10 || first === 127 ||
+    return (
+      first === 0 ||
+      first === 10 ||
+      first === 127 ||
       (first === 169 && second === 254) ||
       (first === 172 && second >= 16 && second <= 31) ||
-      (first === 192 && second === 168);
+      (first === 192 && second === 168)
+    );
   }
   if (version === 6) {
-    return hostname === "::" || hostname === "::1" || hostname.startsWith("fc") ||
-      hostname.startsWith("fd") || hostname.startsWith("fe8") ||
-      hostname.startsWith("fe9") || hostname.startsWith("fea") || hostname.startsWith("feb");
+    return (
+      hostname === "::" ||
+      hostname === "::1" ||
+      hostname.startsWith("fc") ||
+      hostname.startsWith("fd") ||
+      hostname.startsWith("fe8") ||
+      hostname.startsWith("fe9") ||
+      hostname.startsWith("fea") ||
+      hostname.startsWith("feb")
+    );
   }
   return false;
 }

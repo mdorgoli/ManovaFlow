@@ -52,7 +52,12 @@ export function apiError(error: unknown): NextResponse {
   const message = error instanceof Error ? error.message : "Unknown error";
   const status = /Demo mode|Demo identity/.test(message) ? 503 : 400;
   return NextResponse.json(
-    { error: { code: status === 503 ? "DEMO_UNAVAILABLE" : "REQUEST_REJECTED", message } },
+    {
+      error: {
+        code: status === 503 ? "DEMO_UNAVAILABLE" : "REQUEST_REJECTED",
+        message
+      }
+    },
     { status }
   );
 }

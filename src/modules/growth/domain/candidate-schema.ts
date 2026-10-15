@@ -65,7 +65,11 @@ export const candidateSchema = z
     }
 
     if (candidate.reportedPublicWebsiteUrl) {
-      validatePublicUrl(candidate.reportedPublicWebsiteUrl, ["reportedPublicWebsiteUrl"], context);
+      validatePublicUrl(
+        candidate.reportedPublicWebsiteUrl,
+        ["reportedPublicWebsiteUrl"],
+        context
+      );
     }
 
     const hostname = url.hostname.toLowerCase();

@@ -1,4 +1,7 @@
-import { parseCandidate, type CandidateInput } from "../domain/candidate-schema";
+import {
+  parseCandidate,
+  type CandidateInput
+} from "../domain/candidate-schema";
 import type { LaneKey, MarketKey } from "../domain/types";
 
 const markets = [

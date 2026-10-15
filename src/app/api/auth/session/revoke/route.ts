@@ -1,9 +1,6 @@
 import { NextResponse } from "next/server";
 import { apiError } from "@/lib/api-response";
-import {
-  getDatabaseClient,
-  getIdentityDatabaseClient
-} from "@/lib/container";
+import { getDatabaseClient, getIdentityDatabaseClient } from "@/lib/container";
 import { AuthenticationError } from "@/modules/identity/application/auth-port";
 import { createProductionIdentityServices } from "@/modules/identity/infrastructure/production-identity";
 import { serializeClearedSessionCookies } from "@/modules/identity/infrastructure/session-cookie";

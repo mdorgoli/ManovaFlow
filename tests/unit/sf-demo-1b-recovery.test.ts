@@ -25,19 +25,23 @@ describe("SF-DEMO-1B recovery boundary", () => {
         SF_DEMO_1B_IDEMPOTENCY_KEY
       );
       if (status === "COMPLETED") {
-        await repository.completeRun(actor, run.id, { fixture: "interrupted-before-activity" });
+        await repository.completeRun(actor, run.id, {
+          fixture: "interrupted-before-activity"
+        });
       } else if (status === "FAILED") {
         await repository.failRun(actor, run.id, "interrupted-before-activity");
       }
       const storedBefore = await repository.getDashboard(actor);
       const probe = sourceProbe();
 
-      await expect(new SfDemo1BExecutor().execute({
-        actor,
-        repository,
-        source: probe.source,
-        websiteReviewer: unusedReviewer
-      })).rejects.toBeInstanceOf(SfDemo1BExecutionError);
+      await expect(
+        new SfDemo1BExecutor().execute({
+          actor,
+          repository,
+          source: probe.source,
+          websiteReviewer: unusedReviewer
+        })
+      ).rejects.toBeInstanceOf(SfDemo1BExecutionError);
 
       expect(probe.calls()).toBe(0);
       expect(await repository.getDashboard(actor)).toEqual(storedBefore);
@@ -47,7 +51,12 @@ describe("SF-DEMO-1B recovery boundary", () => {
   it("replays a complete snapshot through a fresh executor without another discovery", async () => {
     const repository = new InMemoryGrowthRepository();
     const probe = sourceProbe();
-    const input = { actor, repository, source: probe.source, websiteReviewer: unusedReviewer };
+    const input = {
+      actor,
+      repository,
+      source: probe.source,
+      websiteReviewer: unusedReviewer
+    };
     const first = await new SfDemo1BExecutor().execute(input);
     const beforeReplay = await repository.getDashboard(actor);
 

@@ -167,7 +167,8 @@ export interface ApproveProposalResult {
   outboundActionCount: 0;
 }
 
-export type LifecycleAction = "START" | "BLOCK" | "RESUME" | "COMPLETE" | "CLOSE";
+export type LifecycleAction =
+  "START" | "BLOCK" | "RESUME" | "COMPLETE" | "CLOSE";
 
 export interface LifecycleCommand {
   requestId: string;

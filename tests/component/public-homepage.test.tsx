@@ -1,11 +1,20 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  within
+} from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import HomePage from "@/app/(default)/page";
 
 describe("public homepage", () => {
   beforeEach(() => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("{}", { status: 503 })));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(new Response("{}", { status: 503 }))
+    );
   });
   afterEach(() => {
     cleanup();
@@ -14,26 +23,44 @@ describe("public homepage", () => {
 
   it("renders the approved public story without requesting internal data", () => {
     render(<HomePage />);
-    expect(screen.getByRole("heading", { level: 1, name: "Every request, clearly handled." })).toBeVisible();
-    expect(screen.getAllByText("Research preview · Human-controlled").length).toBeGreaterThan(0);
+    expect(
+      screen.getByRole("heading", {
+        level: 1,
+        name: "Every request, clearly handled."
+      })
+    ).toBeVisible();
+    expect(
+      screen.getAllByText("Research preview · Human-controlled").length
+    ).toBeGreaterThan(0);
     expect(fetch).not.toHaveBeenCalled();
     expect(screen.queryByText("Growth Control")).not.toBeInTheDocument();
   });
 
   it("links every public anchor to a real section and keeps research tools separate", () => {
     const { container } = render(<HomePage />);
-    const anchors = [...container.querySelectorAll<HTMLAnchorElement>('a[href^="#"]')];
+    const anchors = [
+      ...container.querySelectorAll<HTMLAnchorElement>('a[href^="#"]')
+    ];
     expect(anchors.length).toBeGreaterThan(5);
     for (const anchor of anchors) {
-      expect(document.getElementById(anchor.hash.slice(1)), anchor.textContent ?? "anchor").not.toBeNull();
+      expect(
+        document.getElementById(anchor.hash.slice(1)),
+        anchor.textContent ?? "anchor"
+      ).not.toBeNull();
     }
-    expect(screen.getByRole("link", { name: "Open research dashboard" })).toHaveAttribute("href", "/dashboard");
-    expect(screen.getByRole("link", { name: "Explore the ServiceFlow demo" })).toHaveAttribute("href", "/serviceflow");
+    expect(
+      screen.getByRole("link", { name: "Open research dashboard" })
+    ).toHaveAttribute("href", "/dashboard");
+    expect(
+      screen.getByRole("link", { name: "Explore the ServiceFlow demo" })
+    ).toHaveAttribute("href", "/serviceflow");
   });
 
   it("shows five honest, ordered stages and the development status of all flows", () => {
     render(<HomePage />);
-    const sequence = screen.getByRole("list", { name: "How a request moves through ManovaFlow" });
+    const sequence = screen.getByRole("list", {
+      name: "How a request moves through ManovaFlow"
+    });
     expect(within(sequence).getAllByRole("listitem")).toHaveLength(5);
     expect(within(sequence).getByText("Human approval")).toBeVisible();
     expect(within(sequence).getByText("Proof of completion")).toBeVisible();
@@ -74,11 +101,17 @@ describe("public homepage", () => {
 
   it("keeps the content usable if the decorative photograph fails", () => {
     const { container } = render(<HomePage />);
-    const photo = container.querySelector<HTMLImageElement>('img[data-home-photo]');
+    const photo = container.querySelector<HTMLImageElement>(
+      "img[data-home-photo]"
+    );
     expect(photo).not.toBeNull();
     fireEvent.error(photo!);
-    expect(container.querySelector('img[data-home-photo]')).toBeNull();
+    expect(container.querySelector("img[data-home-photo]")).toBeNull();
     expect(screen.getByRole("heading", { level: 1 })).toBeVisible();
-    expect(screen.getByRole("list", { name: "How a request moves through ManovaFlow" })).toBeVisible();
+    expect(
+      screen.getByRole("list", {
+        name: "How a request moves through ManovaFlow"
+      })
+    ).toBeVisible();
   });
 });

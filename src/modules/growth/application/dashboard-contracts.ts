@@ -29,11 +29,7 @@ export type MissingReason =
   | "UNSAFE_SOURCE_REDACTED"
   | "INVARIANT_UNVERIFIED";
 
-export type ProvenanceBasis =
-  | "CONFIG"
-  | "OBSERVED"
-  | "DERIVED"
-  | "INVARIANT";
+export type ProvenanceBasis = "CONFIG" | "OBSERVED" | "DERIVED" | "INVARIANT";
 
 export type ProvenanceSource =
   | "SERVER_POLICY"
@@ -165,11 +161,7 @@ export interface MarketRankingReadModelV1 {
   lanes: LaneMarketRankingV1[];
 }
 
-export type EvidenceMatrixState =
-  | "FACT"
-  | "INFERENCE"
-  | "UNKNOWN"
-  | "MISSING";
+export type EvidenceMatrixState = "FACT" | "INFERENCE" | "UNKNOWN" | "MISSING";
 
 export interface EvidenceCellV1 {
   category: ComplianceCategory;

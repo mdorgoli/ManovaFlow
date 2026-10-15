@@ -44,7 +44,10 @@ describe("ServiceFlow deterministic demo reset", () => {
       "DEMO_10000000-0000-4000-8000-000000000001_REQUEST_STANDARD_001",
       "DEMO_10000000-0000-4000-8000-000000000001_REQUEST_SAFETY_001"
     ]);
-    expect(first.cases.map(({ request }) => request.state)).toEqual(["REVIEW", "BLOCKED"]);
+    expect(first.cases.map(({ request }) => request.state)).toEqual([
+      "REVIEW",
+      "BLOCKED"
+    ]);
     expect(first.cases[0]?.evaluation.proposal).not.toBeNull();
     expect(first.cases[1]?.evaluation).toMatchObject({
       blockReason: "POSSIBLE_EMERGENCY",
@@ -92,23 +95,36 @@ describe("ServiceFlow deterministic demo reset", () => {
   it("resets only the authenticated demo tenant and leaves another tenant byte-for-byte unchanged", async () => {
     const service = createService();
     await service.resetDemoTenant(ownerA, "reset-tenant-a-initial");
-    await service.createAndEvaluate(ownerB, safeInput, "create-tenant-b-control");
+    await service.createAndEvaluate(
+      ownerB,
+      safeInput,
+      "create-tenant-b-control"
+    );
     const tenantBBefore = await service.getSnapshot(ownerB);
 
     await service.resetDemoTenant(ownerA, "reset-tenant-a-repeat");
 
     expect(await service.getSnapshot(ownerB)).toEqual(tenantBBefore);
-    expect((await service.getSnapshot(ownerA)).cases.every((item) => item.request.tenantId === tenantA)).toBe(true);
-    expect(tenantBBefore.cases.every((item) => item.request.tenantId === tenantB)).toBe(true);
+    expect(
+      (await service.getSnapshot(ownerA)).cases.every(
+        (item) => item.request.tenantId === tenantA
+      )
+    ).toBe(true);
+    expect(
+      tenantBBefore.cases.every((item) => item.request.tenantId === tenantB)
+    ).toBe(true);
   });
 
   it("forbids Viewer reset without deleting or rewriting the tenant snapshot", async () => {
     const service = createService();
-    const baseline = await service.resetDemoTenant(ownerA, "reset-viewer-baseline");
-
-    await expect(service.resetDemoTenant(viewerA, "reset-viewer-denied")).rejects.toThrow(
-      "ServiceFlow lifecycle mutation is forbidden"
+    const baseline = await service.resetDemoTenant(
+      ownerA,
+      "reset-viewer-baseline"
     );
+
+    await expect(
+      service.resetDemoTenant(viewerA, "reset-viewer-denied")
+    ).rejects.toThrow("ServiceFlow lifecycle mutation is forbidden");
 
     expect(await service.getSnapshot(ownerA)).toEqual(baseline);
   });

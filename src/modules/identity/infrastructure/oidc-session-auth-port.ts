@@ -18,7 +18,10 @@ export class OidcSessionAuthPort implements AuthPort {
 
   constructor(configuration: OidcSessionAuthPortConfiguration) {
     const origin = new URL(configuration.applicationOrigin);
-    if (origin.protocol !== "https:" || origin.origin !== configuration.applicationOrigin) {
+    if (
+      origin.protocol !== "https:" ||
+      origin.origin !== configuration.applicationOrigin
+    ) {
       throw new Error("Application origin must be an exact HTTPS origin");
     }
     this.#store = configuration.store;
@@ -42,4 +45,3 @@ export class OidcSessionAuthPort implements AuthPort {
     });
   }
 }
-

@@ -1,7 +1,12 @@
 import type postgres from "postgres";
 import { getApplicationDatabaseRole } from "@/lib/database";
 import type { CandidateInput } from "../domain/candidate-schema";
-import type { ActorContext, LaneKey, MarketKey, PackState } from "../domain/types";
+import type {
+  ActorContext,
+  LaneKey,
+  MarketKey,
+  PackState
+} from "../domain/types";
 import type { CandidateScore, ScoreExplanation } from "../domain/scoring";
 import type { MarketScore } from "../domain/market-scoring";
 import {
@@ -196,7 +201,11 @@ export class PostgresGrowthRepository implements GrowthRepository {
         do update set total = company_scores.total
         returning *
       `;
-      return mapRequired(rows[0], mapCompanyScore, "Company score upsert failed");
+      return mapRequired(
+        rows[0],
+        mapCompanyScore,
+        "Company score upsert failed"
+      );
     });
   }
 
@@ -306,7 +315,11 @@ export class PostgresGrowthRepository implements GrowthRepository {
           and decision = 'PENDING'
         returning *
       `;
-      return mapRequired(rows[0], mapDraft, "Draft not found or decision is final");
+      return mapRequired(
+        rows[0],
+        mapDraft,
+        "Draft not found or decision is final"
+      );
     });
   }
 
@@ -338,14 +351,30 @@ export class PostgresGrowthRepository implements GrowthRepository {
 
   async getDashboard(actor: ActorContext): Promise<DashboardSnapshot> {
     return this.#withTenant(actor, async (tx) => {
-      const runs = await tx<DbRow[]>`select * from research_runs order by started_at desc`;
-      const companies = await tx<DbRow[]>`select * from companies order by created_at desc`;
-      const companyScores = await tx<DbRow[]>`select * from company_scores order by created_at desc`;
-      const marketScores = await tx<DbRow[]>`select * from market_scores order by created_at desc`;
-      const compliance = await tx<DbRow[]>`select * from compliance_decisions order by recorded_at desc`;
-      const drafts = await tx<DbRow[]>`select * from drafts order by created_at desc`;
-      const suppressions = await tx<DbRow[]>`select * from suppressions order by created_at desc`;
-      const audit = await tx<DbRow[]>`select * from audit_events order by sequence`;
+      const runs = await tx<
+        DbRow[]
+      >`select * from research_runs order by started_at desc`;
+      const companies = await tx<
+        DbRow[]
+      >`select * from companies order by created_at desc`;
+      const companyScores = await tx<
+        DbRow[]
+      >`select * from company_scores order by created_at desc`;
+      const marketScores = await tx<
+        DbRow[]
+      >`select * from market_scores order by created_at desc`;
+      const compliance = await tx<
+        DbRow[]
+      >`select * from compliance_decisions order by recorded_at desc`;
+      const drafts = await tx<
+        DbRow[]
+      >`select * from drafts order by created_at desc`;
+      const suppressions = await tx<
+        DbRow[]
+      >`select * from suppressions order by created_at desc`;
+      const audit = await tx<
+        DbRow[]
+      >`select * from audit_events order by sequence`;
 
       return {
         runs: runs.map(mapRun),
@@ -382,9 +411,10 @@ function mapRun(row: DbRow): ResearchRunRecord {
     startedAt: iso(row.started_at),
     completedAt: nullableIso(row.completed_at),
     error: nullableText(row.error),
-    summary: row.summary === null || row.summary === undefined
-      ? null
-      : json<Record<string, unknown>>(row.summary)
+    summary:
+      row.summary === null || row.summary === undefined
+        ? null
+        : json<Record<string, unknown>>(row.summary)
   };
 }
 
@@ -499,7 +529,8 @@ function mapRequired<T>(
 }
 
 function text(value: unknown): string {
-  if (typeof value !== "string") throw new Error("Unexpected database text value");
+  if (typeof value !== "string")
+    throw new Error("Unexpected database text value");
   return value;
 }
 

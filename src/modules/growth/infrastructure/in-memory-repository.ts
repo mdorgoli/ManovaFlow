@@ -302,7 +302,8 @@ export class InMemoryGrowthRepository implements GrowthRepository {
       id: this.#id(),
       tenantId: actor.tenantId,
       sequence:
-        this.#audit.filter((item) => item.tenantId === actor.tenantId).length + 1,
+        this.#audit.filter((item) => item.tenantId === actor.tenantId).length +
+        1,
       eventType: input.eventType,
       laneKey: input.laneKey,
       entityId: input.entityId,
@@ -317,13 +318,27 @@ export class InMemoryGrowthRepository implements GrowthRepository {
   async getDashboard(actor: ActorContext): Promise<DashboardSnapshot> {
     const tenantId = actor.tenantId;
     return clone({
-      runs: [...this.#runs.values()].filter((item) => item.tenantId === tenantId),
-      companies: [...this.#companies.values()].filter((item) => item.tenantId === tenantId),
-      companyScores: this.#companyScores.filter((item) => item.tenantId === tenantId),
-      marketScores: this.#marketScores.filter((item) => item.tenantId === tenantId),
-      complianceDecisions: [...this.#compliance.values()].filter((item) => item.tenantId === tenantId),
-      drafts: [...this.#drafts.values()].filter((item) => item.tenantId === tenantId),
-      suppressions: [...this.#suppressions.values()].filter((item) => item.tenantId === tenantId),
+      runs: [...this.#runs.values()].filter(
+        (item) => item.tenantId === tenantId
+      ),
+      companies: [...this.#companies.values()].filter(
+        (item) => item.tenantId === tenantId
+      ),
+      companyScores: this.#companyScores.filter(
+        (item) => item.tenantId === tenantId
+      ),
+      marketScores: this.#marketScores.filter(
+        (item) => item.tenantId === tenantId
+      ),
+      complianceDecisions: [...this.#compliance.values()].filter(
+        (item) => item.tenantId === tenantId
+      ),
+      drafts: [...this.#drafts.values()].filter(
+        (item) => item.tenantId === tenantId
+      ),
+      suppressions: [...this.#suppressions.values()].filter(
+        (item) => item.tenantId === tenantId
+      ),
       audit: this.#audit
         .filter((item) => item.tenantId === tenantId)
         .sort((left, right) => left.sequence - right.sequence)

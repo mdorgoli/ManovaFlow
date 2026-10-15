@@ -68,8 +68,7 @@ type SessionFailureCode = Extract<
 >;
 
 type OperationOutcome<T> =
-  | { ok: true; value: T }
-  | { ok: false; code: SessionFailureCode };
+  { ok: true; value: T } | { ok: false; code: SessionFailureCode };
 
 export class PostgresSessionStore implements SessionStorePort {
   readonly #sql: postgres.Sql;
@@ -84,7 +83,9 @@ export class PostgresSessionStore implements SessionStorePort {
       configuration.idleTimeoutSeconds < 60 ||
       configuration.idleTimeoutSeconds > 86_400
     ) {
-      throw new Error("Session idle timeout must be between 60 and 86400 seconds");
+      throw new Error(
+        "Session idle timeout must be between 60 and 86400 seconds"
+      );
     }
     this.#sql = sql;
     this.#idleTimeoutMs = configuration.idleTimeoutSeconds * 1_000;
@@ -209,12 +210,15 @@ export class PostgresSessionStore implements SessionStorePort {
     };
   }
 
-  async authenticate(input: AuthenticateSessionInput): Promise<VerifiedSession> {
+  async authenticate(
+    input: AuthenticateSessionInput
+  ): Promise<VerifiedSession> {
     assertOpaqueToken(input.sessionToken, "INVALID_SESSION");
     const tokenHash = hashSecret(input.sessionToken);
-    const outcome = await this.#sql.begin(async (tx): Promise<OperationOutcome<VerifiedSession>> => {
-      await setIdentityRuntimeRole(tx);
-      const rows = await tx<CredentialRow[]>`
+    const outcome = await this.#sql.begin(
+      async (tx): Promise<OperationOutcome<VerifiedSession>> => {
+        await setIdentityRuntimeRole(tx);
+        const rows = await tx<CredentialRow[]>`
         select
           c.state as credential_state,
           c.csrf_hash,
@@ -237,61 +241,66 @@ export class PostgresSessionStore implements SessionStorePort {
         where c.token_hash = ${tokenHash}
         for update of c, s
       `;
-      const row = rows[0];
-      if (!row) return failure("INVALID_SESSION");
-      if (row.credential_state === "ROTATED") {
-        await compromiseSession(tx, row.session_id, input.now);
-        await appendSessionAudit(
-          tx,
-          row,
-          "SESSION_REPLAY_BLOCKED",
-          "BLOCKED",
-          input.now,
-          { generation: row.generation }
-        );
-        return failure("SESSION_REPLAY_DETECTED");
-      }
-      if (row.credential_state !== "ACTIVE" || row.session_state !== "ACTIVE") {
-        return failure("SESSION_REVOKED");
-      }
-      const temporalFailure = sessionTemporalFailure(row, input.now);
-      if (temporalFailure) {
-        await expireSession(tx, row.session_id, input.now);
-        await appendSessionAudit(
-          tx,
-          row,
-          timeoutAuditEvent(temporalFailure),
-          "EXPIRED",
-          input.now,
-          { reason: temporalFailure.toLocaleLowerCase("en-US") }
-        );
-        return failure(temporalFailure);
-      }
-      if (input.requireCsrf) {
-        if (!input.csrfToken || !opaqueTokenPattern.test(input.csrfToken)) {
+        const row = rows[0];
+        if (!row) return failure("INVALID_SESSION");
+        if (row.credential_state === "ROTATED") {
+          await compromiseSession(tx, row.session_id, input.now);
           await appendSessionAudit(
             tx,
             row,
-            "SESSION_CSRF_BLOCKED",
+            "SESSION_REPLAY_BLOCKED",
             "BLOCKED",
             input.now,
-            { operation: "authenticate" }
+            { generation: row.generation }
           );
-          return failure("CSRF_VALIDATION_FAILED");
+          return failure("SESSION_REPLAY_DETECTED");
         }
-        if (!constantTimeDigestEqual(row.csrf_hash, hashSecret(input.csrfToken))) {
+        if (
+          row.credential_state !== "ACTIVE" ||
+          row.session_state !== "ACTIVE"
+        ) {
+          return failure("SESSION_REVOKED");
+        }
+        const temporalFailure = sessionTemporalFailure(row, input.now);
+        if (temporalFailure) {
+          await expireSession(tx, row.session_id, input.now);
           await appendSessionAudit(
             tx,
             row,
-            "SESSION_CSRF_BLOCKED",
-            "BLOCKED",
+            timeoutAuditEvent(temporalFailure),
+            "EXPIRED",
             input.now,
-            { operation: "authenticate" }
+            { reason: temporalFailure.toLocaleLowerCase("en-US") }
           );
-          return failure("CSRF_VALIDATION_FAILED");
+          return failure(temporalFailure);
         }
-      }
-      await tx`
+        if (input.requireCsrf) {
+          if (!input.csrfToken || !opaqueTokenPattern.test(input.csrfToken)) {
+            await appendSessionAudit(
+              tx,
+              row,
+              "SESSION_CSRF_BLOCKED",
+              "BLOCKED",
+              input.now,
+              { operation: "authenticate" }
+            );
+            return failure("CSRF_VALIDATION_FAILED");
+          }
+          if (
+            !constantTimeDigestEqual(row.csrf_hash, hashSecret(input.csrfToken))
+          ) {
+            await appendSessionAudit(
+              tx,
+              row,
+              "SESSION_CSRF_BLOCKED",
+              "BLOCKED",
+              input.now,
+              { operation: "authenticate" }
+            );
+            return failure("CSRF_VALIDATION_FAILED");
+          }
+        }
+        await tx`
         update auth_sessions
         set last_seen_at = ${input.now},
             idle_expires_at = ${this.#nextIdleExpiry(
@@ -300,8 +309,9 @@ export class PostgresSessionStore implements SessionStorePort {
             )}
         where id = ${row.session_id}::uuid
       `;
-      return { ok: true, value: sessionFromRow(row) };
-    });
+        return { ok: true, value: sessionFromRow(row) };
+      }
+    );
     return unwrap(outcome);
   }
 
@@ -315,9 +325,10 @@ export class PostgresSessionStore implements SessionStorePort {
     const nextTokenHash = hashSecret(nextSessionToken);
     const nextCsrfHash = hashSecret(nextCsrfToken);
 
-    const outcome = await this.#sql.begin(async (tx): Promise<OperationOutcome<IssuedSession>> => {
-      await setIdentityRuntimeRole(tx);
-      const rows = await tx<CredentialRow[]>`
+    const outcome = await this.#sql.begin(
+      async (tx): Promise<OperationOutcome<IssuedSession>> => {
+        await setIdentityRuntimeRole(tx);
+        const rows = await tx<CredentialRow[]>`
         select
           c.state as credential_state,
           c.csrf_hash,
@@ -340,55 +351,58 @@ export class PostgresSessionStore implements SessionStorePort {
         where c.token_hash = ${oldTokenHash}
         for update of c, s
       `;
-      const row = rows[0];
-      if (!row) return failure("INVALID_SESSION");
-      if (row.credential_state === "ROTATED") {
-        await compromiseSession(tx, row.session_id, input.now);
-        await appendSessionAudit(
-          tx,
-          row,
-          "SESSION_REPLAY_BLOCKED",
-          "BLOCKED",
-          input.now,
-          { generation: row.generation }
-        );
-        return failure("SESSION_REPLAY_DETECTED");
-      }
-      if (row.credential_state !== "ACTIVE" || row.session_state !== "ACTIVE") {
-        return failure("SESSION_REVOKED");
-      }
-      const temporalFailure = sessionTemporalFailure(row, input.now);
-      if (temporalFailure) {
-        await expireSession(tx, row.session_id, input.now);
-        await appendSessionAudit(
-          tx,
-          row,
-          timeoutAuditEvent(temporalFailure),
-          "EXPIRED",
-          input.now,
-          { reason: temporalFailure.toLocaleLowerCase("en-US") }
-        );
-        return failure(temporalFailure);
-      }
-      if (!constantTimeDigestEqual(row.csrf_hash, presentedCsrfHash)) {
-        await appendSessionAudit(
-          tx,
-          row,
-          "SESSION_CSRF_BLOCKED",
-          "BLOCKED",
-          input.now,
-          { operation: "rotate" }
-        );
-        return failure("CSRF_VALIDATION_FAILED");
-      }
+        const row = rows[0];
+        if (!row) return failure("INVALID_SESSION");
+        if (row.credential_state === "ROTATED") {
+          await compromiseSession(tx, row.session_id, input.now);
+          await appendSessionAudit(
+            tx,
+            row,
+            "SESSION_REPLAY_BLOCKED",
+            "BLOCKED",
+            input.now,
+            { generation: row.generation }
+          );
+          return failure("SESSION_REPLAY_DETECTED");
+        }
+        if (
+          row.credential_state !== "ACTIVE" ||
+          row.session_state !== "ACTIVE"
+        ) {
+          return failure("SESSION_REVOKED");
+        }
+        const temporalFailure = sessionTemporalFailure(row, input.now);
+        if (temporalFailure) {
+          await expireSession(tx, row.session_id, input.now);
+          await appendSessionAudit(
+            tx,
+            row,
+            timeoutAuditEvent(temporalFailure),
+            "EXPIRED",
+            input.now,
+            { reason: temporalFailure.toLocaleLowerCase("en-US") }
+          );
+          return failure(temporalFailure);
+        }
+        if (!constantTimeDigestEqual(row.csrf_hash, presentedCsrfHash)) {
+          await appendSessionAudit(
+            tx,
+            row,
+            "SESSION_CSRF_BLOCKED",
+            "BLOCKED",
+            input.now,
+            { operation: "rotate" }
+          );
+          return failure("CSRF_VALIDATION_FAILED");
+        }
 
-      await tx`
+        await tx`
         update auth_session_credentials
         set state = 'ROTATED', consumed_at = ${input.now}
         where token_hash = ${oldTokenHash}
           and state = 'ACTIVE'
       `;
-      await tx`
+        await tx`
         insert into auth_session_credentials (
           token_hash, session_id, generation, csrf_hash,
           state, issued_at, expires_at
@@ -402,7 +416,7 @@ export class PostgresSessionStore implements SessionStorePort {
           ${toDate(row.session_expires_at)}
         )
       `;
-      await tx`
+        await tx`
         update auth_sessions
         set rotation_counter = rotation_counter + 1,
             last_seen_at = ${input.now},
@@ -412,24 +426,25 @@ export class PostgresSessionStore implements SessionStorePort {
             )}
         where id = ${row.session_id}::uuid
       `;
-      await appendSessionAudit(
-        tx,
-        row,
-        "SESSION_ROTATED",
-        "SUCCEEDED",
-        input.now,
-        { generation: row.generation + 1 }
-      );
-      return {
-        ok: true,
-        value: {
-          sessionId: String(row.session_id),
-          sessionToken: nextSessionToken,
-          csrfToken: nextCsrfToken,
-          expiresAt: toDate(row.session_expires_at).toISOString()
-        }
-      };
-    });
+        await appendSessionAudit(
+          tx,
+          row,
+          "SESSION_ROTATED",
+          "SUCCEEDED",
+          input.now,
+          { generation: row.generation + 1 }
+        );
+        return {
+          ok: true,
+          value: {
+            sessionId: String(row.session_id),
+            sessionToken: nextSessionToken,
+            csrfToken: nextCsrfToken,
+            expiresAt: toDate(row.session_expires_at).toISOString()
+          }
+        };
+      }
+    );
     return unwrap(outcome);
   }
 
@@ -438,9 +453,10 @@ export class PostgresSessionStore implements SessionStorePort {
     assertOpaqueToken(input.csrfToken, "CSRF_VALIDATION_FAILED");
     const tokenHash = hashSecret(input.sessionToken);
     const csrfHash = hashSecret(input.csrfToken);
-    const outcome = await this.#sql.begin(async (tx): Promise<OperationOutcome<void>> => {
-      await setIdentityRuntimeRole(tx);
-      const rows = await tx<CredentialRow[]>`
+    const outcome = await this.#sql.begin(
+      async (tx): Promise<OperationOutcome<void>> => {
+        await setIdentityRuntimeRole(tx);
+        const rows = await tx<CredentialRow[]>`
         select
           c.state as credential_state,
           c.csrf_hash,
@@ -463,68 +479,72 @@ export class PostgresSessionStore implements SessionStorePort {
         where c.token_hash = ${tokenHash}
         for update of c, s
       `;
-      const row = rows[0];
-      if (!row) return failure("INVALID_SESSION");
-      if (row.credential_state === "ROTATED") {
-        await compromiseSession(tx, row.session_id, input.now);
-        await appendSessionAudit(
-          tx,
-          row,
-          "SESSION_REPLAY_BLOCKED",
-          "BLOCKED",
-          input.now,
-          { generation: row.generation }
-        );
-        return failure("SESSION_REPLAY_DETECTED");
-      }
-      if (row.credential_state !== "ACTIVE" || row.session_state !== "ACTIVE") {
-        return failure("SESSION_REVOKED");
-      }
-      const temporalFailure = sessionTemporalFailure(row, input.now);
-      if (temporalFailure) {
-        await expireSession(tx, row.session_id, input.now);
-        await appendSessionAudit(
-          tx,
-          row,
-          timeoutAuditEvent(temporalFailure),
-          "EXPIRED",
-          input.now,
-          { reason: temporalFailure.toLocaleLowerCase("en-US") }
-        );
-        return failure(temporalFailure);
-      }
-      if (!constantTimeDigestEqual(row.csrf_hash, csrfHash)) {
-        await appendSessionAudit(
-          tx,
-          row,
-          "SESSION_CSRF_BLOCKED",
-          "BLOCKED",
-          input.now,
-          { operation: "revoke" }
-        );
-        return failure("CSRF_VALIDATION_FAILED");
-      }
-      await tx`
+        const row = rows[0];
+        if (!row) return failure("INVALID_SESSION");
+        if (row.credential_state === "ROTATED") {
+          await compromiseSession(tx, row.session_id, input.now);
+          await appendSessionAudit(
+            tx,
+            row,
+            "SESSION_REPLAY_BLOCKED",
+            "BLOCKED",
+            input.now,
+            { generation: row.generation }
+          );
+          return failure("SESSION_REPLAY_DETECTED");
+        }
+        if (
+          row.credential_state !== "ACTIVE" ||
+          row.session_state !== "ACTIVE"
+        ) {
+          return failure("SESSION_REVOKED");
+        }
+        const temporalFailure = sessionTemporalFailure(row, input.now);
+        if (temporalFailure) {
+          await expireSession(tx, row.session_id, input.now);
+          await appendSessionAudit(
+            tx,
+            row,
+            timeoutAuditEvent(temporalFailure),
+            "EXPIRED",
+            input.now,
+            { reason: temporalFailure.toLocaleLowerCase("en-US") }
+          );
+          return failure(temporalFailure);
+        }
+        if (!constantTimeDigestEqual(row.csrf_hash, csrfHash)) {
+          await appendSessionAudit(
+            tx,
+            row,
+            "SESSION_CSRF_BLOCKED",
+            "BLOCKED",
+            input.now,
+            { operation: "revoke" }
+          );
+          return failure("CSRF_VALIDATION_FAILED");
+        }
+        await tx`
         update auth_sessions
         set state = 'REVOKED', revoked_at = ${input.now}, last_seen_at = ${input.now}
         where id = ${row.session_id}::uuid
       `;
-      await tx`
+        await tx`
         update auth_session_credentials
         set state = 'REVOKED', consumed_at = coalesce(consumed_at, ${input.now})
         where session_id = ${row.session_id}::uuid
           and state = 'ACTIVE'
       `;
-      await appendSessionAudit(
-        tx,
-        row,
-        "SESSION_REVOKED",
-        "SUCCEEDED",
-        input.now,
-        { generation: row.generation }
-      );
-      return { ok: true, value: undefined };
-    });
+        await appendSessionAudit(
+          tx,
+          row,
+          "SESSION_REVOKED",
+          "SUCCEEDED",
+          input.now,
+          { generation: row.generation }
+        );
+        return { ok: true, value: undefined };
+      }
+    );
     unwrap(outcome);
   }
 

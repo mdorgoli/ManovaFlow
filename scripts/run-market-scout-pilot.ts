@@ -6,7 +6,9 @@ import { PublicWebsiteReviewer } from "../src/modules/growth/infrastructure/publ
 
 const [countryInput, laneInput, ...extra] = process.argv.slice(2);
 if (!countryInput || !laneInput || extra.length > 0) {
-  fail("Usage: pnpm pilot:market-scout -- <FR|TR|IQ|AE|IR> <serviceflow|beautyflow|briefflow>");
+  fail(
+    "Usage: pnpm pilot:market-scout -- <FR|TR|IQ|AE|IR> <serviceflow|beautyflow|briefflow>"
+  );
 }
 if (!(LANE_KEYS as readonly string[]).includes(laneInput)) {
   fail("Unsupported vertical: " + laneInput);

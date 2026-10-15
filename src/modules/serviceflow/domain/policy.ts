@@ -12,8 +12,10 @@ export const ASSIGNEE_PROPOSAL_RULE_VERSION = "assignee-proposal-v1";
 const SUPPORTED_SERVICES = new Set(["PLUMBING_LEAK", "ELECTRICAL_REPAIR"]);
 const SUPPORTED_AREAS = new Set(["DEMO_CENTRAL_ZONE", "DEMO_NORTH_ZONE"]);
 const SUPPORTED_HOURS = new Set([9, 10, 11, 12, 13, 14, 15, 16]);
-const HAZARD_PATTERN = /(?:\b(emergency|fire|smoke|gas\s+(?:leak|odor|smell)|hazard|explosion|electrocution|electric\s+shock|live\s+wire|spark(?:ing)?|burning\s+smell|structural\s+collapse|uncontrolled\s+flooding)\b|اضطرار(?:ی)?|آتش|دود|نشت\s*گاز|بوی\s*گاز|جرقه|سیم\s*لخت|بوی\s*سوختگی|برق\s*گرفتگی|فروریزش|سیل\s*کنترل\s*نشده|خطر)/i;
-const AMBIGUOUS_SAFETY_PATTERN = /(?:\b(not\s+sure|unknown\s+whether\s+safe|possibly\s+unsafe|strange\s+smell)\b|مطمئن\s*نیستم|نامشخص|احتمالاً?\s*ناامن|بوی\s*عجیب)/i;
+const HAZARD_PATTERN =
+  /(?:\b(emergency|fire|smoke|gas\s+(?:leak|odor|smell)|hazard|explosion|electrocution|electric\s+shock|live\s+wire|spark(?:ing)?|burning\s+smell|structural\s+collapse|uncontrolled\s+flooding)\b|اضطرار(?:ی)?|آتش|دود|نشت\s*گاز|بوی\s*گاز|جرقه|سیم\s*لخت|بوی\s*سوختگی|برق\s*گرفتگی|فروریزش|سیل\s*کنترل\s*نشده|خطر)/i;
+const AMBIGUOUS_SAFETY_PATTERN =
+  /(?:\b(not\s+sure|unknown\s+whether\s+safe|possibly\s+unsafe|strange\s+smell)\b|مطمئن\s*نیستم|نامشخص|احتمالاً?\s*ناامن|بوی\s*عجیب)/i;
 
 export const DEFAULT_DEMO_TECHNICIANS: readonly Technician[] = [
   {
@@ -78,7 +80,9 @@ export function evaluateIntake(
 
   const { description, address, service } = input;
   if (!description || !address || !service) {
-    throw new Error("Complete ServiceFlow intake unexpectedly lost a required field");
+    throw new Error(
+      "Complete ServiceFlow intake unexpectedly lost a required field"
+    );
   }
 
   if (!SUPPORTED_SERVICES.has(service)) {

@@ -28,11 +28,14 @@ const optionalDescription = z
     if (CONTACT_DETAIL_PATTERN.test(value)) {
       context.addIssue({
         code: "custom",
-        message: "Personal contact details are forbidden in synthetic descriptions"
+        message:
+          "Personal contact details are forbidden in synthetic descriptions"
       });
     }
   })
-  .transform((value) => (value.slice("DEMO:".length).trim() ? value : undefined))
+  .transform((value) =>
+    value.slice("DEMO:".length).trim() ? value : undefined
+  )
   .optional();
 
 const optionalCode = z
@@ -88,7 +91,10 @@ export const generatedRequestIdSchema = z
   .trim()
   .min(1)
   .max(128)
-  .regex(/^[A-Za-z0-9._:-]+$/, "Generated request ids must use safe bounded characters");
+  .regex(
+    /^[A-Za-z0-9._:-]+$/,
+    "Generated request ids must use safe bounded characters"
+  );
 
 export const idempotencyKeySchema = z
   .string()
@@ -109,7 +115,10 @@ const syntheticHumanReasonSchema = z
   .trim()
   .min(8)
   .max(500)
-  .refine((value) => value.startsWith("DEMO:"), "Human reasons must visibly begin with DEMO:")
+  .refine(
+    (value) => value.startsWith("DEMO:"),
+    "Human reasons must visibly begin with DEMO:"
+  )
   .refine(
     (value) => !CONTACT_DETAIL_PATTERN.test(value),
     "Personal contact details are forbidden in synthetic human reasons"
@@ -145,7 +154,8 @@ const catalogCodeSchema = z
   .max(64)
   .regex(/^[A-Z0-9_]+$/, "Catalog values must be uppercase identifiers");
 
-const uniqueCatalogValues = <T>(values: readonly T[]) => new Set(values).size === values.length;
+const uniqueCatalogValues = <T>(values: readonly T[]) =>
+  new Set(values).size === values.length;
 
 export const technicianSchema = z.strictObject({
   id: technicianIdSchema,
@@ -166,7 +176,12 @@ export const technicianSchema = z.strictObject({
     .max(20)
     .refine(uniqueCatalogValues, "Technician skills must be unique"),
   serviceAreas: z
-    .array(catalogCodeSchema.refine((value) => value.startsWith("DEMO_"), "Service areas must be DEMO-prefixed"))
+    .array(
+      catalogCodeSchema.refine(
+        (value) => value.startsWith("DEMO_"),
+        "Service areas must be DEMO-prefixed"
+      )
+    )
     .min(1)
     .max(20)
     .refine(uniqueCatalogValues, "Technician service areas must be unique"),
@@ -182,7 +197,8 @@ export const technicianCatalogSchema = z
   .min(1)
   .max(20)
   .refine(
-    (catalog) => uniqueCatalogValues(catalog.map((technician) => technician.id)),
+    (catalog) =>
+      uniqueCatalogValues(catalog.map((technician) => technician.id)),
     "Synthetic technician ids must be unique"
   );
 
@@ -198,11 +214,15 @@ export function parseApprovalActor(input: unknown): ApprovalActor {
   return approvalActorSchema.parse(input);
 }
 
-export function parseServiceFlowMutationActor(input: unknown): ServiceFlowMutationActor {
+export function parseServiceFlowMutationActor(
+  input: unknown
+): ServiceFlowMutationActor {
   return serviceFlowMutationActorSchema.parse(input);
 }
 
-export function parseApproveProposalCommand(input: unknown): ApproveProposalCommand {
+export function parseApproveProposalCommand(
+  input: unknown
+): ApproveProposalCommand {
   return approveProposalCommandSchema.parse(input);
 }
 

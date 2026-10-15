@@ -35,7 +35,9 @@ export function scoreCandidate(
 ): CandidateScore {
   assertWeights(manifest.signals);
   const allowedKeys = new Set(manifest.signals.map((signal) => signal.key));
-  const unknownSignals = input.signalKeys.filter((key) => !allowedKeys.has(key));
+  const unknownSignals = input.signalKeys.filter(
+    (key) => !allowedKeys.has(key)
+  );
   if (unknownSignals.length > 0) {
     throw new Error("Unknown company signal: " + unknownSignals.join(", "));
   }

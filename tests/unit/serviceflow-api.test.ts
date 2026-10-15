@@ -63,13 +63,18 @@ describe("local ServiceFlow API", () => {
 
     expect(response.status).toBe(503);
     await expect(response.json()).resolves.toEqual({
-      error: { code: "DEMO_UNAVAILABLE", message: "ServiceFlow demo API is unavailable" }
+      error: {
+        code: "DEMO_UNAVAILABLE",
+        message: "ServiceFlow demo API is unavailable"
+      }
     });
   });
 
   it("returns a private tenant snapshot and derives identity only from server context", async () => {
     const routes = await loadRoutes();
-    await routes.reset.POST(jsonRequest("/api/serviceflow/reset", {}, "reset-api-snapshot"));
+    await routes.reset.POST(
+      jsonRequest("/api/serviceflow/reset", {}, "reset-api-snapshot")
+    );
 
     const response = await routes.root.GET(
       new Request("https://app.example.test/api/serviceflow")
@@ -79,7 +84,9 @@ describe("local ServiceFlow API", () => {
     expect(response.status).toBe(200);
     expect(response.headers.get("cache-control")).toBe("private, no-store");
     expect(snapshot.cases).toHaveLength(2);
-    expect(snapshot.cases.every((item) => item.request.tenantId === tenantA)).toBe(true);
+    expect(
+      snapshot.cases.every((item) => item.request.tenantId === tenantA)
+    ).toBe(true);
     expect(JSON.stringify(snapshot)).not.toContain(tenantB);
   });
 
@@ -92,30 +99,50 @@ describe("local ServiceFlow API", () => {
     const normal = reset.cases[0]!;
     const proposal = normal.evaluation.proposal!;
 
-    const approved = await command(routes, normal.request.id, "approve-api-chain", {
-      action: "APPROVE",
-      requestRevision: normal.request.revision,
-      technicianId: proposal.technicianId,
-      proposalPolicyVersion: proposal.policyVersion,
-      proposalRuleVersion: proposal.ruleVersion,
-      reason: "DEMO: owner approves the API assignment."
-    });
-    const started = await command(routes, normal.request.id, "start-api-chain", {
-      action: "START",
-      requestRevision: approved.request.revision,
-      reason: "DEMO: owner starts API work."
-    });
-    const withEvidence = await command(routes, normal.request.id, "evidence-api-chain", {
-      action: "ATTACH_EVIDENCE",
-      requestRevision: started.request.revision,
-      evidenceType: "DEMO_INTERNAL_FIXTURE",
-      evidenceAssetId: "DEMO_EVIDENCE_FIXTURE_COMPLETION_01"
-    });
-    const completed = await command(routes, normal.request.id, "complete-api-chain", {
-      action: "COMPLETE",
-      requestRevision: withEvidence.request.revision,
-      reason: "DEMO: owner verifies API completion evidence."
-    });
+    const approved = await command(
+      routes,
+      normal.request.id,
+      "approve-api-chain",
+      {
+        action: "APPROVE",
+        requestRevision: normal.request.revision,
+        technicianId: proposal.technicianId,
+        proposalPolicyVersion: proposal.policyVersion,
+        proposalRuleVersion: proposal.ruleVersion,
+        reason: "DEMO: owner approves the API assignment."
+      }
+    );
+    const started = await command(
+      routes,
+      normal.request.id,
+      "start-api-chain",
+      {
+        action: "START",
+        requestRevision: approved.request.revision,
+        reason: "DEMO: owner starts API work."
+      }
+    );
+    const withEvidence = await command(
+      routes,
+      normal.request.id,
+      "evidence-api-chain",
+      {
+        action: "ATTACH_EVIDENCE",
+        requestRevision: started.request.revision,
+        evidenceType: "DEMO_INTERNAL_FIXTURE",
+        evidenceAssetId: "DEMO_EVIDENCE_FIXTURE_COMPLETION_01"
+      }
+    );
+    const completed = await command(
+      routes,
+      normal.request.id,
+      "complete-api-chain",
+      {
+        action: "COMPLETE",
+        requestRevision: withEvidence.request.revision,
+        reason: "DEMO: owner verifies API completion evidence."
+      }
+    );
     const closed = await command(routes, normal.request.id, "close-api-chain", {
       action: "CLOSE",
       requestRevision: completed.request.revision,
@@ -176,7 +203,9 @@ describe("local ServiceFlow API", () => {
 
   it("rejects Viewer mutation and client-controlled identity headers without mutation", async () => {
     const routes = await loadRoutes();
-    await routes.reset.POST(jsonRequest("/api/serviceflow/reset", {}, "reset-auth-baseline"));
+    await routes.reset.POST(
+      jsonRequest("/api/serviceflow/reset", {}, "reset-auth-baseline")
+    );
     const baseline = await state.service.getSnapshot(ownerA);
 
     state.actor = { ...ownerA, role: "VIEWER" };
@@ -184,7 +213,9 @@ describe("local ServiceFlow API", () => {
       jsonRequest("/api/serviceflow/reset", {}, "reset-viewer-api")
     );
     expect(viewerResponse.status).toBe(403);
-    await expect(viewerResponse.json()).resolves.toMatchObject({ error: { code: "FORBIDDEN" } });
+    await expect(viewerResponse.json()).resolves.toMatchObject({
+      error: { code: "FORBIDDEN" }
+    });
 
     state.actor = structuredClone(ownerA);
     const spoofed = await routes.reset.POST(
@@ -208,12 +239,16 @@ describe("local ServiceFlow API", () => {
     const tenantARequestId = tenantASnapshot.cases[0]!.request.id;
 
     state.actor = structuredClone(ownerB);
-    await routes.reset.POST(jsonRequest("/api/serviceflow/reset", {}, "reset-tenant-b-api"));
+    await routes.reset.POST(
+      jsonRequest("/api/serviceflow/reset", {}, "reset-tenant-b-api")
+    );
     const tenantBRead = await routes.root.GET(
       new Request("https://app.example.test/api/serviceflow")
     );
     const tenantBSnapshot = (await tenantBRead.json()) as ServiceFlowSnapshot;
-    expect(tenantBSnapshot.cases.every((item) => item.request.tenantId === tenantB)).toBe(true);
+    expect(
+      tenantBSnapshot.cases.every((item) => item.request.tenantId === tenantB)
+    ).toBe(true);
     expect(JSON.stringify(tenantBSnapshot)).not.toContain(tenantARequestId);
 
     const crossTenant = await routes.commands.POST(

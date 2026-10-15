@@ -4,7 +4,10 @@ import "../globals.css";
 export default async function LocalizedHomeLayout({
   children,
   params
-}: Readonly<{ children: React.ReactNode; params: Promise<{ locale: string }> }>) {
+}: Readonly<{
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
+}>) {
   const { locale } = await params;
   if (locale !== "fr" && locale !== "ar") notFound();
   return (

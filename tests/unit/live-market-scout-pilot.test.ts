@@ -27,28 +27,30 @@ describe("live Market Scout pilot", () => {
         return {
           sourceUrlsReviewed: 1,
           paidSpend: 0,
-          candidates: [{
-            candidate: {
-              laneKey: "beautyflow",
-              marketKey: "fr-france",
-              companyName: "Public Hair Studio",
-              domain: "public-hair-studio.fr",
-              country: "FR",
-              sourceUrl: "https://www.openstreetmap.org/node/123",
-              reportedPublicWebsiteUrl: "https://public-hair-studio.fr",
-              sourceKind: "OPEN_DATASET",
-              synthetic: false,
-              signalKeys: [
-                "non_medical_beauty",
-                "catalog_hours_visible",
-                "supported_public_language",
-                "country_research_ready"
-              ],
-              marketSignalKeys: [],
-              riskFlags: []
-            },
-            publicText: "Public Hair Studio hairdresser"
-          }]
+          candidates: [
+            {
+              candidate: {
+                laneKey: "beautyflow",
+                marketKey: "fr-france",
+                companyName: "Public Hair Studio",
+                domain: "public-hair-studio.fr",
+                country: "FR",
+                sourceUrl: "https://www.openstreetmap.org/node/123",
+                reportedPublicWebsiteUrl: "https://public-hair-studio.fr",
+                sourceKind: "OPEN_DATASET",
+                synthetic: false,
+                signalKeys: [
+                  "non_medical_beauty",
+                  "catalog_hours_visible",
+                  "supported_public_language",
+                  "country_research_ready"
+                ],
+                marketSignalKeys: [],
+                riskFlags: []
+              },
+              publicText: "Public Hair Studio hairdresser"
+            }
+          ]
         };
       }
     };
@@ -70,8 +72,12 @@ describe("live Market Scout pilot", () => {
           bytesRead: 512,
           contentHandling: "UNTRUSTED_DATA_ONLY",
           untrustedInstructionTextDetected: false,
-          documentedFacts: ["PUBLIC_SERVICE_DESCRIPTION", "PUBLIC_BOOKING_PATH"],
-          potentialFitReason: "Two public facts may justify later human review; interest is unverified.",
+          documentedFacts: [
+            "PUBLIC_SERVICE_DESCRIPTION",
+            "PUBLIC_BOOKING_PATH"
+          ],
+          potentialFitReason:
+            "Two public facts may justify later human review; interest is unverified.",
           unknowns: ["CUSTOMER_INTEREST_UNVERIFIED"]
         };
       }
@@ -182,20 +188,22 @@ describe("live Market Scout pilot", () => {
         websiteReviewEvidence: {
           contractVersion: "manovaflow.market-scout.website-review-evidence.v1",
           runId: result.activity.runId,
-          reviews: [{
-            sourceUrl: "https://public-hair-studio.fr",
-            occurredAt: "2026-09-05T10:00:02.000Z",
-            outcome: "SUCCEEDED",
-            observedFacts: [
-              "PUBLIC_SERVICE_DESCRIPTION",
-              "PUBLIC_BOOKING_PATH"
-            ],
-            potentialFit: "HUMAN_REVIEW_REQUIRED",
-            unknowns: ["CUSTOMER_INTEREST_UNVERIFIED"],
-            requestsMade: 2,
-            bytesRead: 512,
-            instructionLikeTextDetected: false
-          }],
+          reviews: [
+            {
+              sourceUrl: "https://public-hair-studio.fr",
+              occurredAt: "2026-09-05T10:00:02.000Z",
+              outcome: "SUCCEEDED",
+              observedFacts: [
+                "PUBLIC_SERVICE_DESCRIPTION",
+                "PUBLIC_BOOKING_PATH"
+              ],
+              potentialFit: "HUMAN_REVIEW_REQUIRED",
+              unknowns: ["CUSTOMER_INTEREST_UNVERIFIED"],
+              requestsMade: 2,
+              bytesRead: 512,
+              instructionLikeTextDetected: false
+            }
+          ],
           safety: {
             paidSpend: 0,
             apolloCredits: 0,
@@ -248,14 +256,16 @@ describe("live Market Scout pilot", () => {
         return {};
       }
     };
-    await expect(runLiveMarketScoutPilot({
-      actor,
-      batchKey: "unsupported-country",
-      countryCode: "US",
-      laneKey: "serviceflow",
-      source,
-      repository: new InMemoryGrowthRepository()
-    })).rejects.toThrow("MARKET_SCOUT_COUNTRY_NOT_CONFIGURED");
+    await expect(
+      runLiveMarketScoutPilot({
+        actor,
+        batchKey: "unsupported-country",
+        countryCode: "US",
+        laneKey: "serviceflow",
+        source,
+        repository: new InMemoryGrowthRepository()
+      })
+    ).rejects.toThrow("MARKET_SCOUT_COUNTRY_NOT_CONFIGURED");
     expect(called).toBe(false);
   });
 });

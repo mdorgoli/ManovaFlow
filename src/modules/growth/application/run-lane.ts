@@ -8,10 +8,7 @@ import { scoreCandidate } from "../domain/scoring";
 import { scoreMarket } from "../domain/market-scoring";
 import type { VerticalManifest } from "../manifests";
 import type { MarketProfile } from "../markets";
-import type {
-  DraftRecord,
-  GrowthRepository
-} from "./repository";
+import type { DraftRecord, GrowthRepository } from "./repository";
 import { normalizeDomain } from "./repository";
 import type { MarketScoutLanguageMetadata } from "./market-scout-contracts";
 
@@ -73,7 +70,8 @@ export interface LaneReport {
     suppressedCompanies: number;
     draftsCreated: number;
     paidSpend: 0;
-    stoppedBy: "INPUT_EXHAUSTED" | "DAILY_CAP" | "DIMINISHING_RETURNS" | "TIME_CAP";
+    stoppedBy:
+      "INPUT_EXHAUSTED" | "DAILY_CAP" | "DIMINISHING_RETURNS" | "TIME_CAP";
   };
   outboundActions: 0;
 }
@@ -115,7 +113,10 @@ export async function runLane(input: RunLaneInput): Promise<LaneReport> {
       details: { mode: "RESEARCH_ONLY", outboundEnabled: false }
     });
 
-    const selectedMarkets = input.markets.slice(0, input.manifest.dailyCaps.markets);
+    const selectedMarkets = input.markets.slice(
+      0,
+      input.manifest.dailyCaps.markets
+    );
     const marketShortlist: MarketShortlistItem[] = [];
     const complianceDecisions: LaneComplianceDecision[] = [];
 
@@ -182,7 +183,9 @@ export async function runLane(input: RunLaneInput): Promise<LaneReport> {
         left.marketKey.localeCompare(right.marketKey)
     );
 
-    const allowedMarketKeys = new Set(selectedMarkets.map((market) => market.key));
+    const allowedMarketKeys = new Set(
+      selectedMarkets.map((market) => market.key)
+    );
     const companyShortlist: CompanyShortlistItem[] = [];
     const rejections: CandidateRejection[] = [];
     const drafts: DraftRecord[] = [];
@@ -195,7 +198,10 @@ export async function runLane(input: RunLaneInput): Promise<LaneReport> {
     let stoppedBy: LaneReport["metrics"]["stoppedBy"] = "INPUT_EXHAUSTED";
 
     for (const candidate of input.candidates) {
-      if (candidate.laneKey !== input.manifest.key || !allowedMarketKeys.has(candidate.marketKey)) {
+      if (
+        candidate.laneKey !== input.manifest.key ||
+        !allowedMarketKeys.has(candidate.marketKey)
+      ) {
         continue;
       }
       if (
@@ -239,7 +245,10 @@ export async function runLane(input: RunLaneInput): Promise<LaneReport> {
           reasons: ["TENANT_SUPPRESSED"]
         });
       } else {
-        const saved = await input.repository.saveCompany(input.actor, candidate);
+        const saved = await input.repository.saveCompany(
+          input.actor,
+          candidate
+        );
         if (!saved.created) deduplicatedCompanies += 1;
 
         const score = scoreCandidate(input.manifest.scoring, candidate);
@@ -326,7 +335,8 @@ export async function runLane(input: RunLaneInput): Promise<LaneReport> {
 
     companyShortlist.sort(
       (left, right) =>
-        right.fitScore - left.fitScore || left.domain.localeCompare(right.domain)
+        right.fitScore - left.fitScore ||
+        left.domain.localeCompare(right.domain)
     );
 
     const report: LaneReport = {
@@ -400,10 +410,20 @@ function localizedInternalDraft(input: LocalizedDraftInput): {
   const backlog = input.manifest.packState === "VALIDATION_BACKLOG";
   if (input.language === "fa") {
     return {
-      subject: "پیش‌نویس داخلی — " + input.manifest.displayName + " — ارسال نشده",
-      body: "پیش‌نویس پژوهش محصول برای " + input.companyName + ". " +
-        (backlog ? "محصول آماده نیست. " : "فقط دموی محلی، نه محصول آماده استقرار. ") +
-        "ارسال نشده است. منبع: " + input.evidenceUrl + "؛ امتیاز تناسب: " + input.fitScore + "/100."
+      subject:
+        "پیش‌نویس داخلی — " + input.manifest.displayName + " — ارسال نشده",
+      body:
+        "پیش‌نویس پژوهش محصول برای " +
+        input.companyName +
+        ". " +
+        (backlog
+          ? "محصول آماده نیست. "
+          : "فقط دموی محلی، نه محصول آماده استقرار. ") +
+        "ارسال نشده است. منبع: " +
+        input.evidenceUrl +
+        "؛ امتیاز تناسب: " +
+        input.fitScore +
+        "/100."
     };
   }
   if (input.language === "fr") {
@@ -439,8 +459,7 @@ function localizedInternalDraft(input: LocalizedDraftInput): {
     };
   }
   return {
-    subject:
-      "Internal draft — " + input.manifest.displayName + " — NOT SENT",
+    subject: "Internal draft — " + input.manifest.displayName + " — NOT SENT",
     body:
       "Internal product research draft for " +
       input.companyName +

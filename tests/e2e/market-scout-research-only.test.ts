@@ -112,7 +112,9 @@ describe("Market Scout Research-Only vertical slice", () => {
     expect(dashboard.runs).toHaveLength(3);
     expect(dashboard.companies).toHaveLength(12);
     expect(dashboard.drafts).toHaveLength(10);
-    expect(dashboard.drafts.every((draft) => draft.outboundEnabled === false)).toBe(true);
+    expect(
+      dashboard.drafts.every((draft) => draft.outboundEnabled === false)
+    ).toBe(true);
   });
 });
 

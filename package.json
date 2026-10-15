@@ -10,7 +10,6 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --exclude tests/integration/**",
     "test:watch": "vitest --exclude tests/integration/**",
@@ -19,7 +18,13 @@
     "db:seed": "tsx scripts/seed.ts",
     "identity:cleanup": "tsx scripts/cleanup-identity.ts",
     "demo": "tsx scripts/run-demo.ts",
-    "pilot:market-scout": "tsx scripts/run-market-scout-pilot.ts"
+    "pilot:market-scout": "tsx scripts/run-market-scout-pilot.ts",
+    "lint": "node scripts/style.mjs lint",
+    "format:verify": "node scripts/style.mjs format:verify",
+    "format:check": "node scripts/style.mjs format:check",
+    "format": "node scripts/style.mjs format",
+    "lint:fix": "node scripts/style.mjs lint:fix",
+    "check:style": "pnpm lint && pnpm format:check"
   },
   "dependencies": {
     "@fontsource/barlow": "5.3.0",
@@ -40,7 +45,9 @@
     "@types/react-dom": "19.2.7",
     "eslint": "9.39.5",
     "eslint-config-next": "16.3.4",
+    "eslint-config-prettier": "10.1.8",
     "jsdom": "30.0.1",
+    "prettier": "3.9.10",
     "tsx": "4.23.13",
     "typescript": "6.0.3",
     "vitest": "5.0.0"

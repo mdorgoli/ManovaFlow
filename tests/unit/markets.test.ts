@@ -10,8 +10,12 @@ describe("global market profile registry", () => {
       expect(profile.researchOnly).toBe(true);
       expect(profile.truthfulKycRequired).toBe(true);
       expect(profile.incorporationRecommendation).toBe("NONE");
-      expect(profile.scoring.criteria.reduce((sum, item) => sum + item.weight, 0)).toBe(100);
-      expect(profile.officialReferences.every((item) => item.checkedAt.length > 0)).toBe(true);
+      expect(
+        profile.scoring.criteria.reduce((sum, item) => sum + item.weight, 0)
+      ).toBe(100);
+      expect(
+        profile.officialReferences.every((item) => item.checkedAt.length > 0)
+      ).toBe(true);
     }
   });
 
@@ -36,7 +40,9 @@ describe("global market profile registry", () => {
     expect(erbil.gates.contract).toBe("UNKNOWN");
     expect(erbil.gates.payment).toBe("UNKNOWN");
     expect(erbil.gates.dataMarketing).toBe("UNKNOWN");
-    expect(erbil.explicitUnknowns.join(" ")).toMatch(/legal|contract|payment|data/i);
+    expect(erbil.explicitUnknowns.join(" ")).toMatch(
+      /legal|contract|payment|data/i
+    );
   });
 
   it("keeps Turkey policy and commercial gates separate", () => {

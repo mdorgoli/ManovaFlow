@@ -61,15 +61,20 @@ export function detectMarketScoutLanguage(
 
   const arabicCharacters = text.match(ARABIC_SCRIPT)?.length ?? 0;
   if (arabicCharacters >= 3) {
-    const persianMarket = input.marketLocales.some(locale => /^fa(?:-|$)/i.test(locale));
+    const persianMarket = input.marketLocales.some((locale) =>
+      /^fa(?:-|$)/i.test(locale)
+    );
     if (persianMarket) {
-      return result("fa", /[پچژگکی]/u.test(text) ? "PUBLIC_TEXT" : "MARKET_LOCALE_FALLBACK");
+      return result(
+        "fa",
+        /[پچژگکی]/u.test(text) ? "PUBLIC_TEXT" : "MARKET_LOCALE_FALLBACK"
+      );
     }
     return result("ar", "PUBLIC_TEXT");
   }
 
-  const words = (text.toLocaleLowerCase("und").match(WORDS) ?? []).map(
-    (word) => stripMarks(word)
+  const words = (text.toLocaleLowerCase("und").match(WORDS) ?? []).map((word) =>
+    stripMarks(word)
   );
   const englishScore = score(words, LANGUAGE_WORDS.en);
   const frenchScore = score(words, LANGUAGE_WORDS.fr);
@@ -89,7 +94,10 @@ export function detectMarketScoutLanguage(
   return result("en", "DEFAULT_ENGLISH");
 }
 
-function score(words: readonly string[], vocabulary: ReadonlySet<string>): number {
+function score(
+  words: readonly string[],
+  vocabulary: ReadonlySet<string>
+): number {
   return words.reduce(
     (total, word) => total + (vocabulary.has(word) ? 1 : 0),
     0
@@ -104,7 +112,10 @@ function supportedLocaleLanguage(
   locale: string
 ): MarketScoutResearchLanguage | null {
   const language = locale.trim().toLowerCase().split("-")[0];
-  return language === "en" || language === "fr" || language === "ar" || language === "fa"
+  return language === "en" ||
+    language === "fr" ||
+    language === "ar" ||
+    language === "fa"
     ? language
     : null;
 }

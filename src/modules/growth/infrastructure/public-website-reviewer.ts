@@ -28,8 +28,9 @@ export class PublicWebsiteReviewer implements MarketScoutWebsiteReviewer {
 
   constructor(options: PublicWebsiteReviewerOptions = {}) {
     this.#fetch = options.fetchImpl ?? fetch;
-    this.#lookup = options.lookup ?? (async (hostname) =>
-      nodeLookup(hostname, { all: true, verbatim: true }));
+    this.#lookup =
+      options.lookup ??
+      (async (hostname) => nodeLookup(hostname, { all: true, verbatim: true }));
   }
 
   async review(request: WebsiteReviewRequest): Promise<WebsiteReviewResult> {
@@ -120,7 +121,10 @@ export class PublicWebsiteReviewer implements MarketScoutWebsiteReviewer {
         };
       }
 
-      const page = await fetchBounded(sourceUrl, request.budget.maxResponseBytes);
+      const page = await fetchBounded(
+        sourceUrl,
+        request.budget.maxResponseBytes
+      );
       if (!page.response.ok) {
         return {
           ...base(),
@@ -131,8 +135,12 @@ export class PublicWebsiteReviewer implements MarketScoutWebsiteReviewer {
           bytesRead
         };
       }
-      const contentType = page.response.headers.get("content-type")?.toLowerCase() ?? "";
-      if (!contentType.includes("text/html") && !contentType.includes("text/plain")) {
+      const contentType =
+        page.response.headers.get("content-type")?.toLowerCase() ?? "";
+      if (
+        !contentType.includes("text/html") &&
+        !contentType.includes("text/plain")
+      ) {
         return {
           ...base(),
           finalUrl: page.finalUrl.toString(),
@@ -150,9 +158,10 @@ export class PublicWebsiteReviewer implements MarketScoutWebsiteReviewer {
         ...base(),
         finalUrl: page.finalUrl.toString(),
         outcome: "SUCCEEDED",
-        reason: facts.length > 0
-          ? "PUBLIC_PAGE_REVIEWED"
-          : "PUBLIC_PAGE_REVIEWED_NO_ALLOWLISTED_FACTS",
+        reason:
+          facts.length > 0
+            ? "PUBLIC_PAGE_REVIEWED"
+            : "PUBLIC_PAGE_REVIEWED_NO_ALLOWLISTED_FACTS",
         errorCode: null,
         requestsMade,
         bytesRead,
@@ -164,9 +173,10 @@ export class PublicWebsiteReviewer implements MarketScoutWebsiteReviewer {
       const code = reviewErrorCode(error, controller.signal);
       return {
         ...base(),
-        outcome: code === "PRIVATE_NETWORK_TARGET" || code === "WEBSITE_URL_UNSAFE"
-          ? "REJECTED"
-          : "FAILED",
+        outcome:
+          code === "PRIVATE_NETWORK_TARGET" || code === "WEBSITE_URL_UNSAFE"
+            ? "REJECTED"
+            : "FAILED",
         reason: code,
         errorCode: code,
         requestsMade,
@@ -181,9 +191,15 @@ export class PublicWebsiteReviewer implements MarketScoutWebsiteReviewer {
 
 function validateBudget(budget: WebsiteReviewBudget): void {
   if (
-    !Number.isSafeInteger(budget.maxRequests) || budget.maxRequests < 1 || budget.maxRequests > 4 ||
-    !Number.isSafeInteger(budget.maxElapsedMs) || budget.maxElapsedMs < 1 || budget.maxElapsedMs > 15_000 ||
-    !Number.isSafeInteger(budget.maxResponseBytes) || budget.maxResponseBytes < 1 || budget.maxResponseBytes > 256_000
+    !Number.isSafeInteger(budget.maxRequests) ||
+    budget.maxRequests < 1 ||
+    budget.maxRequests > 4 ||
+    !Number.isSafeInteger(budget.maxElapsedMs) ||
+    budget.maxElapsedMs < 1 ||
+    budget.maxElapsedMs > 15_000 ||
+    !Number.isSafeInteger(budget.maxResponseBytes) ||
+    budget.maxResponseBytes < 1 ||
+    budget.maxResponseBytes > 256_000
   ) {
     throw new Error("WEBSITE_REVIEW_BUDGET_INVALID");
   }
@@ -202,16 +218,22 @@ function parsePublicHttpsUrl(value: string): URL {
   return url;
 }
 
-async function assertPublicHttpsTarget(url: URL, lookup: Lookup): Promise<void> {
+async function assertPublicHttpsTarget(
+  url: URL,
+  lookup: Lookup
+): Promise<void> {
   const hostname = url.hostname.toLowerCase();
   if (
-    hostname === "localhost" || hostname.endsWith(".localhost") ||
-    hostname.endsWith(".local") || hostname.endsWith(".internal")
+    hostname === "localhost" ||
+    hostname.endsWith(".localhost") ||
+    hostname.endsWith(".local") ||
+    hostname.endsWith(".internal")
   ) {
     throw new ReviewError("PRIVATE_NETWORK_TARGET");
   }
   if (isIP(hostname)) {
-    if (!isPublicAddress(hostname)) throw new ReviewError("PRIVATE_NETWORK_TARGET");
+    if (!isPublicAddress(hostname))
+      throw new ReviewError("PRIVATE_NETWORK_TARGET");
     parsePublicHttpsUrl(url.toString());
     return;
   }
@@ -222,7 +244,10 @@ async function assertPublicHttpsTarget(url: URL, lookup: Lookup): Promise<void> 
   } catch {
     throw new ReviewError("WEBSITE_DNS_FAILED");
   }
-  if (addresses.length === 0 || addresses.some((item) => !isPublicAddress(item.address))) {
+  if (
+    addresses.length === 0 ||
+    addresses.some((item) => !isPublicAddress(item.address))
+  ) {
     throw new ReviewError("PRIVATE_NETWORK_TARGET");
   }
 }
@@ -232,7 +257,10 @@ function isPublicAddress(address: string): boolean {
   if (version === 4) {
     const [a = 0, b = 0, c = 0] = address.split(".").map(Number);
     if (
-      a === 0 || a === 10 || a === 127 || a >= 224 ||
+      a === 0 ||
+      a === 10 ||
+      a === 127 ||
+      a >= 224 ||
       (a === 100 && b >= 64 && b <= 127) ||
       (a === 169 && b === 254) ||
       (a === 172 && b >= 16 && b <= 31) ||
@@ -240,7 +268,8 @@ function isPublicAddress(address: string): boolean {
       (a === 192 && b === 0 && (c === 0 || c === 2)) ||
       (a === 198 && (b === 18 || b === 19 || b === 51)) ||
       (a === 203 && b === 0 && c === 113)
-    ) return false;
+    )
+      return false;
     return true;
   }
   if (version === 6) {
@@ -248,14 +277,25 @@ function isPublicAddress(address: string): boolean {
     if (lower.startsWith("::ffff:")) {
       return isPublicAddress(lower.slice("::ffff:".length));
     }
-    return !(lower === "::" || lower === "::1" || lower.startsWith("fc") ||
-      lower.startsWith("fd") || lower.startsWith("fe8") || lower.startsWith("fe9") ||
-      lower.startsWith("fea") || lower.startsWith("feb") || lower.startsWith("ff"));
+    return !(
+      lower === "::" ||
+      lower === "::1" ||
+      lower.startsWith("fc") ||
+      lower.startsWith("fd") ||
+      lower.startsWith("fe8") ||
+      lower.startsWith("fe9") ||
+      lower.startsWith("fea") ||
+      lower.startsWith("feb") ||
+      lower.startsWith("ff")
+    );
   }
   return false;
 }
 
-async function readLimited(response: Response, maxBytes: number): Promise<{ text: string; bytes: number }> {
+async function readLimited(
+  response: Response,
+  maxBytes: number
+): Promise<{ text: string; bytes: number }> {
   const declared = Number(response.headers.get("content-length") ?? "0");
   if (Number.isFinite(declared) && declared > maxBytes) {
     throw new ReviewError("WEBSITE_RESPONSE_TOO_LARGE");
@@ -280,11 +320,16 @@ async function readLimited(response: Response, maxBytes: number): Promise<{ text
     combined.set(chunk, offset);
     offset += chunk.byteLength;
   }
-  return { text: new TextDecoder("utf-8", { fatal: false }).decode(combined), bytes: total };
+  return {
+    text: new TextDecoder("utf-8", { fatal: false }).decode(combined),
+    bytes: total
+  };
 }
 
 function robotsAllows(text: string, path: string): boolean {
-  const lines = text.split(/\r?\n/).map((line) => line.replace(/#.*/, "").trim());
+  const lines = text
+    .split(/\r?\n/)
+    .map((line) => line.replace(/#.*/, "").trim());
   const groups: Array<{
     agents: string[];
     allowed: string[];
@@ -298,7 +343,11 @@ function robotsAllows(text: string, path: string): boolean {
     const key = line.slice(0, separator).trim().toLowerCase();
     const value = line.slice(separator + 1).trim();
     if (key === "user-agent") {
-      if (!current || current.allowed.length > 0 || current.disallowed.length > 0) {
+      if (
+        !current ||
+        current.allowed.length > 0 ||
+        current.disallowed.length > 0
+      ) {
         current = { agents: [], allowed: [], disallowed: [] };
         groups.push(current);
       }
@@ -311,18 +360,26 @@ function robotsAllows(text: string, path: string): boolean {
   }
   const token = ROBOTS_PRODUCT_TOKEN.toLowerCase();
   const exact = groups.filter((group) => group.agents.includes(token));
-  const selected = exact.length > 0
-    ? exact
-    : groups.filter((group) => group.agents.includes("*"));
+  const selected =
+    exact.length > 0
+      ? exact
+      : groups.filter((group) => group.agents.includes("*"));
   const disallowed = selected.flatMap((group) => group.disallowed);
   const allowed = selected.flatMap((group) => group.allowed);
   const longestDisallow = longestPrefix(path, disallowed);
   const longestAllow = longestPrefix(path, allowed);
-  return longestDisallow.length === 0 || longestAllow.length >= longestDisallow.length;
+  return (
+    longestDisallow.length === 0 ||
+    longestAllow.length >= longestDisallow.length
+  );
 }
 
 function longestPrefix(path: string, rules: readonly string[]): string {
-  return rules.filter((rule) => path.startsWith(rule)).sort((a, b) => b.length - a.length)[0] ?? "";
+  return (
+    rules
+      .filter((rule) => path.startsWith(rule))
+      .sort((a, b) => b.length - a.length)[0] ?? ""
+  );
 }
 
 function extractVisibleText(html: string): string {
@@ -341,52 +398,94 @@ function extractVisibleText(html: string): string {
 }
 
 function normalizeText(text: string): string {
-  return text.normalize("NFKD")
+  return text
+    .normalize("NFKD")
     .replace(/[\u0300-\u036f\u064b-\u065f\u0670]/g, "")
-    .replace(/ك/g, "ک").replace(/ي|ى/g, "ی")
-    .replace(/\u200c/g, " ").replace(/\s+/g, " ").toLowerCase();
+    .replace(/ك/g, "ک")
+    .replace(/ي|ى/g, "ی")
+    .replace(/\u200c/g, " ")
+    .replace(/\s+/g, " ")
+    .toLowerCase();
 }
 
 function extractFacts(laneKey: LaneKey, text: string): WebsiteReviewFact[] {
   const facts: WebsiteReviewFact[] = [];
-  const servicePattern = laneKey === "serviceflow"
-    ? /\b(plomberie|serrurerie|electricite|electricien|chauffage|climatisation|maintenance|reparation|plumber|locksmith|electrician|hvac)\b/
-    : laneKey === "beautyflow"
-      ? /\b(salon|coiffure|coiffeur|coloration|beaute|hair|hairdresser|beauty|nail)\b/
-      : /\b(agence|communication|branding|design|publicite|campagne|creative|advertising|web design)\b/;
-  const persianServicePattern = laneKey === "serviceflow"
-    ? /تاسیسات|لوله\s?کشی|برق\s?کاری|تعمیر پکیج|سرویس کولر|تعمیرات ساختمان/u
-    : laneKey === "beautyflow" ? /سالن زیبایی|ارایشگاه|خدمات ناخن|رنگ مو/u
-      : /طراحی سایت|طراحی گرافیک|اژانس تبلیغاتی|برندسازی/u;
-  if (servicePattern.test(text) || persianServicePattern.test(text)) facts.push("PUBLIC_SERVICE_DESCRIPTION");
-  if (/\b(reservation|reserver|rendez-vous|booking|book online|prendre rendez vous)\b/.test(text) || /رزرو انلاین|ثبت درخواست|نوبت\s?دهی/u.test(text)) {
+  const servicePattern =
+    laneKey === "serviceflow"
+      ? /\b(plomberie|serrurerie|electricite|electricien|chauffage|climatisation|maintenance|reparation|plumber|locksmith|electrician|hvac)\b/
+      : laneKey === "beautyflow"
+        ? /\b(salon|coiffure|coiffeur|coloration|beaute|hair|hairdresser|beauty|nail)\b/
+        : /\b(agence|communication|branding|design|publicite|campagne|creative|advertising|web design)\b/;
+  const persianServicePattern =
+    laneKey === "serviceflow"
+      ? /تاسیسات|لوله\s?کشی|برق\s?کاری|تعمیر پکیج|سرویس کولر|تعمیرات ساختمان/u
+      : laneKey === "beautyflow"
+        ? /سالن زیبایی|ارایشگاه|خدمات ناخن|رنگ مو/u
+        : /طراحی سایت|طراحی گرافیک|اژانس تبلیغاتی|برندسازی/u;
+  if (servicePattern.test(text) || persianServicePattern.test(text))
+    facts.push("PUBLIC_SERVICE_DESCRIPTION");
+  if (
+    /\b(reservation|reserver|rendez-vous|booking|book online|prendre rendez vous)\b/.test(
+      text
+    ) ||
+    /رزرو انلاین|ثبت درخواست|نوبت\s?دهی/u.test(text)
+  ) {
     facts.push("PUBLIC_BOOKING_PATH");
   }
-  if (/\b(horaires|opening hours|lundi|monday|samedi|saturday)\b/.test(text) || /ساعات کاری|ساعت کار|ساعت فعالیت/u.test(text)) {
+  if (
+    /\b(horaires|opening hours|lundi|monday|samedi|saturday)\b/.test(text) ||
+    /ساعات کاری|ساعت کار|ساعت فعالیت/u.test(text)
+  ) {
     facts.push("PUBLIC_HOURS");
   }
-  if (/\b(nos salons|nos agences|plusieurs adresses|locations|multi-location)\b/.test(text)) {
+  if (
+    /\b(nos salons|nos agences|plusieurs adresses|locations|multi-location)\b/.test(
+      text
+    )
+  ) {
     facts.push("PUBLIC_MULTI_LOCATION");
   }
-  if (laneKey === "briefflow" && /\b(brief|votre projet|project brief|parlez-nous de votre projet)\b/.test(text)) {
+  if (
+    laneKey === "briefflow" &&
+    /\b(brief|votre projet|project brief|parlez-nous de votre projet)\b/.test(
+      text
+    )
+  ) {
     facts.push("PUBLIC_BRIEF_PATH");
   }
-  if (laneKey === "briefflow" && /\b(validation|approbation|approval|retours?)\b/.test(text)) {
+  if (
+    laneKey === "briefflow" &&
+    /\b(validation|approbation|approval|retours?)\b/.test(text)
+  ) {
     facts.push("PUBLIC_APPROVAL_LANGUAGE");
   }
-  if (/\b(nos services|prestations|offres|packages|services)\b/.test(text) || /خدمات ما|لیست خدمات|بسته خدمات/u.test(text)) {
+  if (
+    /\b(nos services|prestations|offres|packages|services)\b/.test(text) ||
+    /خدمات ما|لیست خدمات|بسته خدمات/u.test(text)
+  ) {
     facts.push("PUBLIC_PACKAGED_SERVICE_LANGUAGE");
   }
   return facts;
 }
 
 function hasInstructionLikeText(text: string): boolean {
-  return /ignore (all |any )?(previous|prior) instructions|system message|developer message|act as (an?|the)|assistant:/.test(text) || /دستور(?:های|ات) قبلی.{0,30}نادیده|پیام سیستم|نقش دستیار/u.test(text);
+  return (
+    /ignore (all |any )?(previous|prior) instructions|system message|developer message|act as (an?|the)|assistant:/.test(
+      text
+    ) || /دستور(?:های|ات) قبلی.{0,30}نادیده|پیام سیستم|نقش دستیار/u.test(text)
+  );
 }
 
-function potentialFitReason(laneKey: LaneKey, facts: readonly WebsiteReviewFact[]): string {
-  const product = laneKey === "serviceflow" ? "ServiceFlow local demo" :
-    laneKey === "beautyflow" ? "BeautyFlow research concept" : "BriefFlow research concept";
+function potentialFitReason(
+  laneKey: LaneKey,
+  facts: readonly WebsiteReviewFact[]
+): string {
+  const product =
+    laneKey === "serviceflow"
+      ? "ServiceFlow local demo"
+      : laneKey === "beautyflow"
+        ? "BeautyFlow research concept"
+        : "BriefFlow research concept";
   return facts.length === 0
     ? `No allowlisted public page fact was captured; potential fit for ${product} remains unassessed.`
     : `${facts.length} allowlisted public page fact(s) may justify a later human fit review for ${product}; need and interest are not established.`;

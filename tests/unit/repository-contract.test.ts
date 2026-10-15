@@ -37,9 +37,18 @@ describe("InMemoryGrowthRepository contract", () => {
   it("deduplicates a company tenant-wide across lanes but isolates tenants", async () => {
     const repository = new InMemoryGrowthRepository();
 
-    const first = await repository.saveCompany(tenantA, candidate("serviceflow"));
-    const duplicate = await repository.saveCompany(tenantA, candidate("beautyflow"));
-    const otherTenant = await repository.saveCompany(tenantB, candidate("serviceflow"));
+    const first = await repository.saveCompany(
+      tenantA,
+      candidate("serviceflow")
+    );
+    const duplicate = await repository.saveCompany(
+      tenantA,
+      candidate("beautyflow")
+    );
+    const otherTenant = await repository.saveCompany(
+      tenantB,
+      candidate("serviceflow")
+    );
 
     expect(first.created).toBe(true);
     expect(duplicate.created).toBe(false);
@@ -51,19 +60,43 @@ describe("InMemoryGrowthRepository contract", () => {
 
   it("applies suppression tenant-wide regardless of lane", async () => {
     const repository = new InMemoryGrowthRepository();
-    await repository.suppressDomain(tenantA, "Atelier-Shared.Example", "manual DNC");
+    await repository.suppressDomain(
+      tenantA,
+      "Atelier-Shared.Example",
+      "manual DNC"
+    );
 
-    expect(await repository.isSuppressed(tenantA, "atelier-shared.example")).toBe(true);
-    expect(await repository.isSuppressed(tenantB, "atelier-shared.example")).toBe(false);
+    expect(
+      await repository.isSuppressed(tenantA, "atelier-shared.example")
+    ).toBe(true);
+    expect(
+      await repository.isSuppressed(tenantB, "atelier-shared.example")
+    ).toBe(false);
   });
 
   it("reuses a research run only for the same tenant, lane, and idempotency key", async () => {
     const repository = new InMemoryGrowthRepository();
 
-    const first = await repository.beginRun(tenantA, "serviceflow", "batch-001");
-    const replay = await repository.beginRun(tenantA, "serviceflow", "batch-001");
-    const otherLane = await repository.beginRun(tenantA, "beautyflow", "batch-001");
-    const otherTenant = await repository.beginRun(tenantB, "serviceflow", "batch-001");
+    const first = await repository.beginRun(
+      tenantA,
+      "serviceflow",
+      "batch-001"
+    );
+    const replay = await repository.beginRun(
+      tenantA,
+      "serviceflow",
+      "batch-001"
+    );
+    const otherLane = await repository.beginRun(
+      tenantA,
+      "beautyflow",
+      "batch-001"
+    );
+    const otherTenant = await repository.beginRun(
+      tenantB,
+      "serviceflow",
+      "batch-001"
+    );
 
     expect(replay).toEqual({ run: first.run, reused: true });
     expect(otherLane.run.id).not.toBe(first.run.id);

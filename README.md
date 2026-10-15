@@ -119,3 +119,7 @@ provider واقعی و login/callback مبتنی بر state/PKCE، enrollment/re
 ## Dockerization
 
 راهنمای اجرای برنامه با PostgreSQL و Redis در [docs/dockerization.md](docs/dockerization.md) است.
+
+## Lint و Reformat
+
+راهنمای فرمان‌ها در [docs/lint-reformat.md](docs/lint-reformat.md) است.

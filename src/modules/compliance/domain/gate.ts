@@ -50,18 +50,14 @@ export function evaluateComplianceGate(
   input: ComplianceGateInput,
   now = new Date()
 ): ComplianceDecision {
-  const facts = input.evidence.filter(
-    (item) => item.classification === "FACT"
-  );
+  const facts = input.evidence.filter((item) => item.classification === "FACT");
   const inferences = input.evidence.filter(
     (item) => item.classification === "INFERENCE"
   );
   const unknowns = input.evidence.filter(
     (item) => item.classification === "UNKNOWN"
   );
-  const unknownCategories = [
-    ...new Set(unknowns.map((item) => item.category))
-  ];
+  const unknownCategories = [...new Set(unknowns.map((item) => item.category))];
 
   const supported = new Set(
     facts
@@ -79,8 +75,7 @@ export function evaluateComplianceGate(
     inferences,
     unknowns,
     checklist: REQUIRED_COMPLIANCE_CATEGORIES.map(
-      (category) =>
-        category + ": official source, scope, date, and human owner"
+      (category) => category + ": official source, scope, date, and human owner"
     ),
     disclaimer:
       "این ابزار جایگزین وکیل نیست؛ فقط شواهد و دروازه سیاست را ثبت می‌کند.",

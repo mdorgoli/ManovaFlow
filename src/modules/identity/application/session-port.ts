@@ -42,4 +42,3 @@ export interface SessionStorePort {
   rotate(input: RotateSessionInput): Promise<IssuedSession>;
   revoke(input: RevokeSessionInput): Promise<void>;
 }
-

@@ -41,7 +41,9 @@ describe("vertical manifests", () => {
 
     for (const manifest of manifests) {
       const serialized = JSON.stringify(manifest);
-      expect(serialized).not.toMatch(/fr-france|tr-istanbul|iq-kri-erbil|ae-dubai/);
+      expect(serialized).not.toMatch(
+        /fr-france|tr-istanbul|iq-kri-erbil|ae-dubai/
+      );
       expect(serialized).not.toMatch(/KVKK|IYS|GDPR|UAE/i);
     }
   });

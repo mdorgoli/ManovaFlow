@@ -1,6 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const state = vi.hoisted(() => ({ query: vi.fn(), ping: vi.fn(), cache: vi.fn(), locales: vi.fn() }));
+const state = vi.hoisted(() => ({
+  query: vi.fn(),
+  ping: vi.fn(),
+  cache: vi.fn(),
+  locales: vi.fn()
+}));
 vi.mock("@/lib/container", () => ({ getDatabaseClient: () => state.query }));
 vi.mock("@/lib/public-cache", () => ({
   getPublicCache: state.cache,
@@ -16,7 +21,10 @@ beforeEach(() => {
   state.query.mockResolvedValue([{ "?column?": 1 }]);
   state.ping.mockResolvedValue("PONG");
   state.cache.mockResolvedValue({ ping: state.ping });
-  state.locales.mockImplementation(async (load: () => unknown) => ({ value: load(), cache: "MISS" }));
+  state.locales.mockImplementation(async (load: () => unknown) => ({
+    value: load(),
+    cache: "MISS"
+  }));
 });
 afterEach(() => vi.unstubAllEnvs());
 
@@ -48,6 +56,8 @@ describe("Docker HTTP routes", () => {
     expect(response.headers.get("x-cache")).toBe("MISS");
     expect(response.headers.get("cache-control")).toBe("no-store");
     const body = await response.json();
-    expect(body.locales.map((option: { locale: string }) => option.locale)).toEqual(["en", "fr", "ar"]);
+    expect(
+      body.locales.map((option: { locale: string }) => option.locale)
+    ).toEqual(["en", "fr", "ar"]);
   });
 });

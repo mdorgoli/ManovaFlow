@@ -16,7 +16,9 @@ const base = {
 describe("API policy", () => {
   it("allows every known role to view the dashboard", () => {
     for (const role of ["OWNER", "OPERATOR", "VIEWER"] as const) {
-      expect(() => authorizeDashboard({ ...base, role }, new Headers())).not.toThrow();
+      expect(() =>
+        authorizeDashboard({ ...base, role }, new Headers())
+      ).not.toThrow();
     }
   });
 
@@ -58,19 +60,18 @@ describe("API policy", () => {
     "x-session-id",
     "x-mfa-verified",
     "x-auth-subject"
-  ])(
-    "rejects client-controlled identity header %s",
-    (header) => {
-      const headers = new Headers({ [header]: "attacker-controlled" });
-      expect(() =>
-        authorizeDashboard({ ...base, role: "OWNER" }, headers)
-      ).toThrow(/client-controlled identity/i);
-    }
-  );
+  ])("rejects client-controlled identity header %s", (header) => {
+    const headers = new Headers({ [header]: "attacker-controlled" });
+    expect(() =>
+      authorizeDashboard({ ...base, role: "OWNER" }, headers)
+    ).toThrow(/client-controlled identity/i);
+  });
 
   it("allows authenticated roles to read ServiceFlow while rejecting identity headers", () => {
     for (const role of ["OWNER", "OPERATOR", "VIEWER"] as const) {
-      expect(() => authorizeServiceFlowRead({ ...base, role }, new Headers())).not.toThrow();
+      expect(() =>
+        authorizeServiceFlowRead({ ...base, role }, new Headers())
+      ).not.toThrow();
     }
     expect(() =>
       authorizeServiceFlowRead(
@@ -81,14 +82,16 @@ describe("API policy", () => {
   });
 
   it("requires Owner or Operator and a bounded idempotency key for ServiceFlow mutation", () => {
-    const headers = new Headers({ "Idempotency-Key": "serviceflow-command-001" });
+    const headers = new Headers({
+      "Idempotency-Key": "serviceflow-command-001"
+    });
 
-    expect(authorizeServiceFlowMutation({ ...base, role: "OWNER" }, headers)).toBe(
-      "serviceflow-command-001"
-    );
-    expect(authorizeServiceFlowMutation({ ...base, role: "OPERATOR" }, headers)).toBe(
-      "serviceflow-command-001"
-    );
+    expect(
+      authorizeServiceFlowMutation({ ...base, role: "OWNER" }, headers)
+    ).toBe("serviceflow-command-001");
+    expect(
+      authorizeServiceFlowMutation({ ...base, role: "OPERATOR" }, headers)
+    ).toBe("serviceflow-command-001");
     expect(() =>
       authorizeServiceFlowMutation({ ...base, role: "VIEWER" }, headers)
     ).toThrow(/cannot perform/i);

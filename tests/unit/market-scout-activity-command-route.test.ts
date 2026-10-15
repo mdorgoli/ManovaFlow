@@ -27,16 +27,19 @@ type PostHandler = (request: Request) => Promise<Response>;
 beforeEach(() => {
   state.repository = new InMemoryGrowthRepository();
   vi.unstubAllEnvs();
-  vi.stubGlobal("fetch", vi.fn(async () => new Response(
-    JSON.stringify({ elements: [] }),
-    {
-      status: 200,
-      headers: {
-        "content-type": "application/json",
-        "content-length": "15"
-      }
-    }
-  )));
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(
+      async () =>
+        new Response(JSON.stringify({ elements: [] }), {
+          status: 200,
+          headers: {
+            "content-type": "application/json",
+            "content-length": "15"
+          }
+        })
+    )
+  );
 });
 
 describe("POST /api/market-scout/activity", () => {
@@ -101,10 +104,9 @@ describe("POST /api/market-scout/activity", () => {
     expect(post).toBeTypeOf("function");
     if (!post) return;
 
-    const response = await post(commandRequest(
-      { scope: "SF-DEMO-1B" },
-      "another-run"
-    ));
+    const response = await post(
+      commandRequest({ scope: "SF-DEMO-1B" }, "another-run")
+    );
 
     expect(response.status).toBe(400);
     expect(fetch).not.toHaveBeenCalled();
@@ -115,13 +117,16 @@ describe("POST /api/market-scout/activity", () => {
     const gate = new Promise<void>((resolve) => {
       release = resolve;
     });
-    vi.stubGlobal("fetch", vi.fn(async () => {
-      await gate;
-      return new Response(JSON.stringify({ elements: [] }), {
-        status: 200,
-        headers: { "content-type": "application/json" }
-      });
-    }));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => {
+        await gate;
+        return new Response(JSON.stringify({ elements: [] }), {
+          status: 200,
+          headers: { "content-type": "application/json" }
+        });
+      })
+    );
     const post = (activityRoute as { POST?: PostHandler }).POST;
     expect(post).toBeTypeOf("function");
     if (!post) return;
@@ -136,7 +141,9 @@ describe("POST /api/market-scout/activity", () => {
     const [firstResponse, secondResponse] = await Promise.all([first, second]);
     expect(firstResponse.status).toBe(201);
     expect(secondResponse.status).toBe(200);
-    expect(await secondResponse.json()).toMatchObject({ disposition: "REUSED" });
+    expect(await secondResponse.json()).toMatchObject({
+      disposition: "REUSED"
+    });
   });
 
   it("keeps the live command disabled in production", async () => {

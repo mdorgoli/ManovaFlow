@@ -41,7 +41,9 @@ describe("Market Scout coordinator", () => {
     expect(maxActive).toBeGreaterThan(1);
     expect(maxActive).toBeLessThanOrEqual(3);
     expect(result.workerOutcomes).toHaveLength(12);
-    expect(result.workerOutcomes.every((item) => item.status === "fulfilled")).toBe(true);
+    expect(
+      result.workerOutcomes.every((item) => item.status === "fulfilled")
+    ).toBe(true);
 
     for (const laneKey of Object.keys(growthManifests) as LaneKey[]) {
       const laneRequests = requests.filter(
@@ -93,19 +95,16 @@ describe("Market Scout coordinator", () => {
       ])
     );
     expect(
-      result.internalDrafts.find(
-        (draft) => draft.marketKey === "fr-france"
-      )?.body
+      result.internalDrafts.find((draft) => draft.marketKey === "fr-france")
+        ?.body
     ).toContain("NON ENVOYÉ");
     expect(
-      result.internalDrafts.find(
-        (draft) => draft.marketKey === "ae-dubai"
-      )?.body
+      result.internalDrafts.find((draft) => draft.marketKey === "ae-dubai")
+        ?.body
     ).toContain("لم يتم الإرسال");
     expect(
-      result.internalDrafts.find(
-        (draft) => draft.marketKey === "tr-istanbul"
-      )?.body
+      result.internalDrafts.find((draft) => draft.marketKey === "tr-istanbul")
+        ?.body
     ).toContain("NOT SENT");
   });
 
@@ -129,7 +128,9 @@ describe("Market Scout coordinator", () => {
     ).rejects.toThrow("Batch idempotency key is required");
     await expect(
       runMarketScout({ ...input(source), concurrency: 13 })
-    ).rejects.toThrow("Market Scout concurrency must be an integer from 1 through 12");
+    ).rejects.toThrow(
+      "Market Scout concurrency must be an integer from 1 through 12"
+    );
     expect(calls).toBe(0);
   });
 
@@ -158,7 +159,9 @@ describe("Market Scout coordinator", () => {
       status: "rejected",
       errorCode: "MARKET_SCOUT_SOURCE_FAILED"
     });
-    expect(JSON.stringify(result)).not.toContain("provider detail must not escape");
+    expect(JSON.stringify(result)).not.toContain(
+      "provider detail must not escape"
+    );
     expect(result.research.aggregate.lanesCompleted).toBe(3);
   });
 
@@ -214,7 +217,9 @@ describe("Market Scout coordinator", () => {
       )
     ).toBe(1);
     expect(
-      reports.flatMap((report) => report.companyShortlist).map((item) => item.domain)
+      reports
+        .flatMap((report) => report.companyShortlist)
+        .map((item) => item.domain)
     ).not.toContain("blocked-brief-dubai.ae");
   });
 
@@ -228,7 +233,8 @@ describe("Market Scout coordinator", () => {
             request.task.marketKey === "tr-istanbul")
         ) {
           candidate.domain = "shared-serviceflow-domain.com";
-          candidate.sourceUrl = "https://shared-serviceflow-domain.com/services";
+          candidate.sourceUrl =
+            "https://shared-serviceflow-domain.com/services";
         }
         return {
           sourceUrlsReviewed: 1,

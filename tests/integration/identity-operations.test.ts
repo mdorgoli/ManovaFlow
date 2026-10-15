@@ -84,9 +84,7 @@ describe("identity operational security", () => {
       now: new Date(now.getTime() + 2_000)
     });
 
-    const rows = await admin<
-      { event_type: string; details_text: string }[]
-    >`
+    const rows = await admin<{ event_type: string; details_text: string }[]>`
       select event_type, details::text as details_text
       from identity_security_events
       where session_id = ${issued.sessionId}::uuid
@@ -214,8 +212,16 @@ describe("identity operational security", () => {
       })
     ];
 
-    await limiter.consume({ operation: "SESSION_ROTATE", request: requests[0]!, now });
-    await limiter.consume({ operation: "SESSION_ROTATE", request: requests[1]!, now });
+    await limiter.consume({
+      operation: "SESSION_ROTATE",
+      request: requests[0]!,
+      now
+    });
+    await limiter.consume({
+      operation: "SESSION_ROTATE",
+      request: requests[1]!,
+      now
+    });
     await expect(
       limiter.consume({
         operation: "SESSION_ROTATE",
@@ -298,14 +304,17 @@ describe("identity operational security", () => {
       )
     );
 
-    expect(results.filter((result) => result.status === "fulfilled")).toHaveLength(1);
+    expect(
+      results.filter((result) => result.status === "fulfilled")
+    ).toHaveLength(1);
     const rejected = results.filter(
       (result): result is PromiseRejectedResult => result.status === "rejected"
     );
     expect(rejected).toHaveLength(3);
     expect(
       rejected.every(
-        (result) => result.reason instanceof Error &&
+        (result) =>
+          result.reason instanceof Error &&
           "code" in result.reason &&
           result.reason.code === "AUTH_RATE_LIMITED"
       )
@@ -431,9 +440,8 @@ describe("identity operational security", () => {
       survivors.find((row) => row.id === sessionIds["cleanup-live"])?.state
     ).toBe("ACTIVE");
     expect(
-      survivors.find(
-        (row) => row.id === sessionIds["cleanup-recent-terminal"]
-      )?.state
+      survivors.find((row) => row.id === sessionIds["cleanup-recent-terminal"])
+        ?.state
     ).toBe("REVOKED");
 
     const purgedRows = await admin<{ count: number }[]>`

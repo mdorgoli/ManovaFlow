@@ -24,40 +24,45 @@ const csvAlgorithms = z.string().transform((value, context) => {
   const values = splitCsv(value);
   const parsed = z.array(algorithmSchema).min(1).max(2).safeParse(values);
   if (!parsed.success || new Set(values).size !== values.length) {
-    context.addIssue({ code: "custom", message: "Invalid OIDC algorithm allowlist" });
+    context.addIssue({
+      code: "custom",
+      message: "Invalid OIDC algorithm allowlist"
+    });
     return z.NEVER;
   }
   return parsed.data;
 });
 const positiveSeconds = z.coerce.number().int().positive().max(86_400);
 const positiveRequestCount = z.coerce.number().int().positive().max(100_000);
-const environmentSchema = z.strictObject({
-  NODE_ENV: z.literal("production"),
-  DATABASE_URL: z.string().min(1),
-  IDENTITY_DATABASE_URL: z.string().min(1),
-  APP_ORIGIN: z.url(),
-  OIDC_ISSUER: z.url(),
-  OIDC_AUDIENCE: z.string().trim().min(1).max(512),
-  OIDC_JWKS_JSON: z.string().min(2).max(131_072),
-  OIDC_ALLOWED_ALGORITHMS: csvAlgorithms,
-  OIDC_MFA_AMR_VALUES: z.string(),
-  OIDC_MFA_ACR_VALUES: z.string(),
-  OIDC_CLOCK_SKEW_SECONDS: z.coerce.number().int().min(0).max(300),
-  OIDC_MAX_TOKEN_LIFETIME_SECONDS: positiveSeconds,
-  OIDC_MAX_MFA_AGE_SECONDS: positiveSeconds,
-  SESSION_MAX_LIFETIME_SECONDS: positiveSeconds,
-  SESSION_IDLE_TIMEOUT_SECONDS: positiveSeconds,
-  AUTH_RATE_LIMIT_HMAC_KEY: z.string().min(1),
-  AUTH_RATE_LIMIT_WINDOW_SECONDS: positiveSeconds,
-  AUTH_RATE_LIMIT_MAX_REQUESTS: positiveRequestCount,
-  AUTH_RATE_LIMIT_GLOBAL_MAX_REQUESTS: positiveRequestCount,
-  AUTH_RATE_LIMIT_BLOCK_SECONDS: positiveSeconds
-}).refine(
-  (configuration) =>
-    configuration.SESSION_IDLE_TIMEOUT_SECONDS <=
-    configuration.SESSION_MAX_LIFETIME_SECONDS,
-  { message: "Idle timeout cannot exceed absolute session lifetime" }
-);
+const environmentSchema = z
+  .strictObject({
+    NODE_ENV: z.literal("production"),
+    DATABASE_URL: z.string().min(1),
+    IDENTITY_DATABASE_URL: z.string().min(1),
+    APP_ORIGIN: z.url(),
+    OIDC_ISSUER: z.url(),
+    OIDC_AUDIENCE: z.string().trim().min(1).max(512),
+    OIDC_JWKS_JSON: z.string().min(2).max(131_072),
+    OIDC_ALLOWED_ALGORITHMS: csvAlgorithms,
+    OIDC_MFA_AMR_VALUES: z.string(),
+    OIDC_MFA_ACR_VALUES: z.string(),
+    OIDC_CLOCK_SKEW_SECONDS: z.coerce.number().int().min(0).max(300),
+    OIDC_MAX_TOKEN_LIFETIME_SECONDS: positiveSeconds,
+    OIDC_MAX_MFA_AGE_SECONDS: positiveSeconds,
+    SESSION_MAX_LIFETIME_SECONDS: positiveSeconds,
+    SESSION_IDLE_TIMEOUT_SECONDS: positiveSeconds,
+    AUTH_RATE_LIMIT_HMAC_KEY: z.string().min(1),
+    AUTH_RATE_LIMIT_WINDOW_SECONDS: positiveSeconds,
+    AUTH_RATE_LIMIT_MAX_REQUESTS: positiveRequestCount,
+    AUTH_RATE_LIMIT_GLOBAL_MAX_REQUESTS: positiveRequestCount,
+    AUTH_RATE_LIMIT_BLOCK_SECONDS: positiveSeconds
+  })
+  .refine(
+    (configuration) =>
+      configuration.SESSION_IDLE_TIMEOUT_SECONDS <=
+      configuration.SESSION_MAX_LIFETIME_SECONDS,
+    { message: "Idle timeout cannot exceed absolute session lifetime" }
+  );
 const publicJwkSchema = z
   .object({
     kty: z.enum(["RSA", "EC"]),
@@ -67,7 +72,10 @@ const publicJwkSchema = z
     key_ops: z.array(z.string()).optional()
   })
   .passthrough()
-  .refine((key) => !Object.hasOwn(key, "d"), "Private JWK material is forbidden");
+  .refine(
+    (key) => !Object.hasOwn(key, "d"),
+    "Private JWK material is forbidden"
+  );
 const jwksSchema = z.strictObject({
   keys: z.array(publicJwkSchema).min(1).max(32)
 });
@@ -106,12 +114,10 @@ export function createProductionIdentityServices(
       AUTH_RATE_LIMIT_HMAC_KEY: environment.AUTH_RATE_LIMIT_HMAC_KEY,
       AUTH_RATE_LIMIT_WINDOW_SECONDS:
         environment.AUTH_RATE_LIMIT_WINDOW_SECONDS,
-      AUTH_RATE_LIMIT_MAX_REQUESTS:
-        environment.AUTH_RATE_LIMIT_MAX_REQUESTS,
+      AUTH_RATE_LIMIT_MAX_REQUESTS: environment.AUTH_RATE_LIMIT_MAX_REQUESTS,
       AUTH_RATE_LIMIT_GLOBAL_MAX_REQUESTS:
         environment.AUTH_RATE_LIMIT_GLOBAL_MAX_REQUESTS,
-      AUTH_RATE_LIMIT_BLOCK_SECONDS:
-        environment.AUTH_RATE_LIMIT_BLOCK_SECONDS
+      AUTH_RATE_LIMIT_BLOCK_SECONDS: environment.AUTH_RATE_LIMIT_BLOCK_SECONDS
     });
     parseIdentityDatabaseConfiguration(environment);
     const applicationOrigin = new URL(configuration.APP_ORIGIN);
@@ -130,7 +136,10 @@ export function createProductionIdentityServices(
     const jwks = jwksSchema.parse(JSON.parse(configuration.OIDC_JWKS_JSON));
     const acceptedMfaAmrValues = splitCsv(configuration.OIDC_MFA_AMR_VALUES);
     const acceptedMfaAcrValues = splitCsv(configuration.OIDC_MFA_ACR_VALUES);
-    if (acceptedMfaAmrValues.length === 0 && acceptedMfaAcrValues.length === 0) {
+    if (
+      acceptedMfaAmrValues.length === 0 &&
+      acceptedMfaAcrValues.length === 0
+    ) {
       throw new Error("At least one production MFA marker is required");
     }
 
@@ -149,7 +158,11 @@ export function createProductionIdentityServices(
     const sessionStore = new PostgresSessionStore(identitySql, {
       idleTimeoutSeconds: configuration.SESSION_IDLE_TIMEOUT_SECONDS
     });
-    const membershipPort = new PostgresMembershipPort(applicationSql, clock, environment);
+    const membershipPort = new PostgresMembershipPort(
+      applicationSql,
+      clock,
+      environment
+    );
     const identityLinkPort = new PostgresIdentityLinkPort(identitySql);
     const sessionService = new OidcSessionService({
       verifier,

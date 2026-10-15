@@ -3,51 +3,56 @@ import { OverpassMarketScoutSource } from "@/modules/growth/infrastructure/overp
 
 describe("Overpass Market Scout source", () => {
   it("discovers and deduplicates public organizations from country and vertical only", async () => {
-    const fetchImpl = vi.fn(async (_input: string | URL | Request, _init?: RequestInit) => {
-      void _input;
-      void _init;
-      return new Response(JSON.stringify({
-        version: 0.6,
-        generator: "Overpass API",
-        elements: [
+    const fetchImpl = vi.fn(
+      async (_input: string | URL | Request, _init?: RequestInit) => {
+        void _input;
+        void _init;
+        return new Response(
+          JSON.stringify({
+            version: 0.6,
+            generator: "Overpass API",
+            elements: [
+              {
+                type: "candidate",
+                id: 534911895,
+                tags: {
+                  osm_type: "node",
+                  name: "Tchip",
+                  category: "hairdresser",
+                  website: "https://tchip.fr/salon/view/4098",
+                  opening_hours: "Mo-Sa 09:00-19:00"
+                }
+              },
+              {
+                type: "candidate",
+                id: 42,
+                tags: {
+                  osm_type: "way",
+                  name: "Tchip duplicate",
+                  category: "hairdresser",
+                  website: "https://www.tchip.fr/another",
+                  opening_hours: ""
+                }
+              },
+              {
+                type: "candidate",
+                id: 43,
+                tags: {
+                  osm_type: "node",
+                  name: "Unsafe listing",
+                  category: "beauty",
+                  website: "http://127.0.0.1/private"
+                }
+              }
+            ]
+          }),
           {
-            type: "candidate",
-            id: 534911895,
-            tags: {
-              osm_type: "node",
-              name: "Tchip",
-              category: "hairdresser",
-              website: "https://tchip.fr/salon/view/4098",
-              opening_hours: "Mo-Sa 09:00-19:00"
-            }
-          },
-          {
-            type: "candidate",
-            id: 42,
-            tags: {
-              osm_type: "way",
-              name: "Tchip duplicate",
-              category: "hairdresser",
-              website: "https://www.tchip.fr/another",
-              opening_hours: ""
-            }
-          },
-          {
-            type: "candidate",
-            id: 43,
-            tags: {
-              osm_type: "node",
-              name: "Unsafe listing",
-              category: "beauty",
-              website: "http://127.0.0.1/private"
-            }
+            status: 200,
+            headers: { "content-type": "application/json" }
           }
-        ]
-      }), {
-        status: 200,
-        headers: { "content-type": "application/json" }
-      });
-    });
+        );
+      }
+    );
     const source = new OverpassMarketScoutSource({ fetchImpl });
 
     const result = await source.discover({
@@ -59,28 +64,30 @@ describe("Overpass Market Scout source", () => {
     expect(result).toEqual({
       sourceUrlsReviewed: 1,
       paidSpend: 0,
-      candidates: [{
-        candidate: {
-          laneKey: "beautyflow",
-          marketKey: "fr-france",
-          companyName: "Tchip",
-          domain: "tchip.fr",
-          country: "FR",
-          sourceUrl: "https://www.openstreetmap.org/node/534911895",
-          reportedPublicWebsiteUrl: "https://tchip.fr/salon/view/4098",
-          sourceKind: "OPEN_DATASET",
-          synthetic: false,
-          signalKeys: [
-            "non_medical_beauty",
-            "catalog_hours_visible",
-            "supported_public_language",
-            "country_research_ready"
-          ],
-          marketSignalKeys: [],
-          riskFlags: []
-        },
-        publicText: "Tchip hairdresser"
-      }]
+      candidates: [
+        {
+          candidate: {
+            laneKey: "beautyflow",
+            marketKey: "fr-france",
+            companyName: "Tchip",
+            domain: "tchip.fr",
+            country: "FR",
+            sourceUrl: "https://www.openstreetmap.org/node/534911895",
+            reportedPublicWebsiteUrl: "https://tchip.fr/salon/view/4098",
+            sourceKind: "OPEN_DATASET",
+            synthetic: false,
+            signalKeys: [
+              "non_medical_beauty",
+              "catalog_hours_visible",
+              "supported_public_language",
+              "country_research_ready"
+            ],
+            marketSignalKeys: [],
+            riskFlags: []
+          },
+          publicText: "Tchip hairdresser"
+        }
+      ]
     });
 
     const [endpoint, init] = fetchImpl.mock.calls[0] ?? [];
@@ -106,23 +113,29 @@ describe("Overpass Market Scout source", () => {
 
   it("fails closed on an oversized or non-JSON upstream response", async () => {
     const oversized = new OverpassMarketScoutSource({
-      fetchImpl: vi.fn(async () => new Response("x", {
-        status: 200,
-        headers: {
-          "content-type": "application/json",
-          "content-length": "600000"
-        }
-      }))
+      fetchImpl: vi.fn(
+        async () =>
+          new Response("x", {
+            status: 200,
+            headers: {
+              "content-type": "application/json",
+              "content-length": "600000"
+            }
+          })
+      )
     });
     await expect(oversized.discover(request())).rejects.toThrow(
       "OVERPASS_RESPONSE_TOO_LARGE"
     );
 
     const html = new OverpassMarketScoutSource({
-      fetchImpl: vi.fn(async () => new Response("<html>busy</html>", {
-        status: 200,
-        headers: { "content-type": "text/html" }
-      }))
+      fetchImpl: vi.fn(
+        async () =>
+          new Response("<html>busy</html>", {
+            status: 200,
+            headers: { "content-type": "text/html" }
+          })
+      )
     });
     await expect(html.discover(request())).rejects.toThrow(
       "OVERPASS_RESPONSE_CONTENT_TYPE_INVALID"

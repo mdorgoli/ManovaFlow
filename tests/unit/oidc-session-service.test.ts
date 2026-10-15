@@ -86,11 +86,13 @@ function validatingStore(): SessionStorePort {
   };
 }
 
-function service(overrides: {
-  link?: IdentityLinkPort;
-  membership?: MembershipPort;
-  store?: SessionStorePort;
-} = {}): OidcSessionService {
+function service(
+  overrides: {
+    link?: IdentityLinkPort;
+    membership?: MembershipPort;
+    store?: SessionStorePort;
+  } = {}
+): OidcSessionService {
   return new OidcSessionService({
     verifier: verifier(),
     identityLinkPort: overrides.link ?? identityLinks(),
@@ -180,8 +182,13 @@ describe("OIDC session establishment", () => {
           method: "POST",
           headers: {
             cookie:
-              SESSION_COOKIE_NAME + "=" + issued.sessionToken + "; " +
-              CSRF_COOKIE_NAME + "=" + issued.csrfToken,
+              SESSION_COOKIE_NAME +
+              "=" +
+              issued.sessionToken +
+              "; " +
+              CSRF_COOKIE_NAME +
+              "=" +
+              issued.csrfToken,
             origin: "https://app.example.test",
             "x-csrf-token": issued.csrfToken
           }
@@ -208,8 +215,13 @@ describe("OIDC session establishment", () => {
           method: "POST",
           headers: {
             cookie:
-              SESSION_COOKIE_NAME + "=" + issued.sessionToken + "; " +
-              CSRF_COOKIE_NAME + "=" + issued.csrfToken,
+              SESSION_COOKIE_NAME +
+              "=" +
+              issued.sessionToken +
+              "; " +
+              CSRF_COOKIE_NAME +
+              "=" +
+              issued.csrfToken,
             origin: "https://app.example.test",
             "x-csrf-token": issued.csrfToken
           }

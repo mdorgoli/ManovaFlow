@@ -5,7 +5,9 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export async function GET(): Promise<Response> {
-  const result = await cachedPublicLocales(() => ({ locales: homeLanguageOptions }));
+  const result = await cachedPublicLocales(() => ({
+    locales: homeLanguageOptions
+  }));
   return Response.json(result.value, {
     headers: { "cache-control": "no-store", "x-cache": result.cache }
   });

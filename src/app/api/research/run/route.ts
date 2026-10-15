@@ -30,7 +30,10 @@ const inputsByLaneSchema = z
 
 const researchPayloadSchema = z.discriminatedUnion("mode", [
   z.strictObject({ mode: z.literal("SYNTHETIC") }),
-  z.strictObject({ mode: z.literal("MANUAL"), inputsByLane: inputsByLaneSchema })
+  z.strictObject({
+    mode: z.literal("MANUAL"),
+    inputsByLane: inputsByLaneSchema
+  })
 ]);
 
 export async function POST(request: Request): Promise<NextResponse> {

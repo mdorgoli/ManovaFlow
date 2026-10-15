@@ -92,7 +92,9 @@ export async function runMarketScoutWorker(
         rejectionCounts.NON_PUBLIC_SOURCE_KIND += 1;
         continue;
       }
-      if (!input.market.allowedSourceKinds.includes(parsedCandidate.sourceKind)) {
+      if (
+        !input.market.allowedSourceKinds.includes(parsedCandidate.sourceKind)
+      ) {
         rejectionCounts.SOURCE_KIND_NOT_ALLOWLISTED += 1;
         continue;
       }

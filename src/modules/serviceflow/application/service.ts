@@ -73,8 +73,14 @@ export class ServiceFlowService {
     );
   }
 
-  getRequest(actorInput: ServiceFlowActor, requestId: string): Promise<ServiceRequest> {
-    return this.#repository.getRequest(parseServiceFlowActor(actorInput), requestId);
+  getRequest(
+    actorInput: ServiceFlowActor,
+    requestId: string
+  ): Promise<ServiceRequest> {
+    return this.#repository.getRequest(
+      parseServiceFlowActor(actorInput),
+      requestId
+    );
   }
 
   listRequests(actorInput: ServiceFlowActor): Promise<ServiceRequest[]> {
@@ -89,7 +95,10 @@ export class ServiceFlowService {
     actorInput: ServiceFlowActor,
     reason: BlockReason
   ): Promise<number> {
-    return this.#repository.getExceptionCount(parseServiceFlowActor(actorInput), reason);
+    return this.#repository.getExceptionCount(
+      parseServiceFlowActor(actorInput),
+      reason
+    );
   }
 
   async approveProposal(
@@ -128,7 +137,12 @@ export class ServiceFlowService {
     commandInput: LifecycleCommand,
     idempotencyKeyInput: string
   ): Promise<LifecycleCommandResult> {
-    return this.#executeLifecycle("START", actorInput, commandInput, idempotencyKeyInput);
+    return this.#executeLifecycle(
+      "START",
+      actorInput,
+      commandInput,
+      idempotencyKeyInput
+    );
   }
 
   blockRequest(
@@ -136,7 +150,12 @@ export class ServiceFlowService {
     commandInput: LifecycleCommand,
     idempotencyKeyInput: string
   ): Promise<LifecycleCommandResult> {
-    return this.#executeLifecycle("BLOCK", actorInput, commandInput, idempotencyKeyInput);
+    return this.#executeLifecycle(
+      "BLOCK",
+      actorInput,
+      commandInput,
+      idempotencyKeyInput
+    );
   }
 
   resumeRequest(
@@ -144,7 +163,12 @@ export class ServiceFlowService {
     commandInput: LifecycleCommand,
     idempotencyKeyInput: string
   ): Promise<LifecycleCommandResult> {
-    return this.#executeLifecycle("RESUME", actorInput, commandInput, idempotencyKeyInput);
+    return this.#executeLifecycle(
+      "RESUME",
+      actorInput,
+      commandInput,
+      idempotencyKeyInput
+    );
   }
 
   completeRequest(
@@ -152,7 +176,12 @@ export class ServiceFlowService {
     commandInput: LifecycleCommand,
     idempotencyKeyInput: string
   ): Promise<LifecycleCommandResult> {
-    return this.#executeLifecycle("COMPLETE", actorInput, commandInput, idempotencyKeyInput);
+    return this.#executeLifecycle(
+      "COMPLETE",
+      actorInput,
+      commandInput,
+      idempotencyKeyInput
+    );
   }
 
   closeRequest(
@@ -160,7 +189,12 @@ export class ServiceFlowService {
     commandInput: LifecycleCommand,
     idempotencyKeyInput: string
   ): Promise<LifecycleCommandResult> {
-    return this.#executeLifecycle("CLOSE", actorInput, commandInput, idempotencyKeyInput);
+    return this.#executeLifecycle(
+      "CLOSE",
+      actorInput,
+      commandInput,
+      idempotencyKeyInput
+    );
   }
 
   async attachCompletionEvidence(
@@ -179,8 +213,12 @@ export class ServiceFlowService {
     );
   }
 
-  listCompletionEvidence(actorInput: ServiceFlowActor): Promise<CompletionEvidence[]> {
-    return this.#repository.listCompletionEvidence(parseServiceFlowActor(actorInput));
+  listCompletionEvidence(
+    actorInput: ServiceFlowActor
+  ): Promise<CompletionEvidence[]> {
+    return this.#repository.listCompletionEvidence(
+      parseServiceFlowActor(actorInput)
+    );
   }
 
   getSnapshot(actorInput: ServiceFlowActor): Promise<ServiceFlowSnapshot> {
@@ -193,16 +231,20 @@ export class ServiceFlowService {
   ): Promise<ServiceFlowSnapshot> {
     const actor = this.#parseMutationActor(actorInput);
     parseIdempotencyKey(idempotencyKeyInput);
-    const cases = (["STANDARD", "SAFETY"] as const).map((key): DemoResetCasePlan => {
-      const input = parseServiceRequestInput(SERVICEFLOW_DEMO_RESET_INPUTS[key]);
-      const evaluation = evaluateIntake(input, this.#technicians);
-      return {
-        key,
-        input,
-        evaluation: evaluation.evaluation,
-        state: evaluation.state
-      };
-    });
+    const cases = (["STANDARD", "SAFETY"] as const).map(
+      (key): DemoResetCasePlan => {
+        const input = parseServiceRequestInput(
+          SERVICEFLOW_DEMO_RESET_INPUTS[key]
+        );
+        const evaluation = evaluateIntake(input, this.#technicians);
+        return {
+          key,
+          input,
+          evaluation: evaluation.evaluation,
+          state: evaluation.state
+        };
+      }
+    );
     return this.#repository.resetDemoTenant(actor, cases);
   }
 
@@ -213,7 +255,12 @@ export class ServiceFlowService {
     const actor = parseServiceFlowActor(actorInput);
     const request = await this.#repository.getRequest(actor, requestId);
     const plan = evaluateIntake(request.input, this.#technicians);
-    return this.#repository.replaceEvaluation(actor, request.id, plan.evaluation, plan.state);
+    return this.#repository.replaceEvaluation(
+      actor,
+      request.id,
+      plan.evaluation,
+      plan.state
+    );
   }
 
   async #executeLifecycle(
@@ -234,7 +281,9 @@ export class ServiceFlowService {
     );
   }
 
-  #parseMutationActor(actorInput: ServiceFlowMutationActor): ServiceFlowMutationActor {
+  #parseMutationActor(
+    actorInput: ServiceFlowMutationActor
+  ): ServiceFlowMutationActor {
     const actor = parseServiceFlowMutationActor(actorInput);
     if (actor.role === "VIEWER") {
       throw new Error(LIFECYCLE_FORBIDDEN);

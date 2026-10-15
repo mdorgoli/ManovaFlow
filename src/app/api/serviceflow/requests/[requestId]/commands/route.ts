@@ -17,8 +17,12 @@ import {
 const approvalBodySchema = approveProposalCommandSchema
   .omit({ requestId: true })
   .extend({ action: z.literal("APPROVE") });
-const lifecycleBodySchema = (action: "START" | "BLOCK" | "RESUME" | "COMPLETE" | "CLOSE") =>
-  lifecycleCommandSchema.omit({ requestId: true }).extend({ action: z.literal(action) });
+const lifecycleBodySchema = (
+  action: "START" | "BLOCK" | "RESUME" | "COMPLETE" | "CLOSE"
+) =>
+  lifecycleCommandSchema
+    .omit({ requestId: true })
+    .extend({ action: z.literal(action) });
 const evidenceBodySchema = attachCompletionEvidenceCommandSchema
   .omit({ requestId: true })
   .extend({ action: z.literal("ATTACH_EVIDENCE") });
@@ -46,7 +50,13 @@ export async function POST(
     const command = commandBodySchema.parse(await request.json());
     const service = getServiceFlowService();
 
-    const result = await dispatchCommand(service, actor, requestId, command, idempotencyKey);
+    const result = await dispatchCommand(
+      service,
+      actor,
+      requestId,
+      command,
+      idempotencyKey
+    );
     return NextResponse.json(result, {
       headers: { "cache-control": "private, no-store" }
     });
@@ -77,11 +87,23 @@ async function dispatchCommand(
         idempotencyKey
       );
     case "START":
-      return service.startRequest(actor, lifecycleCommand(requestId, command), idempotencyKey);
+      return service.startRequest(
+        actor,
+        lifecycleCommand(requestId, command),
+        idempotencyKey
+      );
     case "BLOCK":
-      return service.blockRequest(actor, lifecycleCommand(requestId, command), idempotencyKey);
+      return service.blockRequest(
+        actor,
+        lifecycleCommand(requestId, command),
+        idempotencyKey
+      );
     case "RESUME":
-      return service.resumeRequest(actor, lifecycleCommand(requestId, command), idempotencyKey);
+      return service.resumeRequest(
+        actor,
+        lifecycleCommand(requestId, command),
+        idempotencyKey
+      );
     case "ATTACH_EVIDENCE":
       return service.attachCompletionEvidence(
         actor,
@@ -94,9 +116,17 @@ async function dispatchCommand(
         idempotencyKey
       );
     case "COMPLETE":
-      return service.completeRequest(actor, lifecycleCommand(requestId, command), idempotencyKey);
+      return service.completeRequest(
+        actor,
+        lifecycleCommand(requestId, command),
+        idempotencyKey
+      );
     case "CLOSE":
-      return service.closeRequest(actor, lifecycleCommand(requestId, command), idempotencyKey);
+      return service.closeRequest(
+        actor,
+        lifecycleCommand(requestId, command),
+        idempotencyKey
+      );
   }
 }
 

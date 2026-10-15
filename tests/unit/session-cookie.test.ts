@@ -61,16 +61,21 @@ function cookieHeader(includeCsrf = true): string {
 describe("opaque session cookie boundary", () => {
   it("serializes hardened host-only session and CSRF cookies", () => {
     expect(serializeIssuedSessionCookies(issued, now)).toEqual([
-      SESSION_COOKIE_NAME + "=" + sessionToken +
+      SESSION_COOKIE_NAME +
+        "=" +
+        sessionToken +
         "; Path=/; Max-Age=600; HttpOnly; Secure; SameSite=Strict",
-      CSRF_COOKIE_NAME + "=" + csrfToken +
+      CSRF_COOKIE_NAME +
+        "=" +
+        csrfToken +
         "; Path=/; Max-Age=600; Secure; SameSite=Strict"
     ]);
   });
 
   it("serializes immediate cookie clearing without a Domain attribute", () => {
     expect(serializeClearedSessionCookies()).toEqual([
-      SESSION_COOKIE_NAME + "=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Strict",
+      SESSION_COOKIE_NAME +
+        "=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Strict",
       CSRF_COOKIE_NAME + "=; Path=/; Max-Age=0; Secure; SameSite=Strict"
     ]);
   });
@@ -111,7 +116,11 @@ describe("opaque session cookie boundary", () => {
   });
 
   it.each([
-    ["missing Origin", { cookie: cookieHeader(), "x-csrf-token": csrfToken }, "ORIGIN_VALIDATION_FAILED"],
+    [
+      "missing Origin",
+      { cookie: cookieHeader(), "x-csrf-token": csrfToken },
+      "ORIGIN_VALIDATION_FAILED"
+    ],
     [
       "wrong Origin",
       {
@@ -162,8 +171,13 @@ describe("opaque session cookie boundary", () => {
         new Request("https://app.example.test/api/dashboard", {
           headers: {
             cookie:
-              SESSION_COOKIE_NAME + "=" + sessionToken + "; " +
-              SESSION_COOKIE_NAME + "=" + "a".repeat(43)
+              SESSION_COOKIE_NAME +
+              "=" +
+              sessionToken +
+              "; " +
+              SESSION_COOKIE_NAME +
+              "=" +
+              "a".repeat(43)
           }
         })
       )
@@ -181,8 +195,11 @@ describe("opaque session cookie boundary", () => {
         new Request("https://app.example.test/api/dashboard", {
           headers: {
             cookie:
-              SESSION_COOKIE_NAME + "=" + sessionToken +
-              "; padding=" + "x".repeat(8_192)
+              SESSION_COOKIE_NAME +
+              "=" +
+              sessionToken +
+              "; padding=" +
+              "x".repeat(8_192)
           }
         })
       )

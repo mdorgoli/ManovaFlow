@@ -13,7 +13,8 @@ describe("Market Scout activity contract", () => {
         origin: "SEARCH",
         countryCode: "FR",
         laneKey: "serviceflow",
-        filter: "bbox=central-paris;craft=plumber|electrician;requires=name,website"
+        filter:
+          "bbox=central-paris;craft=plumber|electrician;requires=name,website"
       },
       events: [
         {
@@ -47,7 +48,8 @@ describe("Market Scout activity contract", () => {
         origin: "SEARCH",
         countryCode: "FR",
         laneKey: "serviceflow",
-        filter: "bbox=central-paris;craft=plumber|electrician;requires=name,website"
+        filter:
+          "bbox=central-paris;craft=plumber|electrician;requires=name,website"
       },
       events: [
         {

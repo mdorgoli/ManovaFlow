@@ -28,16 +28,25 @@ export function serializeIssuedSessionCookies(
     throw new AuthenticationError("INVALID_SESSION");
   }
   return [
-    SESSION_COOKIE_NAME + "=" + session.sessionToken +
-      "; Path=/; Max-Age=" + maxAge + "; HttpOnly; Secure; SameSite=Strict",
-    CSRF_COOKIE_NAME + "=" + session.csrfToken +
-      "; Path=/; Max-Age=" + maxAge + "; Secure; SameSite=Strict"
+    SESSION_COOKIE_NAME +
+      "=" +
+      session.sessionToken +
+      "; Path=/; Max-Age=" +
+      maxAge +
+      "; HttpOnly; Secure; SameSite=Strict",
+    CSRF_COOKIE_NAME +
+      "=" +
+      session.csrfToken +
+      "; Path=/; Max-Age=" +
+      maxAge +
+      "; Secure; SameSite=Strict"
   ];
 }
 
 export function serializeClearedSessionCookies(): [string, string] {
   return [
-    SESSION_COOKIE_NAME + "=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Strict",
+    SESSION_COOKIE_NAME +
+      "=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Strict",
     CSRF_COOKIE_NAME + "=; Path=/; Max-Age=0; Secure; SameSite=Strict"
   ];
 }
@@ -75,10 +84,7 @@ export function readSessionRequestCredentials(
 export function readCanonicalRateLimitSessionToken(
   cookieHeader: string | null
 ): string | null {
-  if (
-    !cookieHeader ||
-    cookieHeader.length > maximumCookieHeaderLength
-  ) {
+  if (!cookieHeader || cookieHeader.length > maximumCookieHeaderLength) {
     return null;
   }
   const matches = readCookieValues(cookieHeader, SESSION_COOKIE_NAME);

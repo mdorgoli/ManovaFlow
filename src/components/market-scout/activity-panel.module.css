@@ -1,58 +1,301 @@
-.panel { max-width: 1488px; margin: 0 auto; padding: 24px; color: var(--text); }
-.header { display: flex; justify-content: space-between; align-items: start; gap: 24px; padding-block-end: 24px; border-block-end: 1px solid var(--line); }
-.header h1 { margin: 0 0 8px; font-size: clamp(1.5rem, 3vw, 2.4rem); }
-.header p, .muted { color: var(--muted); line-height: 1.6; }
-.controls { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
-.controls select, .controls button { padding: 10px 14px; border: 1px solid var(--line-strong); border-radius: 6px; background: var(--panel-raised); color: var(--text); font: inherit; }
-.controls button { cursor: pointer; }
-.controls button:disabled { cursor: wait; opacity: .6; }
-.panel :focus-visible { outline: 2px solid var(--cyan); outline-offset: 4px; }
-.notice { margin-block: 20px; padding: 20px; border: 1px solid var(--line); border-inline-start: 3px solid var(--amber); background: var(--panel); }
-.notice h2 { margin-block-start: 0; font-size: 1.1rem; }
-.error { border-inline-start-color: var(--red); }
-.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr)); gap: 16px; margin-block: 24px; }
-.card { padding: 20px; border: 1px solid var(--line); background: var(--panel); min-width: 0; }
-.card h2 { margin-block-start: 0; font-size: 1.15rem; }
-.fields { display: grid; gap: 12px; margin: 0; }
-.fields div { min-width: 0; }
-.fields dt { color: var(--muted); font-size: .85rem; margin-block-end: 4px; }
-.fields dd { margin: 0; overflow-wrap: anywhere; line-height: 1.5; white-space: pre-wrap; }
-.sourceLink { color: var(--cyan); text-decoration: underline; text-underline-offset: 3px; }
-.safety { margin-block: 20px; padding: 18px 20px; border: 1px solid var(--line); background: var(--panel-raised); }
-.safety h2 { margin-block-start: 0; font-size: 1.05rem; }
-.safety p { margin-block: 6px; color: var(--muted); }
-.history { list-style: none; padding: 0; }
-.event { padding: 20px; margin-block: 12px; border: 1px solid var(--line); border-inline-start: 3px solid var(--cyan); background: var(--panel); overflow-wrap: anywhere; }
-.event header { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-block-end: 12px; }
-.event time { color: var(--muted); font-size: .85rem; }
-.evidenceDetail { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 16px; margin-block-start: 18px; padding: 18px; border: 1px solid var(--line-strong); background: var(--panel-raised); }
-.evidenceDetail h3 { margin: 0 0 8px; font-size: 1rem; }
-.evidenceDetail ul { margin: 0; padding-inline-start: 20px; }
-.evidenceDetail li { margin-block: 6px; line-height: 1.45; }
-.evidenceCaveat, .evidenceMetrics { color: var(--muted); font-size: .85rem; line-height: 1.5; }
-.evidenceMetrics { grid-column: 1 / -1; margin: 0; }
-.badge { display: inline-block; padding: 5px 9px; background: var(--panel-raised); border: 1px solid var(--line-strong); font-size: .85rem; }
-.fresh { animation: event-arrived 650ms ease-out 1; }
-.workflow { margin-block: 32px; scroll-margin-block-start: 20px; }
-.workflowSteps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; list-style: none; margin: 24px 0; padding: 0; }
-.workflowSteps li { border: 1px solid var(--line-strong); border-block-start: 2px solid var(--cyan); padding: 16px; background: var(--panel); }
-.workflowSteps span { display: block; color: var(--cyan); margin-block-end: 12px; font-size: .8rem; }
-.workflowSteps p { margin-block-end: 0; line-height: 1.6; color: var(--muted); font-size: .85rem; }
-.workflowCounts { display: flex; flex-wrap: wrap; gap: 24px; padding: 18px; background: var(--panel-raised); border: 1px solid var(--line); }
-.workflowCounts dt { color: var(--muted); font-size: .85rem; }
-.workflowCounts dd { margin: 8px 0 0; font-size: 1.5rem; font-weight: 700; }
-.workflowProspects { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 16px; }
-.workflowProspects h3 { margin-block-start: 0; overflow-wrap: anywhere; }
-.workflowStage { border-block-start: 1px solid var(--line); padding-block-start: 14px; margin-block-start: 18px; overflow-wrap: anywhere; font-size: .9rem; line-height: 1.6; }
-.workflowStage h4 { margin: 0 0 10px; color: var(--cyan); }
-.workflowStage small { display: block; color: var(--muted); }
-.workflowStage ul { padding-inline-start: 20px; }
-.workflowBlocked { color: var(--amber); }
-.workflowDraft { border: 1px solid var(--line-strong); padding: 12px; }
-.workflowDraft summary { cursor: pointer; min-height: 44px; }
-.workflowDraft p { white-space: pre-wrap; }
-@media (max-width: 850px) { .workflowSteps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 450px) { .workflowSteps { grid-template-columns: 1fr; } }
-@keyframes event-arrived { from { border-color: var(--cyan); } to { border-color: var(--line); } }
-@media (prefers-reduced-motion: reduce) { .fresh { animation: none; } }
-@media (max-width: 650px) { .panel { padding: 16px; } .header { flex-direction: column; } }
+.panel {
+  max-width: 1488px;
+  margin: 0 auto;
+  padding: 24px;
+  color: var(--text);
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 24px;
+  padding-block-end: 24px;
+  border-block-end: 1px solid var(--line);
+}
+.header h1 {
+  margin: 0 0 8px;
+  font-size: clamp(1.5rem, 3vw, 2.4rem);
+}
+.header p,
+.muted {
+  color: var(--muted);
+  line-height: 1.6;
+}
+.controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.controls select,
+.controls button {
+  padding: 10px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: var(--panel-raised);
+  color: var(--text);
+  font: inherit;
+}
+.controls button {
+  cursor: pointer;
+}
+.controls button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+.panel :focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 4px;
+}
+.notice {
+  margin-block: 20px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-inline-start: 3px solid var(--amber);
+  background: var(--panel);
+}
+.notice h2 {
+  margin-block-start: 0;
+  font-size: 1.1rem;
+}
+.error {
+  border-inline-start-color: var(--red);
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr));
+  gap: 16px;
+  margin-block: 24px;
+}
+.card {
+  padding: 20px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  min-width: 0;
+}
+.card h2 {
+  margin-block-start: 0;
+  font-size: 1.15rem;
+}
+.fields {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+.fields div {
+  min-width: 0;
+}
+.fields dt {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-block-end: 4px;
+}
+.fields dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+.sourceLink {
+  color: var(--cyan);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.safety {
+  margin-block: 20px;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  background: var(--panel-raised);
+}
+.safety h2 {
+  margin-block-start: 0;
+  font-size: 1.05rem;
+}
+.safety p {
+  margin-block: 6px;
+  color: var(--muted);
+}
+.history {
+  list-style: none;
+  padding: 0;
+}
+.event {
+  padding: 20px;
+  margin-block: 12px;
+  border: 1px solid var(--line);
+  border-inline-start: 3px solid var(--cyan);
+  background: var(--panel);
+  overflow-wrap: anywhere;
+}
+.event header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-block-end: 12px;
+}
+.event time {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.evidenceDetail {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 16px;
+  margin-block-start: 18px;
+  padding: 18px;
+  border: 1px solid var(--line-strong);
+  background: var(--panel-raised);
+}
+.evidenceDetail h3 {
+  margin: 0 0 8px;
+  font-size: 1rem;
+}
+.evidenceDetail ul {
+  margin: 0;
+  padding-inline-start: 20px;
+}
+.evidenceDetail li {
+  margin-block: 6px;
+  line-height: 1.45;
+}
+.evidenceCaveat,
+.evidenceMetrics {
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+.evidenceMetrics {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+.badge {
+  display: inline-block;
+  padding: 5px 9px;
+  background: var(--panel-raised);
+  border: 1px solid var(--line-strong);
+  font-size: 0.85rem;
+}
+.fresh {
+  animation: event-arrived 650ms ease-out 1;
+}
+.workflow {
+  margin-block: 32px;
+  scroll-margin-block-start: 20px;
+}
+.workflowSteps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  list-style: none;
+  margin: 24px 0;
+  padding: 0;
+}
+.workflowSteps li {
+  border: 1px solid var(--line-strong);
+  border-block-start: 2px solid var(--cyan);
+  padding: 16px;
+  background: var(--panel);
+}
+.workflowSteps span {
+  display: block;
+  color: var(--cyan);
+  margin-block-end: 12px;
+  font-size: 0.8rem;
+}
+.workflowSteps p {
+  margin-block-end: 0;
+  line-height: 1.6;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.workflowCounts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  padding: 18px;
+  background: var(--panel-raised);
+  border: 1px solid var(--line);
+}
+.workflowCounts dt {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.workflowCounts dd {
+  margin: 8px 0 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+.workflowProspects {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  gap: 16px;
+}
+.workflowProspects h3 {
+  margin-block-start: 0;
+  overflow-wrap: anywhere;
+}
+.workflowStage {
+  border-block-start: 1px solid var(--line);
+  padding-block-start: 14px;
+  margin-block-start: 18px;
+  overflow-wrap: anywhere;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+.workflowStage h4 {
+  margin: 0 0 10px;
+  color: var(--cyan);
+}
+.workflowStage small {
+  display: block;
+  color: var(--muted);
+}
+.workflowStage ul {
+  padding-inline-start: 20px;
+}
+.workflowBlocked {
+  color: var(--amber);
+}
+.workflowDraft {
+  border: 1px solid var(--line-strong);
+  padding: 12px;
+}
+.workflowDraft summary {
+  cursor: pointer;
+  min-height: 44px;
+}
+.workflowDraft p {
+  white-space: pre-wrap;
+}
+@media (max-width: 850px) {
+  .workflowSteps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 450px) {
+  .workflowSteps {
+    grid-template-columns: 1fr;
+  }
+}
+@keyframes event-arrived {
+  from {
+    border-color: var(--cyan);
+  }
+  to {
+    border-color: var(--line);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fresh {
+    animation: none;
+  }
+}
+@media (max-width: 650px) {
+  .panel {
+    padding: 16px;
+  }
+  .header {
+    flex-direction: column;
+  }
+}

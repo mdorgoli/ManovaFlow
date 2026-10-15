@@ -1,8 +1,4 @@
-import {
-  generateKeyPairSync,
-  sign,
-  type KeyObject
-} from "node:crypto";
+import { generateKeyPairSync, sign, type KeyObject } from "node:crypto";
 import { beforeAll, describe, expect, it } from "vitest";
 import type { OidcPublicJwk } from "@/modules/identity/application/oidc-port";
 import { OfflineOidcJwtVerifier } from "@/modules/identity/infrastructure/offline-oidc-jwt-verifier";
@@ -41,7 +37,9 @@ function verifier(): OfflineOidcJwtVerifier {
   });
 }
 
-function claims(overrides: Record<string, unknown> = {}): Record<string, unknown> {
+function claims(
+  overrides: Record<string, unknown> = {}
+): Record<string, unknown> {
   return {
     iss: issuer,
     aud: audience,
@@ -65,8 +63,12 @@ function jwt(
     typ: "JWT"
   }
 ): string {
-  const encodedHeader = Buffer.from(JSON.stringify(header)).toString("base64url");
-  const encodedPayload = Buffer.from(JSON.stringify(payload)).toString("base64url");
+  const encodedHeader = Buffer.from(JSON.stringify(header)).toString(
+    "base64url"
+  );
+  const encodedPayload = Buffer.from(JSON.stringify(payload)).toString(
+    "base64url"
+  );
   const signingInput = encodedHeader + "." + encodedPayload;
   const signature = sign("RSA-SHA256", Buffer.from(signingInput), signingKey);
   return signingInput + "." + signature.toString("base64url");
@@ -100,7 +102,9 @@ describe("offline provider-neutral OIDC verification", () => {
     const encodedHeader = Buffer.from(
       JSON.stringify({ alg: "ES256", kid: jwk.kid, typ: "JWT" })
     ).toString("base64url");
-    const encodedPayload = Buffer.from(JSON.stringify(claims())).toString("base64url");
+    const encodedPayload = Buffer.from(JSON.stringify(claims())).toString(
+      "base64url"
+    );
     const signingInput = encodedHeader + "." + encodedPayload;
     const signature = sign("sha256", Buffer.from(signingInput), {
       key: pair.privateKey,

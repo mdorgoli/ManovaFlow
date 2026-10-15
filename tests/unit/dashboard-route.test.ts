@@ -34,11 +34,15 @@ beforeEach(() => {
 describe("GET /api/dashboard", () => {
   it("returns public research with honest provenance through the real read-model boundary", async () => {
     state.snapshot = publicDashboardSnapshot();
-    const response = await GET(new Request("https://app.example.test/api/dashboard"));
+    const response = await GET(
+      new Request("https://app.example.test/api/dashboard")
+    );
     const payload = await response.json();
     expect(response.status).toBe(200);
     expect(payload.safetyContext.dataset.value).toBe("PUBLIC_RESEARCH");
-    expect(JSON.stringify(payload)).not.toMatch(/private-company-tripwire|private-audit-tripwire|never-expose-token/);
+    expect(JSON.stringify(payload)).not.toMatch(
+      /private-company-tripwire|private-audit-tripwire|never-expose-token/
+    );
   });
 
   it("returns only the versioned read-model envelope with private no-store caching", async () => {

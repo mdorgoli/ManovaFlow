@@ -69,7 +69,8 @@ function MarketRanking({
       >
         <table className="analysis-table market-ranking-table">
           <caption className="sr-only">
-            Per-lane market rank, score, confidence, missing reason, and provenance
+            Per-lane market rank, score, confidence, missing reason, and
+            provenance
           </caption>
           <thead>
             <tr>
@@ -94,7 +95,11 @@ function MarketRanking({
                   );
                   return (
                     <td key={lane.laneKey}>
-                      {laneMarket ? <MarketReading market={laneMarket} /> : <MissingMarket />}
+                      {laneMarket ? (
+                        <MarketReading market={laneMarket} />
+                      ) : (
+                        <MissingMarket />
+                      )}
                     </td>
                   );
                 })}
@@ -117,7 +122,9 @@ function MarketReading({ market }: { market: MarketRankingItemV1 }) {
         <>
           <strong className="analysis-missing">MISSING</strong>
           <span className="analysis-reason">
-            {market.score.state === "MISSING" ? market.score.reason : "INVARIANT_UNVERIFIED"}
+            {market.score.state === "MISSING"
+              ? market.score.reason
+              : "INVARIANT_UNVERIFIED"}
           </span>
         </>
       ) : (
@@ -142,7 +149,9 @@ function MarketMetric({
   value: ReadValue<number | string>;
 }) {
   return (
-    <span aria-label={`${label}: ${value.state === "PRESENT" ? value.value : "MISSING"}`}>
+    <span
+      aria-label={`${label}: ${value.state === "PRESENT" ? value.value : "MISSING"}`}
+    >
       {value.state === "PRESENT" ? `${prefix}${value.value}` : "MISSING"}
     </span>
   );
@@ -197,7 +206,10 @@ function EvidenceMatrix({ model }: { model: EvidenceMatrixReadModelV1 }) {
                   <small>{market.gateStatus}</small>
                 </th>
                 {market.cells.map((cell) => (
-                  <td className={`evidence-cell evidence-cell--${cell.state.toLowerCase()}`} key={cell.category}>
+                  <td
+                    className={`evidence-cell evidence-cell--${cell.state.toLowerCase()}`}
+                    key={cell.category}
+                  >
                     <EvidenceState cell={cell} />
                   </td>
                 ))}
@@ -250,7 +262,11 @@ function AnalysisHeading({
         <span>READ MODEL / V1</span>
         <h2 id={id}>{label}</h2>
       </div>
-      <p className={warning ? "analysis-note analysis-note--warning" : "analysis-note"}>
+      <p
+        className={
+          warning ? "analysis-note analysis-note--warning" : "analysis-note"
+        }
+      >
         {note}
       </p>
     </header>

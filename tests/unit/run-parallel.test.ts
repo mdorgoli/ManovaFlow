@@ -65,7 +65,10 @@ describe("parallel Research-Only orchestration", () => {
       error: "simulated transient lane failure",
       attempts: 3
     });
-    expect(result.aggregate).toMatchObject({ lanesCompleted: 2, lanesFailed: 1 });
+    expect(result.aggregate).toMatchObject({
+      lanesCompleted: 2,
+      lanesFailed: 1
+    });
   });
 
   it("honors tenant-wide suppression before scoring", async () => {
@@ -108,7 +111,7 @@ describe("parallel Research-Only orchestration", () => {
         synthetic: true,
         signalKeys: [],
         marketSignalKeys: [],
-        riskFlags: [],
+        riskFlags: []
       })
     );
     const result = await runAllLanes({
@@ -176,9 +179,8 @@ function failLaneAtStart(
           key: string
         ) => {
           if (requestedLane === laneKey) {
-            const { RetryableError } = await import(
-              "@/modules/growth/application/retry"
-            );
+            const { RetryableError } =
+              await import("@/modules/growth/application/retry");
             throw new RetryableError("simulated transient lane failure");
           }
           return target.beginRun(context, requestedLane, key);

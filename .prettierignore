@@ -1,0 +1,16 @@
+node_modules/
+.next/
+next-env.d.ts
+pnpm-lock.yaml
+coverage/
+artifacts/
+outputs/
+proposals/
+work/
+.tmp/
+.npm-cache/
+.pnpm-store/
+.venv-loadtest/
+__pycache__/
+.env*
+*.tsbuildinfo

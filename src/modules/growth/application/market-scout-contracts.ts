@@ -14,9 +14,7 @@ export type MarketScoutLanguage = "en" | "fr" | "ar";
 export type MarketScoutResearchLanguage = MarketScoutLanguage | "fa";
 export type MarketScoutDirection = "LTR" | "RTL";
 export type MarketScoutLanguageBasis =
-  | "PUBLIC_TEXT"
-  | "MARKET_LOCALE_FALLBACK"
-  | "DEFAULT_ENGLISH";
+  "PUBLIC_TEXT" | "MARKET_LOCALE_FALLBACK" | "DEFAULT_ENGLISH";
 
 export interface MarketScoutTask {
   laneKey: LaneKey;

@@ -12,14 +12,13 @@ import { setIdentityRuntimeRole } from "./identity-database";
 import { appendSecurityAudit } from "./postgres-security-audit";
 import { readCanonicalRateLimitSessionToken } from "./session-cookie";
 
-const configurationSchema = z
-  .strictObject({
-    hmacKey: z.string(),
-    windowSeconds: z.number().int().min(1).max(3_600),
-    maxRequests: z.number().int().min(1).max(10_000),
-    globalMaxRequests: z.number().int().min(1).max(100_000),
-    blockSeconds: z.number().int().min(1).max(86_400)
-  });
+const configurationSchema = z.strictObject({
+  hmacKey: z.string(),
+  windowSeconds: z.number().int().min(1).max(3_600),
+  maxRequests: z.number().int().min(1).max(10_000),
+  globalMaxRequests: z.number().int().min(1).max(100_000),
+  blockSeconds: z.number().int().min(1).max(86_400)
+});
 
 export interface AuthRateLimitConfiguration {
   hmacKey: string;

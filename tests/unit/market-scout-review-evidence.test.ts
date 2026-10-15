@@ -28,17 +28,19 @@ function validEvidence() {
   return {
     contractVersion: "manovaflow.market-scout.website-review-evidence.v1",
     runId: "bounded-contract-test",
-    reviews: [{
-      sourceUrl: "https://example.com",
-      occurredAt: "2026-09-05T10:00:01.000Z",
-      outcome: "SUCCEEDED",
-      observedFacts: ["PUBLIC_SERVICE_DESCRIPTION"],
-      potentialFit: "HUMAN_REVIEW_REQUIRED",
-      unknowns: ["CUSTOMER_INTEREST_UNVERIFIED"],
-      requestsMade: 2,
-      bytesRead: 512,
-      instructionLikeTextDetected: false
-    }],
+    reviews: [
+      {
+        sourceUrl: "https://example.com",
+        occurredAt: "2026-09-05T10:00:01.000Z",
+        outcome: "SUCCEEDED",
+        observedFacts: ["PUBLIC_SERVICE_DESCRIPTION"],
+        potentialFit: "HUMAN_REVIEW_REQUIRED",
+        unknowns: ["CUSTOMER_INTEREST_UNVERIFIED"],
+        requestsMade: 2,
+        bytesRead: 512,
+        instructionLikeTextDetected: false
+      }
+    ],
     safety: {
       paidSpend: 0,
       apolloCredits: 0,

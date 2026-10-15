@@ -44,14 +44,17 @@ describe("identity database privilege and pool boundary", () => {
   it("keeps role and tenant settings transaction-local under concurrent pool reuse", async () => {
     const tenantIds = Array.from(
       { length: 16 },
-      (_, index) => `10000000-0000-4000-8000-${String(index + 1).padStart(12, "0")}`
+      (_, index) =>
+        `10000000-0000-4000-8000-${String(index + 1).padStart(12, "0")}`
     );
     const scoped = await Promise.all(
       tenantIds.map((tenantId) =>
         admin.begin(async (tx) => {
           await tx`set local role manovaflow_app`;
           await tx`select set_config('app.tenant_id', ${tenantId}, true)`;
-          const rows = await tx<{ current_role: string; tenant_id: string | null }[]>`
+          const rows = await tx<
+            { current_role: string; tenant_id: string | null }[]
+          >`
             select current_role, current_setting('app.tenant_id', true) as tenant_id
           `;
           return rows[0];
@@ -68,14 +71,18 @@ describe("identity database privilege and pool boundary", () => {
     const unscoped = await Promise.all(
       tenantIds.slice(0, 8).map(() =>
         admin.begin(async (tx) => {
-          const rows = await tx<{ current_role: string; tenant_id: string | null }[]>`
+          const rows = await tx<
+            { current_role: string; tenant_id: string | null }[]
+          >`
             select current_role, nullif(current_setting('app.tenant_id', true), '') as tenant_id
           `;
           return rows[0];
         })
       )
     );
-    expect(unscoped.every((row) => row?.current_role === "postgres")).toBe(true);
+    expect(unscoped.every((row) => row?.current_role === "postgres")).toBe(
+      true
+    );
     expect(unscoped.every((row) => row?.tenant_id === null)).toBe(true);
   });
 

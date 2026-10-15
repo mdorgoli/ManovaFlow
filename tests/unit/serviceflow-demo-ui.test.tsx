@@ -1,7 +1,13 @@
 /* @vitest-environment jsdom */
 
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor
+} from "@testing-library/react";
 import type {
   ServiceFlowCase,
   ServiceFlowSnapshot,
@@ -23,14 +29,18 @@ describe("ServiceFlow clickable demo UI", () => {
       await renderDemo(initial);
 
       expect(screen.getByText("SAFE")).toBeInTheDocument();
-      fireEvent.click(screen.getByRole("button", { name: /Possible emergency/i }));
+      fireEvent.click(
+        screen.getByRole("button", { name: /Possible emergency/i })
+      );
       for (const language of ["English", "Français", "العربية"]) {
         fireEvent.click(screen.getByRole("button", { name: language }));
         const details = document.querySelector("dl");
         expect(details).toHaveTextContent(blockReason);
         expect(screen.queryByText("SAFE")).not.toBeInTheDocument();
         expect(screen.queryByLabelText("Human reason")).not.toBeInTheDocument();
-        expect(document.querySelector("article button[disabled]")).toBeInTheDocument();
+        expect(
+          document.querySelector("article button[disabled]")
+        ).toBeInTheDocument();
       }
     }
   );
@@ -38,16 +48,37 @@ describe("ServiceFlow clickable demo UI", () => {
   it("shows two synthetic cases and keeps proposal visibly separate from assignment", async () => {
     await renderDemo(snapshot("REVIEW"));
 
-    expect(screen.getByRole("heading", { level: 1, name: "ServiceFlow operations demo" })).toBeInTheDocument();
-    expect(screen.getByText("DEMO · SYNTHETIC DATA · NO OUTBOUND")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", {
+        level: 1,
+        name: "ServiceFlow operations demo"
+      })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("DEMO · SYNTHETIC DATA · NO OUTBOUND")
+    ).toBeInTheDocument();
     expect(screen.getByText("Recommended technician")).toBeInTheDocument();
-    expect(screen.getByText("Recommendation only — no assignment exists")).toBeInTheDocument();
-    expect(screen.getByText("DEMO TECHNICIAN ALPHA — SYNTHETIC")).toBeInTheDocument();
+    expect(
+      screen.getByText("Recommendation only — no assignment exists")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("DEMO TECHNICIAN ALPHA — SYNTHETIC")
+    ).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: /Possible emergency/i }));
-    expect(screen.getByRole("heading", { level: 2, name: "Safety lock" })).toBeInTheDocument();
-    expect(screen.getByText("This request cannot be assigned, started, completed, or closed.")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Safety locked" })).toBeDisabled();
+    fireEvent.click(
+      screen.getByRole("button", { name: /Possible emergency/i })
+    );
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Safety lock" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "This request cannot be assigned, started, completed, or closed."
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Safety locked" })
+    ).toBeDisabled();
   });
 
   it("switches English, French, and Arabic with real RTL without fetching or resetting state", async () => {
@@ -56,15 +87,31 @@ describe("ServiceFlow clickable demo UI", () => {
     await renderDemo(snapshot("ASSIGNED"));
 
     fireEvent.click(screen.getByRole("button", { name: "Français" }));
-    expect(screen.getByRole("heading", { level: 1, name: "Démo des opérations ServiceFlow" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", {
+        level: 1,
+        name: "Démo des opérations ServiceFlow"
+      })
+    ).toBeInTheDocument();
     expect(screen.getAllByText("Affectée").length).toBeGreaterThan(0);
-    expect(screen.getByTestId("serviceflow-demo")).toHaveAttribute("dir", "ltr");
+    expect(screen.getByTestId("serviceflow-demo")).toHaveAttribute(
+      "dir",
+      "ltr"
+    );
 
     fireEvent.click(screen.getByRole("button", { name: "العربية" }));
-    expect(screen.getByRole("heading", { level: 1, name: "عرض عمليات ServiceFlow" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { level: 1, name: "عرض عمليات ServiceFlow" })
+    ).toBeInTheDocument();
     expect(screen.getAllByText("تم التعيين").length).toBeGreaterThan(0);
-    expect(screen.getByTestId("serviceflow-demo")).toHaveAttribute("dir", "rtl");
-    expect(screen.getByTestId("serviceflow-demo")).toHaveAttribute("lang", "ar");
+    expect(screen.getByTestId("serviceflow-demo")).toHaveAttribute(
+      "dir",
+      "rtl"
+    );
+    expect(screen.getByTestId("serviceflow-demo")).toHaveAttribute(
+      "lang",
+      "ar"
+    );
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
@@ -72,7 +119,12 @@ describe("ServiceFlow clickable demo UI", () => {
     const assigned = snapshot("ASSIGNED");
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce(jsonResponse({ request: assigned.cases[0]!.request, outboundActionCount: 0 }))
+      .mockResolvedValueOnce(
+        jsonResponse({
+          request: assigned.cases[0]!.request,
+          outboundActionCount: 0
+        })
+      )
       .mockResolvedValueOnce(jsonResponse(assigned));
     vi.stubGlobal("fetch", fetchMock);
     vi.spyOn(document, "cookie", "get").mockReturnValue(
@@ -112,28 +164,45 @@ describe("ServiceFlow clickable demo UI", () => {
     await renderDemo(snapshot(state, state === "IN_PROGRESS"));
     expect(screen.getByRole("button", { name: action })).toBeInTheDocument();
     if (state === "IN_PROGRESS") {
-      expect(screen.getByRole("button", { name: "Add demo evidence" })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "Complete request" })).toBeEnabled();
+      expect(
+        screen.getByRole("button", { name: "Add demo evidence" })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Complete request" })
+      ).toBeEnabled();
     }
   });
 
   it("runs reset twice, restores the baseline, and preserves the selected language", async () => {
     const baseline = snapshot("REVIEW");
-    const fetchMock = vi.fn().mockImplementation(() => Promise.resolve(jsonResponse(baseline)));
+    const fetchMock = vi
+      .fn()
+      .mockImplementation(() => Promise.resolve(jsonResponse(baseline)));
     vi.stubGlobal("fetch", fetchMock);
     await renderDemo(snapshot("CLOSED", true));
 
     fireEvent.click(screen.getByRole("button", { name: "العربية" }));
     fireEvent.click(screen.getByRole("button", { name: "إعادة ضبط العرض" }));
-    expect((await screen.findAllByText("قيد المراجعة")).length).toBeGreaterThan(0);
+    expect((await screen.findAllByText("قيد المراجعة")).length).toBeGreaterThan(
+      0
+    );
     fireEvent.click(screen.getByRole("button", { name: "إعادة ضبط العرض" }));
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
-    expect(screen.getByTestId("serviceflow-demo")).toHaveAttribute("dir", "rtl");
-    expect(screen.getByRole("heading", { level: 1, name: "عرض عمليات ServiceFlow" })).toBeInTheDocument();
-    expect(screen.getByText("تمت استعادة الحالة الأساسية الحتمية ذات الطلبين.")).toBeInTheDocument();
+    expect(screen.getByTestId("serviceflow-demo")).toHaveAttribute(
+      "dir",
+      "rtl"
+    );
+    expect(
+      screen.getByRole("heading", { level: 1, name: "عرض عمليات ServiceFlow" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("تمت استعادة الحالة الأساسية الحتمية ذات الطلبين.")
+    ).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "English" }));
-    expect(screen.getByText("The deterministic two-case demo baseline was restored.")).toBeInTheDocument();
+    expect(
+      screen.getByText("The deterministic two-case demo baseline was restored.")
+    ).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledTimes(2);
     for (const [, init] of fetchMock.mock.calls as [string, RequestInit][]) {
       expect(init.method).toBe("POST");
@@ -146,7 +215,12 @@ describe("ServiceFlow clickable demo UI", () => {
       "fetch",
       vi.fn().mockResolvedValue(
         jsonResponse(
-          { error: { code: "DEMO_UNAVAILABLE", message: "internal details must not render" } },
+          {
+            error: {
+              code: "DEMO_UNAVAILABLE",
+              message: "internal details must not render"
+            }
+          },
           503
         )
       )
@@ -156,8 +230,12 @@ describe("ServiceFlow clickable demo UI", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "The ServiceFlow demo could not load. No workflow state was changed."
     );
-    expect(screen.queryByText("internal details must not render")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Try again" })).toBeInTheDocument();
+    expect(
+      screen.queryByText("internal details must not render")
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Try again" })
+    ).toBeInTheDocument();
   });
 });
 
@@ -234,7 +312,10 @@ function snapshot(
   };
 }
 
-function normalCase(state: ServiceRequestState, withEvidence: boolean): ServiceFlowCase {
+function normalCase(
+  state: ServiceRequestState,
+  withEvidence: boolean
+): ServiceFlowCase {
   const assigned = !["NEW", "NEEDS_INFO", "REVIEW"].includes(state);
   return {
     request: {
@@ -244,7 +325,8 @@ function normalCase(state: ServiceRequestState, withEvidence: boolean): ServiceF
       revision: state === "REVIEW" ? 1 : 3,
       input: {
         synthetic: true,
-        description: "DEMO: kitchen sink has a slow leak and no safety concerns.",
+        description:
+          "DEMO: kitchen sink has a slow leak and no safety concerns.",
         address: "DEMO_CENTRAL_ZONE",
         service: "PLUMBING_LEAK",
         requestedHour: 10,

@@ -14,15 +14,19 @@ describe("Market Scout worker", () => {
   it("accepts a public organization candidate inside its exact task scope", async () => {
     const candidate = publicCandidate();
     const result = await runMarketScoutWorker(
-      workerInput(sourceReturning({
-        sourceUrlsReviewed: 1,
-        paidSpend: 0,
-        candidates: [{
-          candidate,
-          publicText:
-            "Services professionnels pour les entreprises et les equipes locales."
-        }]
-      }))
+      workerInput(
+        sourceReturning({
+          sourceUrlsReviewed: 1,
+          paidSpend: 0,
+          candidates: [
+            {
+              candidate,
+              publicText:
+                "Services professionnels pour les entreprises et les equipes locales."
+            }
+          ]
+        })
+      )
     );
 
     expect(result).toEqual({
@@ -30,12 +34,14 @@ describe("Market Scout worker", () => {
       budget: { maxSourceUrls: 2, maxOrganizations: 2, maxElapsedMs: 5_000 },
       sourceUrlsReviewed: 1,
       organizationsReturned: 1,
-      acceptedCandidates: [{
-        candidate,
-        language: "fr",
-        direction: "LTR",
-        languageBasis: "PUBLIC_TEXT"
-      }],
+      acceptedCandidates: [
+        {
+          candidate,
+          language: "fr",
+          direction: "LTR",
+          languageBasis: "PUBLIC_TEXT"
+        }
+      ],
       rejectionCounts: {
         INVALID_CANDIDATE: 0,
         NON_PUBLIC_SOURCE_KIND: 0,
@@ -66,15 +72,21 @@ describe("Market Scout worker", () => {
       ]
     });
     const result = await runMarketScoutWorker(
-      workerInput(source, { maxSourceUrls: 2, maxOrganizations: 5, maxElapsedMs: 5_000 })
+      workerInput(source, {
+        maxSourceUrls: 2,
+        maxOrganizations: 5,
+        maxElapsedMs: 5_000
+      })
     );
 
-    expect(result.acceptedCandidates).toEqual([{ 
-      candidate: valid,
-      language: "en",
-      direction: "LTR",
-      languageBasis: "PUBLIC_TEXT"
-    }]);
+    expect(result.acceptedCandidates).toEqual([
+      {
+        candidate: valid,
+        language: "en",
+        direction: "LTR",
+        languageBasis: "PUBLIC_TEXT"
+      }
+    ]);
     expect(result.rejectionCounts).toEqual({
       INVALID_CANDIDATE: 1,
       NON_PUBLIC_SOURCE_KIND: 1,
@@ -103,11 +115,13 @@ describe("Market Scout worker", () => {
       sourceKind: "OFFICIAL_PROCUREMENT"
     };
     const result = await runMarketScoutWorker({
-      ...workerInput(sourceReturning({
-        sourceUrlsReviewed: 1,
-        paidSpend: 0,
-        candidates: [scoutRecord(candidate)]
-      })),
+      ...workerInput(
+        sourceReturning({
+          sourceUrlsReviewed: 1,
+          paidSpend: 0,
+          candidates: [scoutRecord(candidate)]
+        })
+      ),
       market: {
         ...marketProfiles["fr-france"],
         allowedSourceKinds: ["PUBLIC_COMPANY_WEBSITE"]
@@ -120,11 +134,15 @@ describe("Market Scout worker", () => {
 
   it("fails the task closed when the source reports paid spend or a malformed envelope", async () => {
     await expect(
-      runMarketScoutWorker(workerInput(sourceReturning({
-        sourceUrlsReviewed: 1,
-        paidSpend: 1,
-        candidates: [scoutRecord(publicCandidate())]
-      })))
+      runMarketScoutWorker(
+        workerInput(
+          sourceReturning({
+            sourceUrlsReviewed: 1,
+            paidSpend: 1,
+            candidates: [scoutRecord(publicCandidate())]
+          })
+        )
+      )
     ).rejects.toThrow("MARKET_SCOUT_SOURCE_ENVELOPE_INVALID");
 
     await expect(
@@ -155,7 +173,9 @@ function sourceReturning(value: unknown): MarketScoutSource {
   };
 }
 
-function scoutRecord(candidate: Record<string, unknown>): Record<string, unknown> {
+function scoutRecord(
+  candidate: Record<string, unknown>
+): Record<string, unknown> {
   return {
     candidate,
     publicText: "Professional services for local companies and their teams."

@@ -67,9 +67,7 @@ export function buildMarketScoutActivityFeed(
         marketingPipeline: null
       };
     }
-    const snapshot = parseMarketScoutActivitySnapshot(
-      latest.details.activity
-    );
+    const snapshot = parseMarketScoutActivitySnapshot(latest.details.activity);
     if (
       latest.entityId !== snapshot.runId ||
       latest.laneKey !== snapshot.query.laneKey ||
@@ -86,7 +84,12 @@ export function buildMarketScoutActivityFeed(
       state: "READY",
       snapshot,
       websiteReviewEvidence,
-      marketingPipeline: buildMarketingPipeline(actor, dashboard, snapshot, websiteReviewEvidence)
+      marketingPipeline: buildMarketingPipeline(
+        actor,
+        dashboard,
+        snapshot,
+        websiteReviewEvidence
+      )
     };
   } catch {
     throw new MarketScoutActivityReadModelError();

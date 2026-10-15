@@ -16,7 +16,10 @@ export async function POST(request: Request): Promise<NextResponse> {
     const actor = await resolveRequestActor(request);
     const idempotencyKey = authorizeServiceFlowMutation(actor, request.headers);
     resetBodySchema.parse(await request.json());
-    const snapshot = await getServiceFlowService().resetDemoTenant(actor, idempotencyKey);
+    const snapshot = await getServiceFlowService().resetDemoTenant(
+      actor,
+      idempotencyKey
+    );
     return NextResponse.json(snapshot, {
       headers: { "cache-control": "private, no-store" }
     });

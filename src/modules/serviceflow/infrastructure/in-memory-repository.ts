@@ -57,7 +57,8 @@ interface ApprovalIdempotencyRecord {
   result: ApproveProposalResult;
 }
 
-type LifecycleStoredResult = LifecycleCommandResult | AttachCompletionEvidenceResult;
+type LifecycleStoredResult =
+  LifecycleCommandResult | AttachCompletionEvidenceResult;
 
 interface LifecycleIdempotencyRecord {
   normalizedCommand: string;
@@ -71,7 +72,10 @@ export class InMemoryServiceFlowRepository implements ServiceFlowRepository {
   readonly #requests = new Map<string, StoredRequest>();
   readonly #idempotency = new Map<string, IdempotencyRecord>();
   readonly #approvalIdempotency = new Map<string, ApprovalIdempotencyRecord>();
-  readonly #lifecycleIdempotency = new Map<string, LifecycleIdempotencyRecord>();
+  readonly #lifecycleIdempotency = new Map<
+    string,
+    LifecycleIdempotencyRecord
+  >();
   readonly #approvals = new Map<string, AssignmentApproval>();
   readonly #assignments = new Map<string, Assignment>();
   readonly #completionEvidence = new Map<string, CompletionEvidence>();
@@ -99,7 +103,9 @@ export class InMemoryServiceFlowRepository implements ServiceFlowRepository {
     const existing = this.#idempotency.get(key);
     if (existing) {
       if (existing.normalizedPayload !== normalizedPayload) {
-        throw new Error("Idempotency key is already bound to a different request payload");
+        throw new Error(
+          "Idempotency key is already bound to a different request payload"
+        );
       }
       return clone(existing.result);
     }
@@ -160,7 +166,10 @@ export class InMemoryServiceFlowRepository implements ServiceFlowRepository {
       stagedEventIds
     );
 
-    this.#requests.set(requestMapKey(actor.tenantId, request.id), stagedRequest);
+    this.#requests.set(
+      requestMapKey(actor.tenantId, request.id),
+      stagedRequest
+    );
     this.#idempotency.set(key, stagedIdempotency);
     this.#audit.push(createdEvent, evaluatedEvent);
     this.#tenantSequence.set(actor.tenantId, evaluatedEvent.sequence);
@@ -169,7 +178,10 @@ export class InMemoryServiceFlowRepository implements ServiceFlowRepository {
     return clone(result);
   }
 
-  async getRequest(actor: ServiceFlowActor, requestId: string): Promise<ServiceRequest> {
+  async getRequest(
+    actor: ServiceFlowActor,
+    requestId: string
+  ): Promise<ServiceRequest> {
     return clone(this.#requireRequest(actor, requestId).request);
   }
 
@@ -177,7 +189,11 @@ export class InMemoryServiceFlowRepository implements ServiceFlowRepository {
     return [...this.#requests.values()]
       .map((stored) => stored.request)
       .filter((request) => request.tenantId === actor.tenantId)
-      .sort((left, right) => left.createdAt.localeCompare(right.createdAt) || left.id.localeCompare(right.id))
+      .sort(
+        (left, right) =>
+          left.createdAt.localeCompare(right.createdAt) ||
+          left.id.localeCompare(right.id)
+      )
       .map(clone);
   }
 
@@ -205,7 +221,8 @@ export class InMemoryServiceFlowRepository implements ServiceFlowRepository {
       .filter((approval) => approval.tenantId === actor.tenantId)
       .sort(
         (left, right) =>
-          left.createdAt.localeCompare(right.createdAt) || left.id.localeCompare(right.id)
+          left.createdAt.localeCompare(right.createdAt) ||
+          left.id.localeCompare(right.id)
       )
       .map(clone);
   }
@@ -215,17 +232,21 @@ export class InMemoryServiceFlowRepository implements ServiceFlowRepository {
       .filter((assignment) => assignment.tenantId === actor.tenantId)
       .sort(
         (left, right) =>
-          left.createdAt.localeCompare(right.createdAt) || left.id.localeCompare(right.id)
+          left.createdAt.localeCompare(right.createdAt) ||
+          left.id.localeCompare(right.id)
       )
       .map(clone);
   }
 
-  async listCompletionEvidence(actor: ServiceFlowActor): Promise<CompletionEvidence[]> {
+  async listCompletionEvidence(
+    actor: ServiceFlowActor
+  ): Promise<CompletionEvidence[]> {
     return [...this.#completionEvidence.values()]
       .filter((evidence) => evidence.tenantId === actor.tenantId)
       .sort(
         (left, right) =>
-          left.createdAt.localeCompare(right.createdAt) || left.id.localeCompare(right.id)
+          left.createdAt.localeCompare(right.createdAt) ||
+          left.id.localeCompare(right.id)
       )
       .map(clone);
   }
@@ -304,7 +325,10 @@ export class InMemoryServiceFlowRepository implements ServiceFlowRepository {
     );
 
     cases.forEach((item, index) => {
-      const requestId = deterministicDemoId(actor.tenantId, `REQUEST_${item.key}_001`);
+      const requestId = deterministicDemoId(
+        actor.tenantId,
+        `REQUEST_${item.key}_001`
+      );
       const createdAt = deterministicResetTimestamp(index * 2 + 1);
       const request: ServiceRequest = {
         id: requestId,
@@ -348,7 +372,10 @@ export class InMemoryServiceFlowRepository implements ServiceFlowRepository {
     }
     this.#audit.push(...stagedEvents);
     for (const event of stagedEvents) this.#auditEventIds.add(event.id);
-    this.#tenantSequence.set(actor.tenantId, stagedEvents.at(-1)?.sequence ?? 0);
+    this.#tenantSequence.set(
+      actor.tenantId,
+      stagedEvents.at(-1)?.sequence ?? 0
+    );
     return this.getSnapshot(actor);
   }
 
@@ -362,7 +389,10 @@ export class InMemoryServiceFlowRepository implements ServiceFlowRepository {
       throw new Error(APPROVAL_FORBIDDEN);
     }
 
-    const idempotencyRecordKey = idempotencyMapKey(actor.tenantId, idempotencyKey);
+    const idempotencyRecordKey = idempotencyMapKey(
+      actor.tenantId,
+      idempotencyKey
+    );
     const existing = this.#approvalIdempotency.get(idempotencyRecordKey);
     if (existing) {
       if (existing.normalizedCommand !== normalizedCommand) {
@@ -373,7 +403,11 @@ export class InMemoryServiceFlowRepository implements ServiceFlowRepository {
 
     const stored = this.#requireRequest(actor, command.requestId);
     if (stored.request.state !== "REVIEW") {
-      this.#recordApprovalRejection(actor, stored.request, "INVALID_TRANSITION");
+      this.#recordApprovalRejection(
+        actor,
+        stored.request,
+        "INVALID_TRANSITION"
+      );
       throw new Error(INVALID_TRANSITION);
     }
 
@@ -466,8 +500,14 @@ export class InMemoryServiceFlowRepository implements ServiceFlowRepository {
       request: clone(updatedRequest),
       evaluation: clone(stored.evaluation)
     });
-    this.#approvals.set(requestMapKey(actor.tenantId, approvalId), clone(approval));
-    this.#assignments.set(requestMapKey(actor.tenantId, assignmentId), clone(assignment));
+    this.#approvals.set(
+      requestMapKey(actor.tenantId, approvalId),
+      clone(approval)
+    );
+    this.#assignments.set(
+      requestMapKey(actor.tenantId, assignmentId),
+      clone(assignment)
+    );
     this.#approvalIdempotency.set(idempotencyRecordKey, {
       normalizedCommand,
       result: clone(result)
@@ -492,8 +532,15 @@ export class InMemoryServiceFlowRepository implements ServiceFlowRepository {
       throw new Error(LIFECYCLE_FORBIDDEN);
     }
 
-    const recordKey = lifecycleIdempotencyMapKey(actor.tenantId, action, idempotencyKey);
-    const replay = this.#replayLifecycle<LifecycleCommandResult>(recordKey, normalizedCommand);
+    const recordKey = lifecycleIdempotencyMapKey(
+      actor.tenantId,
+      action,
+      idempotencyKey
+    );
+    const replay = this.#replayLifecycle<LifecycleCommandResult>(
+      recordKey,
+      normalizedCommand
+    );
     if (replay) return replay;
 
     const stored = this.#requireRequest(actor, command.requestId);
@@ -527,7 +574,10 @@ export class InMemoryServiceFlowRepository implements ServiceFlowRepository {
     }
 
     const expectedState = lifecycleExpectedState(action);
-    if (stored.request.state !== expectedState || !lifecycleInvariantHolds(action, stored.request)) {
+    if (
+      stored.request.state !== expectedState ||
+      !lifecycleInvariantHolds(action, stored.request)
+    ) {
       this.#rejectLifecycle(
         actor,
         action,
@@ -618,7 +668,11 @@ export class InMemoryServiceFlowRepository implements ServiceFlowRepository {
     }
 
     const action = "ATTACH_EVIDENCE";
-    const recordKey = lifecycleIdempotencyMapKey(actor.tenantId, action, idempotencyKey);
+    const recordKey = lifecycleIdempotencyMapKey(
+      actor.tenantId,
+      action,
+      idempotencyKey
+    );
     const replay = this.#replayLifecycle<AttachCompletionEvidenceResult>(
       recordKey,
       normalizedCommand
@@ -637,7 +691,10 @@ export class InMemoryServiceFlowRepository implements ServiceFlowRepository {
         normalizedCommand
       );
     }
-    if (stored.request.state !== "IN_PROGRESS" || !stored.request.assignmentId) {
+    if (
+      stored.request.state !== "IN_PROGRESS" ||
+      !stored.request.assignmentId
+    ) {
       this.#rejectLifecycle(
         actor,
         action,
@@ -649,7 +706,10 @@ export class InMemoryServiceFlowRepository implements ServiceFlowRepository {
       );
     }
 
-    const evidenceId = this.#stageEntityId("completion evidence", this.#completionEvidenceIds);
+    const evidenceId = this.#stageEntityId(
+      "completion evidence",
+      this.#completionEvidenceIds
+    );
     const createdAt = this.#timestamp();
     const evidence: CompletionEvidence = {
       id: evidenceId,
@@ -664,7 +724,10 @@ export class InMemoryServiceFlowRepository implements ServiceFlowRepository {
     const updatedRequest: ServiceRequest = {
       ...stored.request,
       revision: stored.request.revision + 1,
-      completionEvidenceIds: [...stored.request.completionEvidenceIds, evidenceId],
+      completionEvidenceIds: [
+        ...stored.request.completionEvidenceIds,
+        evidenceId
+      ],
       updatedAt: createdAt
     };
     const result: AttachCompletionEvidenceResult = {
@@ -692,7 +755,10 @@ export class InMemoryServiceFlowRepository implements ServiceFlowRepository {
       request: clone(updatedRequest),
       evaluation: clone(stored.evaluation)
     });
-    this.#completionEvidence.set(requestMapKey(actor.tenantId, evidence.id), clone(evidence));
+    this.#completionEvidence.set(
+      requestMapKey(actor.tenantId, evidence.id),
+      clone(evidence)
+    );
     this.#lifecycleIdempotency.set(recordKey, {
       normalizedCommand,
       result: clone(result)
@@ -794,7 +860,10 @@ export class InMemoryServiceFlowRepository implements ServiceFlowRepository {
       (this.#tenantSequence.get(actor.tenantId) ?? 0) + 1,
       new Set<string>()
     );
-    this.#lifecycleIdempotency.set(recordKey, { normalizedCommand, errorMessage });
+    this.#lifecycleIdempotency.set(recordKey, {
+      normalizedCommand,
+      errorMessage
+    });
     this.#audit.push(event);
     this.#tenantSequence.set(actor.tenantId, event.sequence);
     this.#auditEventIds.add(event.id);
@@ -830,7 +899,9 @@ export class InMemoryServiceFlowRepository implements ServiceFlowRepository {
       this.#completionEvidenceIds.delete(evidence.id);
     }
 
-    const retainedEvents = this.#audit.filter((event) => event.tenantId !== tenantId);
+    const retainedEvents = this.#audit.filter(
+      (event) => event.tenantId !== tenantId
+    );
     for (const event of this.#audit) {
       if (event.tenantId === tenantId) this.#auditEventIds.delete(event.id);
     }
@@ -944,7 +1015,9 @@ function requestMapKey(tenantId: string, requestId: string): string {
   return `${tenantId}\u0000${requestId}`;
 }
 
-function lifecycleExpectedState(action: LifecycleAction): ServiceRequest["state"] {
+function lifecycleExpectedState(
+  action: LifecycleAction
+): ServiceRequest["state"] {
   switch (action) {
     case "START":
       return "ASSIGNED";
@@ -958,7 +1031,9 @@ function lifecycleExpectedState(action: LifecycleAction): ServiceRequest["state"
   }
 }
 
-function lifecycleTargetState(action: LifecycleAction): ServiceRequest["state"] {
+function lifecycleTargetState(
+  action: LifecycleAction
+): ServiceRequest["state"] {
   switch (action) {
     case "START":
     case "RESUME":
@@ -987,10 +1062,15 @@ function lifecycleEventType(action: LifecycleAction): ServiceFlowEvent["type"] {
   }
 }
 
-function lifecycleInvariantHolds(action: LifecycleAction, request: ServiceRequest): boolean {
+function lifecycleInvariantHolds(
+  action: LifecycleAction,
+  request: ServiceRequest
+): boolean {
   if (action === "START") return request.assignmentId !== null;
   if (action === "RESUME") {
-    return request.assignmentId !== null && request.operationalBlockReason !== null;
+    return (
+      request.assignmentId !== null && request.operationalBlockReason !== null
+    );
   }
   if (action === "BLOCK" || action === "COMPLETE" || action === "CLOSE") {
     return request.assignmentId !== null;
@@ -1006,7 +1086,9 @@ function isCurrentSafeProposal(
   return (
     stored.request.revision === command.requestRevision &&
     stored.evaluation.blockReason === null &&
-    Object.values(stored.evaluation.checks).every((check) => check === "PASS") &&
+    Object.values(stored.evaluation.checks).every(
+      (check) => check === "PASS"
+    ) &&
     proposal !== null &&
     proposal.technicianId === command.technicianId &&
     proposal.policyVersion === command.proposalPolicyVersion &&
@@ -1030,7 +1112,9 @@ function evaluationDetails(
   };
 }
 
-function assertDeterministicResetPlan(cases: readonly DemoResetCasePlan[]): void {
+function assertDeterministicResetPlan(
+  cases: readonly DemoResetCasePlan[]
+): void {
   const standard = cases[0];
   const safety = cases[1];
   if (
@@ -1060,10 +1144,15 @@ function deterministicDemoId(tenantId: string, suffix: string): string {
 }
 
 function deterministicResetTimestamp(offsetSeconds: number): string {
-  return new Date(Date.parse("2026-09-05T00:00:00.000Z") + offsetSeconds * 1_000).toISOString();
+  return new Date(
+    Date.parse("2026-09-05T00:00:00.000Z") + offsetSeconds * 1_000
+  ).toISOString();
 }
 
-function deleteMapEntriesWithPrefix<T>(map: Map<string, T>, prefix: string): void {
+function deleteMapEntriesWithPrefix<T>(
+  map: Map<string, T>,
+  prefix: string
+): void {
   for (const key of map.keys()) {
     if (key.startsWith(prefix)) map.delete(key);
   }

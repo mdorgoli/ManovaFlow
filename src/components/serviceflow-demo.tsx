@@ -20,7 +20,8 @@ type BusyAction =
   | "COMPLETE"
   | "CLOSE";
 type LoadState = "loading" | "ready" | "error";
-type NoticeKey = "actionError" | "actionApplied" | "resetApplied" | "reasonRequired";
+type NoticeKey =
+  "actionError" | "actionApplied" | "resetApplied" | "reasonRequired";
 
 export interface ServiceFlowDemoProps {
   initialSnapshot?: ServiceFlowSnapshot | null;
@@ -32,7 +33,8 @@ const COPY = {
     localOnly: "Local only",
     eyebrow: "Local service operations",
     title: "ServiceFlow operations demo",
-    subtitle: "A guarded request-to-close workflow with human approval and a complete audit trail.",
+    subtitle:
+      "A guarded request-to-close workflow with human approval and a complete audit trail.",
     reset: "Reset demo",
     resetting: "Resetting…",
     queue: "Work queue",
@@ -46,12 +48,15 @@ const COPY = {
     recommendationOnly: "Recommendation only — no assignment exists",
     assignmentConfirmed: "Human-approved assignment",
     safetyLock: "Safety lock",
-    safetyMessage: "This request cannot be assigned, started, completed, or closed.",
+    safetyMessage:
+      "This request cannot be assigned, started, completed, or closed.",
     safetyLocked: "Safety locked",
     reasonLabel: "Human reason",
     reasonPlaceholder: "DEMO: describe the human decision…",
-    reasonHelp: "Every state-changing decision must begin with DEMO: and is written to the audit trail.",
-    reasonRequired: "Enter a synthetic reason beginning with DEMO: before continuing.",
+    reasonHelp:
+      "Every state-changing decision must begin with DEMO: and is written to the audit trail.",
+    reasonRequired:
+      "Enter a synthetic reason beginning with DEMO: before continuing.",
     approve: "Approve proposal",
     start: "Start work",
     pause: "Pause work",
@@ -79,12 +84,15 @@ const COPY = {
     status: "Status",
     revision: "Revision",
     loading: "Loading the tenant-scoped ServiceFlow snapshot…",
-    loadError: "The ServiceFlow demo could not load. No workflow state was changed.",
-    actionError: "The command was rejected. The current workflow state was preserved.",
+    loadError:
+      "The ServiceFlow demo could not load. No workflow state was changed.",
+    actionError:
+      "The command was rejected. The current workflow state was preserved.",
     actionApplied: "Command applied and snapshot refreshed.",
     resetApplied: "The deterministic two-case demo baseline was restored.",
     tryAgain: "Try again",
-    empty: "No demo cases exist yet. Use Reset demo to create the deterministic baseline.",
+    empty:
+      "No demo cases exist yet. Use Reset demo to create the deterministic baseline.",
     policy: {
       completeness: "Complete request",
       service: "Supported service",
@@ -125,7 +133,8 @@ const COPY = {
     localOnly: "Local uniquement",
     eyebrow: "Opérations de service locales",
     title: "Démo des opérations ServiceFlow",
-    subtitle: "Un parcours protégé de la demande à la clôture, avec validation humaine et audit complet.",
+    subtitle:
+      "Un parcours protégé de la demande à la clôture, avec validation humaine et audit complet.",
     reset: "Réinitialiser la démo",
     resetting: "Réinitialisation…",
     queue: "File de travail",
@@ -139,12 +148,15 @@ const COPY = {
     recommendationOnly: "Recommandation uniquement — aucune affectation",
     assignmentConfirmed: "Affectation validée par un humain",
     safetyLock: "Verrou de sécurité",
-    safetyMessage: "Cette demande ne peut être ni affectée, ni démarrée, ni terminée, ni clôturée.",
+    safetyMessage:
+      "Cette demande ne peut être ni affectée, ni démarrée, ni terminée, ni clôturée.",
     safetyLocked: "Verrouillée pour sécurité",
     reasonLabel: "Motif humain",
     reasonPlaceholder: "DEMO: décrivez la décision humaine…",
-    reasonHelp: "Toute décision modifiant l’état doit commencer par DEMO: et est inscrite dans l’audit.",
-    reasonRequired: "Saisissez un motif synthétique commençant par DEMO: avant de continuer.",
+    reasonHelp:
+      "Toute décision modifiant l’état doit commencer par DEMO: et est inscrite dans l’audit.",
+    reasonRequired:
+      "Saisissez un motif synthétique commençant par DEMO: avant de continuer.",
     approve: "Valider la proposition",
     start: "Démarrer le travail",
     pause: "Suspendre le travail",
@@ -172,12 +184,14 @@ const COPY = {
     status: "État",
     revision: "Révision",
     loading: "Chargement du snapshot ServiceFlow du tenant…",
-    loadError: "La démo ServiceFlow n’a pas pu être chargée. Aucun état n’a été modifié.",
+    loadError:
+      "La démo ServiceFlow n’a pas pu être chargée. Aucun état n’a été modifié.",
     actionError: "La commande a été refusée. L’état actuel a été conservé.",
     actionApplied: "Commande appliquée et snapshot actualisé.",
     resetApplied: "La base déterministe de deux demandes a été restaurée.",
     tryAgain: "Réessayer",
-    empty: "Aucune demande de démo. Réinitialisez la démo pour créer la base déterministe.",
+    empty:
+      "Aucune demande de démo. Réinitialisez la démo pour créer la base déterministe.",
     policy: {
       completeness: "Demande complète",
       service: "Service pris en charge",
@@ -236,7 +250,8 @@ const COPY = {
     safetyLocked: "مقفل للسلامة",
     reasonLabel: "السبب البشري",
     reasonPlaceholder: "DEMO: صِف القرار البشري…",
-    reasonHelp: "يجب أن يبدأ كل قرار يغيّر الحالة بـ DEMO: ويُسجل في سجل التدقيق.",
+    reasonHelp:
+      "يجب أن يبدأ كل قرار يغيّر الحالة بـ DEMO: ويُسجل في سجل التدقيق.",
     reasonRequired: "أدخل سبباً اصطناعياً يبدأ بـ DEMO: قبل المتابعة.",
     approve: "اعتماد الاقتراح",
     start: "بدء العمل",
@@ -314,16 +329,25 @@ const LOCALES: readonly { key: Locale; label: string }[] = [
   { key: "ar", label: "العربية" }
 ];
 
-export function ServiceFlowDemo({ initialSnapshot = null }: ServiceFlowDemoProps) {
+export function ServiceFlowDemo({
+  initialSnapshot = null
+}: ServiceFlowDemoProps) {
   const [locale, setLocale] = useState<Locale>("en");
-  const [snapshot, setSnapshot] = useState<ServiceFlowSnapshot | null>(initialSnapshot);
+  const [snapshot, setSnapshot] = useState<ServiceFlowSnapshot | null>(
+    initialSnapshot
+  );
   const [selectedId, setSelectedId] = useState<string | null>(
     initialSnapshot?.cases[0]?.request.id ?? null
   );
-  const [loadState, setLoadState] = useState<LoadState>(initialSnapshot ? "ready" : "loading");
+  const [loadState, setLoadState] = useState<LoadState>(
+    initialSnapshot ? "ready" : "loading"
+  );
   const [busy, setBusy] = useState<BusyAction | null>(null);
   const [reason, setReason] = useState("");
-  const [notice, setNotice] = useState<{ kind: "success" | "error"; key: NoticeKey } | null>(null);
+  const [notice, setNotice] = useState<{
+    kind: "success" | "error";
+    key: NoticeKey;
+  } | null>(null);
   const copy = COPY[locale];
   const direction = locale === "ar" ? "rtl" : "ltr";
 
@@ -342,7 +366,7 @@ export function ServiceFlowDemo({ initialSnapshot = null }: ServiceFlowDemoProps
     setSelectedId((current) =>
       payload.cases.some((item) => item.request.id === current)
         ? current
-        : payload.cases[0]?.request.id ?? null
+        : (payload.cases[0]?.request.id ?? null)
     );
     setLoadState("ready");
   }, []);
@@ -361,7 +385,8 @@ export function ServiceFlowDemo({ initialSnapshot = null }: ServiceFlowDemoProps
     };
   }, [initialSnapshot, loadSnapshot]);
 
-  const currentCase = snapshot?.cases.find((item) => item.request.id === selectedId) ?? null;
+  const currentCase =
+    snapshot?.cases.find((item) => item.request.id === selectedId) ?? null;
   const metrics = useMemo(() => buildMetrics(snapshot), [snapshot]);
 
   async function resetDemo(): Promise<void> {
@@ -369,7 +394,8 @@ export function ServiceFlowDemo({ initialSnapshot = null }: ServiceFlowDemoProps
     setNotice(null);
     try {
       const payload = await mutationRequest("/api/serviceflow/reset", {});
-      if (!isServiceFlowSnapshot(payload)) throw new Error("Invalid reset snapshot");
+      if (!isServiceFlowSnapshot(payload))
+        throw new Error("Invalid reset snapshot");
       setSnapshot(payload);
       setSelectedId(payload.cases[0]?.request.id ?? null);
       setReason("");
@@ -432,7 +458,9 @@ export function ServiceFlowDemo({ initialSnapshot = null }: ServiceFlowDemoProps
             {LOCALES.map((item) => (
               <button
                 aria-pressed={locale === item.key}
-                className={locale === item.key ? styles.localeActive : undefined}
+                className={
+                  locale === item.key ? styles.localeActive : undefined
+                }
                 key={item.key}
                 onClick={() => setLocale(item.key)}
                 type="button"
@@ -453,7 +481,12 @@ export function ServiceFlowDemo({ initialSnapshot = null }: ServiceFlowDemoProps
       </header>
 
       {notice ? (
-        <div className={notice.kind === "error" ? styles.errorNotice : styles.successNotice} role={notice.kind === "error" ? "alert" : "status"}>
+        <div
+          className={
+            notice.kind === "error" ? styles.errorNotice : styles.successNotice
+          }
+          role={notice.kind === "error" ? "alert" : "status"}
+        >
           {copy[notice.key]}
         </div>
       ) : null}
@@ -478,9 +511,21 @@ export function ServiceFlowDemo({ initialSnapshot = null }: ServiceFlowDemoProps
         <>
           <section className={styles.metrics} aria-label="Demo metrics">
             <Metric label={copy.casesMetric} value={metrics.cases} />
-            <Metric label={copy.safetyMetric} tone="danger" value={metrics.safety} />
-            <Metric label={copy.activeMetric} tone="accent" value={metrics.active} />
-            <Metric label={copy.closedMetric} tone="success" value={metrics.closed} />
+            <Metric
+              label={copy.safetyMetric}
+              tone="danger"
+              value={metrics.safety}
+            />
+            <Metric
+              label={copy.activeMetric}
+              tone="accent"
+              value={metrics.active}
+            />
+            <Metric
+              label={copy.closedMetric}
+              tone="success"
+              value={metrics.closed}
+            />
             <Metric label={copy.eventsMetric} value={metrics.events} />
           </section>
 
@@ -488,7 +533,10 @@ export function ServiceFlowDemo({ initialSnapshot = null }: ServiceFlowDemoProps
             <StatusCard message={copy.empty} />
           ) : (
             <section className={styles.workspace}>
-              <aside className={styles.queue} aria-labelledby="serviceflow-queue-title">
+              <aside
+                className={styles.queue}
+                aria-labelledby="serviceflow-queue-title"
+              >
                 <div className={styles.sectionHeading}>
                   <div>
                     <h2 id="serviceflow-queue-title">{copy.queue}</h2>
@@ -567,12 +615,22 @@ function CaseWorkspace({
 }) {
   const { request, evaluation } = currentCase;
   const locked = isSafetyLocked(currentCase);
-  const assignment = snapshot.assignments.find((item) => item.requestId === request.id) ?? null;
-  const evidence = snapshot.completionEvidence.filter((item) => item.requestId === request.id);
-  const title = caseTitle(currentCase, copy, snapshot.cases.indexOf(currentCase));
+  const assignment =
+    snapshot.assignments.find((item) => item.requestId === request.id) ?? null;
+  const evidence = snapshot.completionEvidence.filter(
+    (item) => item.requestId === request.id
+  );
+  const title = caseTitle(
+    currentCase,
+    copy,
+    snapshot.cases.indexOf(currentCase)
+  );
 
   return (
-    <article className={styles.caseWorkspace} aria-labelledby="selected-case-title">
+    <article
+      className={styles.caseWorkspace}
+      aria-labelledby="selected-case-title"
+    >
       <header className={styles.caseHeader}>
         <div>
           <span className={styles.requestId}>{request.id}</span>
@@ -583,13 +641,17 @@ function CaseWorkspace({
 
       {locked ? (
         <section className={styles.safetyPanel}>
-          <div className={styles.safetyIcon} aria-hidden="true">!</div>
+          <div className={styles.safetyIcon} aria-hidden="true">
+            !
+          </div>
           <div>
             <h2>{copy.safetyLock}</h2>
             <p>{copy.safetyMessage}</p>
             <code>{evaluation.blockReason}</code>
           </div>
-          <button disabled type="button">{copy.safetyLocked}</button>
+          <button disabled type="button">
+            {copy.safetyLocked}
+          </button>
         </section>
       ) : null}
 
@@ -597,10 +659,26 @@ function CaseWorkspace({
         <section className={styles.panel}>
           <PanelTitle>{copy.requestDetails}</PanelTitle>
           <dl className={styles.detailList}>
-            <Detail label={copy.service} value={humanizeCode(request.input.service)} />
-            <Detail label={copy.area} value={humanizeCode(request.input.address)} />
-            <Detail label={copy.requestedTime} value={`${String(request.input.requestedHour).padStart(2, "0")}:00`} />
-            <Detail label={copy.safety} value={locked ? evaluation.blockReason! : request.input.safetyAssessment} />
+            <Detail
+              label={copy.service}
+              value={humanizeCode(request.input.service)}
+            />
+            <Detail
+              label={copy.area}
+              value={humanizeCode(request.input.address)}
+            />
+            <Detail
+              label={copy.requestedTime}
+              value={`${String(request.input.requestedHour).padStart(2, "0")}:00`}
+            />
+            <Detail
+              label={copy.safety}
+              value={
+                locked
+                  ? evaluation.blockReason!
+                  : request.input.safetyAssessment
+              }
+            />
             <Detail label={copy.status} value={copy.states[request.state]} />
             <Detail label={copy.revision} value={String(request.revision)} />
           </dl>
@@ -610,10 +688,22 @@ function CaseWorkspace({
         <section className={styles.panel}>
           <PanelTitle>{copy.policyChecks}</PanelTitle>
           <ul className={styles.checkList}>
-            {(Object.keys(evaluation.checks) as (keyof typeof evaluation.checks)[]).map((key) => (
+            {(
+              Object.keys(
+                evaluation.checks
+              ) as (keyof typeof evaluation.checks)[]
+            ).map((key) => (
               <li key={key}>
                 <span>{copy.policy[key]}</span>
-                <strong className={evaluation.checks[key] === "PASS" ? styles.pass : evaluation.checks[key] === "FAIL" ? styles.fail : styles.neutral}>
+                <strong
+                  className={
+                    evaluation.checks[key] === "PASS"
+                      ? styles.pass
+                      : evaluation.checks[key] === "FAIL"
+                        ? styles.fail
+                        : styles.neutral
+                  }
+                >
                   {evaluation.checks[key]}
                 </strong>
               </li>
@@ -635,7 +725,11 @@ function CaseWorkspace({
             <p>{copy.noAction}</p>
           )}
         </section>
-        <section className={assignment ? styles.assignmentCard : styles.emptyAssignmentCard}>
+        <section
+          className={
+            assignment ? styles.assignmentCard : styles.emptyAssignmentCard
+          }
+        >
           <span className={styles.cardLabel}>{copy.assignment}</span>
           {assignment ? (
             <>
@@ -680,12 +774,16 @@ function CaseWorkspace({
           <ul>
             {evidence.map((item) => (
               <li key={item.id}>
-                <span className={styles.evidenceMark} aria-hidden="true">✓</span>
+                <span className={styles.evidenceMark} aria-hidden="true">
+                  ✓
+                </span>
                 <div>
                   <strong>{copy.internalFixture}</strong>
                   <small>{item.assetId}</small>
                 </div>
-                <time dateTime={item.createdAt}>{formatTime(item.createdAt, locale)}</time>
+                <time dateTime={item.createdAt}>
+                  {formatTime(item.createdAt, locale)}
+                </time>
               </li>
             ))}
           </ul>
@@ -710,27 +808,69 @@ function ActionButtons({
 }) {
   const disabled = busy !== null;
   if (state === "REVIEW") {
-    return <ActionButton disabled={disabled} label={copy.approve} onClick={() => onAction("APPROVE")} primary />;
+    return (
+      <ActionButton
+        disabled={disabled}
+        label={copy.approve}
+        onClick={() => onAction("APPROVE")}
+        primary
+      />
+    );
   }
   if (state === "ASSIGNED") {
-    return <ActionButton disabled={disabled} label={copy.start} onClick={() => onAction("START")} primary />;
+    return (
+      <ActionButton
+        disabled={disabled}
+        label={copy.start}
+        onClick={() => onAction("START")}
+        primary
+      />
+    );
   }
   if (state === "BLOCKED") {
-    return <ActionButton disabled={disabled} label={copy.resume} onClick={() => onAction("RESUME")} primary />;
+    return (
+      <ActionButton
+        disabled={disabled}
+        label={copy.resume}
+        onClick={() => onAction("RESUME")}
+        primary
+      />
+    );
   }
   if (state === "IN_PROGRESS") {
     return (
       <div className={styles.buttonRow}>
-        <ActionButton disabled={disabled} label={copy.pause} onClick={() => onAction("BLOCK")} />
-        <ActionButton disabled={disabled} label={copy.addEvidence} onClick={() => onAction("ATTACH_EVIDENCE")} />
-        <ActionButton disabled={disabled || evidenceCount === 0} label={copy.complete} onClick={() => onAction("COMPLETE")} primary />
+        <ActionButton
+          disabled={disabled}
+          label={copy.pause}
+          onClick={() => onAction("BLOCK")}
+        />
+        <ActionButton
+          disabled={disabled}
+          label={copy.addEvidence}
+          onClick={() => onAction("ATTACH_EVIDENCE")}
+        />
+        <ActionButton
+          disabled={disabled || evidenceCount === 0}
+          label={copy.complete}
+          onClick={() => onAction("COMPLETE")}
+          primary
+        />
       </div>
     );
   }
   if (state === "COMPLETED") {
-    return <ActionButton disabled={disabled} label={copy.close} onClick={() => onAction("CLOSE")} primary />;
+    return (
+      <ActionButton
+        disabled={disabled}
+        label={copy.close}
+        onClick={() => onAction("CLOSE")}
+        primary
+      />
+    );
   }
-  if (state === "CLOSED") return <p className={styles.closedNote}>{copy.closed}</p>;
+  if (state === "CLOSED")
+    return <p className={styles.closedNote}>{copy.closed}</p>;
   return <p className={styles.emptyText}>{copy.noAction}</p>;
 }
 
@@ -766,9 +906,14 @@ function AuditTimeline({
   locale: Locale;
   snapshot: ServiceFlowSnapshot;
 }) {
-  const events = [...snapshot.audit].sort((left, right) => right.sequence - left.sequence);
+  const events = [...snapshot.audit].sort(
+    (left, right) => right.sequence - left.sequence
+  );
   return (
-    <section className={styles.timeline} aria-labelledby="serviceflow-timeline-title">
+    <section
+      className={styles.timeline}
+      aria-labelledby="serviceflow-timeline-title"
+    >
       <div className={styles.sectionHeading}>
         <div>
           <h2 id="serviceflow-timeline-title">{copy.timeline}</h2>
@@ -776,10 +921,17 @@ function AuditTimeline({
         </div>
         <span>{events.length}</span>
       </div>
-      {events.length === 0 ? <p className={styles.emptyText}>{copy.noEvents}</p> : (
+      {events.length === 0 ? (
+        <p className={styles.emptyText}>{copy.noEvents}</p>
+      ) : (
         <ol>
           {events.map((event) => (
-            <TimelineEvent copy={copy} event={event} key={event.id} locale={locale} />
+            <TimelineEvent
+              copy={copy}
+              event={event}
+              key={event.id}
+              locale={locale}
+            />
           ))}
         </ol>
       )}
@@ -796,21 +948,34 @@ function TimelineEvent({
   event: ServiceFlowEvent;
   locale: Locale;
 }) {
-  const reason = typeof event.details.reason === "string" ? event.details.reason : null;
-  const fromState = isState(event.details.fromState) ? copy.states[event.details.fromState] : null;
-  const toState = isState(event.details.toState) ? copy.states[event.details.toState] : null;
+  const reason =
+    typeof event.details.reason === "string" ? event.details.reason : null;
+  const fromState = isState(event.details.fromState)
+    ? copy.states[event.details.fromState]
+    : null;
+  const toState = isState(event.details.toState)
+    ? copy.states[event.details.toState]
+    : null;
   return (
     <li>
-      <span className={styles.timelineSequence}>{String(event.sequence).padStart(2, "0")}</span>
+      <span className={styles.timelineSequence}>
+        {String(event.sequence).padStart(2, "0")}
+      </span>
       <div>
         <strong>{copy.events[event.type]}</strong>
         <p>
           <code>{event.actorId}</code>
-          {fromState && toState ? <span>{fromState} → {toState}</span> : null}
+          {fromState && toState ? (
+            <span>
+              {fromState} → {toState}
+            </span>
+          ) : null}
         </p>
         {reason ? <blockquote>{reason}</blockquote> : null}
       </div>
-      <time dateTime={event.createdAt}>{formatTime(event.createdAt, locale)}</time>
+      <time dateTime={event.createdAt}>
+        {formatTime(event.createdAt, locale)}
+      </time>
     </li>
   );
 }
@@ -822,7 +987,11 @@ function StateBadge({
   copy: (typeof COPY)[Locale];
   state: ServiceRequestState;
 }) {
-  return <span className={`${styles.stateBadge} ${styles[`state${state}`]}`}>{copy.states[state]}</span>;
+  return (
+    <span className={`${styles.stateBadge} ${styles[`state${state}`]}`}>
+      {copy.states[state]}
+    </span>
+  );
 }
 
 function PanelTitle({ children }: { children: React.ReactNode }) {
@@ -901,7 +1070,10 @@ function commandBody(
   return { action, requestRevision: request.revision, reason };
 }
 
-async function mutationRequest(path: string, body: Record<string, unknown>): Promise<unknown> {
+async function mutationRequest(
+  path: string,
+  body: Record<string, unknown>
+): Promise<unknown> {
   const headers = new Headers({
     "content-type": "application/json",
     "idempotency-key": createIdempotencyKey()
@@ -921,7 +1093,9 @@ async function mutationRequest(path: string, body: Record<string, unknown>): Pro
 }
 
 function createIdempotencyKey(): string {
-  const random = globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  const random =
+    globalThis.crypto?.randomUUID?.() ??
+    `${Date.now()}-${Math.random().toString(36).slice(2)}`;
   return `serviceflow-ui-${random}`;
 }
 
@@ -938,18 +1112,41 @@ function readCookie(name: string): string | null {
 }
 
 function isServiceFlowSnapshot(value: unknown): value is ServiceFlowSnapshot {
-  if (!isRecord(value) || value.outboundActionCount !== 0 || !Array.isArray(value.cases)) return false;
-  if (!Array.isArray(value.approvals) || !Array.isArray(value.assignments)) return false;
-  if (!Array.isArray(value.completionEvidence) || !Array.isArray(value.audit)) return false;
+  if (
+    !isRecord(value) ||
+    value.outboundActionCount !== 0 ||
+    !Array.isArray(value.cases)
+  )
+    return false;
+  if (!Array.isArray(value.approvals) || !Array.isArray(value.assignments))
+    return false;
+  if (!Array.isArray(value.completionEvidence) || !Array.isArray(value.audit))
+    return false;
   const tenantIds = new Set<string>();
   for (const item of value.cases) {
-    if (!isRecord(item) || !isRecord(item.request) || !isRecord(item.evaluation)) return false;
-    if (item.request.input === null || !isRecord(item.request.input)) return false;
-    if (item.request.input.synthetic !== true || typeof item.request.tenantId !== "string") return false;
-    if (!isState(item.request.state) || typeof item.request.id !== "string") return false;
+    if (
+      !isRecord(item) ||
+      !isRecord(item.request) ||
+      !isRecord(item.evaluation)
+    )
+      return false;
+    if (item.request.input === null || !isRecord(item.request.input))
+      return false;
+    if (
+      item.request.input.synthetic !== true ||
+      typeof item.request.tenantId !== "string"
+    )
+      return false;
+    if (!isState(item.request.state) || typeof item.request.id !== "string")
+      return false;
     tenantIds.add(item.request.tenantId);
   }
-  for (const collection of [value.approvals, value.assignments, value.completionEvidence, value.audit]) {
+  for (const collection of [
+    value.approvals,
+    value.assignments,
+    value.completionEvidence,
+    value.audit
+  ]) {
     for (const item of collection) {
       if (!isRecord(item) || typeof item.tenantId !== "string") return false;
       tenantIds.add(item.tenantId);
@@ -977,7 +1174,10 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 function isSafetyLocked(item: ServiceFlowCase): boolean {
-  return item.evaluation.blockReason === "POSSIBLE_EMERGENCY" || item.evaluation.blockReason === "SAFETY_UNKNOWN";
+  return (
+    item.evaluation.blockReason === "POSSIBLE_EMERGENCY" ||
+    item.evaluation.blockReason === "SAFETY_UNKNOWN"
+  );
 }
 
 function caseTitle(
@@ -985,7 +1185,9 @@ function caseTitle(
   copy: (typeof COPY)[Locale],
   index: number
 ): string {
-  return isSafetyLocked(item) || index === 1 ? copy.hazardTitle : copy.standardTitle;
+  return isSafetyLocked(item) || index === 1
+    ? copy.hazardTitle
+    : copy.standardTitle;
 }
 
 function humanizeCode(value: string | undefined): string {
@@ -993,7 +1195,8 @@ function humanizeCode(value: string | undefined): string {
 }
 
 function formatTime(value: string, locale: Locale): string {
-  const localeName = locale === "ar" ? "ar" : locale === "fr" ? "fr-FR" : "en-US";
+  const localeName =
+    locale === "ar" ? "ar" : locale === "fr" ? "fr-FR" : "en-US";
   return new Intl.DateTimeFormat(localeName, {
     month: "short",
     day: "2-digit",
@@ -1009,8 +1212,17 @@ function buildMetrics(snapshot: ServiceFlowSnapshot | null) {
   return {
     cases: cases.length,
     safety: cases.filter(isSafetyLocked).length,
-    active: cases.filter((item) => ["ASSIGNED", "IN_PROGRESS", "BLOCKED", "COMPLETED"].includes(item.request.state) && !isSafetyLocked(item)).length,
-    closed: cases.filter((item) => item.request.state === "CLOSED" && item.request.completionEvidenceIds.length > 0).length,
+    active: cases.filter(
+      (item) =>
+        ["ASSIGNED", "IN_PROGRESS", "BLOCKED", "COMPLETED"].includes(
+          item.request.state
+        ) && !isSafetyLocked(item)
+    ).length,
+    closed: cases.filter(
+      (item) =>
+        item.request.state === "CLOSED" &&
+        item.request.completionEvidenceIds.length > 0
+    ).length,
     events: snapshot?.audit.length ?? 0
   };
 }

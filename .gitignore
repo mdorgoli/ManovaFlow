@@ -12,3 +12,8 @@ outputs/
 proposals/
 *.log
 *.tsbuildinfo
+
+# Python load tests
+.venv-loadtest/
+__pycache__/
+*.pyc

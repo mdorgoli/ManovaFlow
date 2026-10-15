@@ -111,3 +111,7 @@ pnpm demo
 ## خارج از ادعای Phase 1، 2A، 2B و 2C
 
 provider واقعی و login/callback مبتنی بر state/PKCE، enrollment/recovery عملی MFA، key rotation عملیاتی، provision login مستقل production، scheduler cleanup، trusted-edge/IP throttling، backup/restore، secret manager، deployment، آزمون نفوذ و تست دسترس‌پذیری/مرورگر هنوز gate هستند. تا بسته‌شدن این موارد، این پروژه نمونه محلی کنترل‌شده است و نه یک سامانه آماده استقرار.
+
+## تست بار
+
+سناریوهای Locust، معیارهای قبولی و فرمان‌های اجرا در [loadtest/README.md](loadtest/README.md) قرار دارند.

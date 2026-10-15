@@ -115,3 +115,7 @@ provider واقعی و login/callback مبتنی بر state/PKCE، enrollment/re
 ## تست بار
 
 سناریوهای Locust، معیارهای قبولی و فرمان‌های اجرا در [loadtest/README.md](loadtest/README.md) قرار دارند.
+
+## Dockerization
+
+راهنمای اجرای برنامه با PostgreSQL و Redis در [docs/dockerization.md](docs/dockerization.md) است.

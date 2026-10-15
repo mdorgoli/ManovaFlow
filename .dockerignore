@@ -1,0 +1,17 @@
+.git
+node_modules
+.next
+.env*
+.npm-cache
+.pnpm-store
+.tmp
+.venv-loadtest
+__pycache__
+*.pyc
+*.log
+*.tsbuildinfo
+coverage
+artifacts
+outputs
+proposals
+work

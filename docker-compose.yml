@@ -1,0 +1,71 @@
+name: manovaflow-class
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: manovaflow
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DOCKER_POSTGRES_PASSWORD:?Set DOCKER_POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d manovaflow"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "128mb", "--maxmemory-policy", "allkeys-lru"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  migrate:
+    build:
+      context: .
+      target: migrate
+    environment:
+      DATABASE_URL: postgresql://postgres:${DOCKER_POSTGRES_PASSWORD}@postgres:5432/manovaflow
+      DOCKER_APP_PASSWORD: ${DOCKER_APP_PASSWORD:?Set DOCKER_APP_PASSWORD}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  app:
+    build:
+      context: .
+      target: runner
+    restart: unless-stopped
+    init: true
+    environment:
+      DATABASE_URL: postgresql://manovaflow_web:${DOCKER_APP_PASSWORD}@postgres:5432/manovaflow
+      DATABASE_APPLICATION_ROLE: manovaflow_app
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "127.0.0.1:${DOCKER_APP_PORT:-3188}:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      start_period: 30s
+      retries: 6
+
+volumes:
+  postgres_data:
+  redis_data:

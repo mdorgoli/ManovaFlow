@@ -123,3 +123,7 @@ provider واقعی و login/callback مبتنی بر state/PKCE، enrollment/re
 ## Lint و Reformat
 
 راهنمای فرمان‌ها در [docs/lint-reformat.md](docs/lint-reformat.md) است.
+
+## تمرین مدیریت خطا
+
+سرویس آموزشی FastAPI و تست‌های pytest در [expense-service/README.md](expense-service/README.md) قرار دارند.

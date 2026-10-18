@@ -32,3 +32,23 @@ python -m venv .venv
 داده‌ها در حافظه هستند و با راه‌اندازی مجدد پاک می‌شوند؛ نمونه تک‌پردازه و محلی است. این سرویس آموزشی احراز هویت، پرداخت یا اتصال به داده واقعی ندارد و به سرویس‌های Docker تمرین قبلی متصل نشده است.
 
 منابع: [exception handler](https://fastapi.tiangolo.com/tutorial/handling-errors/) و [تست FastAPI](https://fastapi.tiangolo.com/tutorial/testing/).
+
+## Lint و Reformat پایتون
+
+از پوشه `expense-service`، پس از ساخت محیط مجازی:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
+.\.venv\Scripts\python.exe -m ruff check app tests
+.\.venv\Scripts\python.exe -m ruff format --check app tests
+```
+
+اصلاح خودکار موارد قابل اصلاح و قالب‌بندی:
+
+```powershell
+.\.venv\Scripts\python.exe -m ruff check --fix app tests
+.\.venv\Scripts\python.exe -m ruff format app tests
+.\.venv\Scripts\python.exe -m pytest -q
+```
+
+تنظیمات در `pyproject.toml` است. Ruff خطاهای رایج پایتون، importهای استفاده‌نشده و ترتیب importها را بررسی می‌کند و formatter قالب کد را یکدست می‌کند. فرمان‌های `check` و `format --check` فایل‌ها را تغییر نمی‌دهند و هنگام وجود مشکل کد خروج غیرصفر می‌دهند. نسخه ابزار در `requirements-dev.txt` ثابت شده است. Python 3.14 برای اجرای این نمونه استفاده شده است.

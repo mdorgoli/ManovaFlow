@@ -446,6 +446,7 @@ export function ServiceFlowDemo({ initialSnapshot = null }: ServiceFlowDemoProps
             disabled={busy !== null}
             onClick={() => void resetDemo()}
             type="button"
+            aria-busy={busy === "RESET"}
           >
             {busy === "RESET" ? copy.resetting : copy.reset}
           </button>
@@ -503,6 +504,7 @@ export function ServiceFlowDemo({ initialSnapshot = null }: ServiceFlowDemoProps
                     return (
                       <button
                         aria-label={`${title} — ${copy.states[item.request.state]}`}
+                        aria-pressed={selectedId === item.request.id}
                         className={`${styles.caseButton} ${selectedId === item.request.id ? styles.caseSelected : ""} ${safetyLocked ? styles.caseDanger : ""}`}
                         key={item.request.id}
                         onClick={() => {
@@ -659,8 +661,10 @@ function CaseWorkspace({
               onChange={(event) => onReasonChange(event.target.value)}
               placeholder={copy.reasonPlaceholder}
               value={reason}
+              aria-describedby="serviceflow-human-reason-help"
+              aria-invalid={reason.length > 0 && !reason.startsWith("DEMO:")}
             />
-            <small>{copy.reasonHelp}</small>
+            <small id="serviceflow-human-reason-help">{copy.reasonHelp}</small>
           </div>
           <ActionButtons
             busy={busy}

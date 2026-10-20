@@ -659,8 +659,9 @@ function CaseWorkspace({
               onChange={(event) => onReasonChange(event.target.value)}
               placeholder={copy.reasonPlaceholder}
               value={reason}
+              aria-describedby="serviceflow-human-reason-help"
             />
-            <small>{copy.reasonHelp}</small>
+            <small id="serviceflow-human-reason-help">{copy.reasonHelp}</small>
           </div>
           <ActionButtons
             busy={busy}

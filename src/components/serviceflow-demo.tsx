@@ -723,7 +723,7 @@ function ActionButtons({
       <div className={styles.buttonRow}>
         <ActionButton disabled={disabled} label={copy.pause} onClick={() => onAction("BLOCK")} />
         <ActionButton disabled={disabled} label={copy.addEvidence} onClick={() => onAction("ATTACH_EVIDENCE")} />
-        <ActionButton disabled={disabled || evidenceCount === 0} label={copy.complete} onClick={() => onAction("COMPLETE")} primary />
+        <ActionButton disabled={disabled || evidenceCount === 0} label={copy.complete} onClick={() => onAction("COMPLETE")} primary title={(!disabled && evidenceCount === 0) ? copy.noEvidence : undefined} />
       </div>
     );
   }
@@ -738,12 +738,14 @@ function ActionButton({
   disabled,
   label,
   onClick,
-  primary = false
+  primary = false,
+  title
 }: {
   disabled: boolean;
   label: string;
   onClick: () => void;
   primary?: boolean;
+  title?: string | undefined;
 }) {
   return (
     <button
@@ -751,6 +753,7 @@ function ActionButton({
       disabled={disabled}
       onClick={onClick}
       type="button"
+      title={title}
     >
       {label}
     </button>

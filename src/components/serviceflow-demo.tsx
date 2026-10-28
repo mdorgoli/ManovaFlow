@@ -530,6 +530,7 @@ export function ServiceFlowDemo({ initialSnapshot = null }: ServiceFlowDemoProps
                   copy={copy}
                   currentCase={currentCase}
                   locale={locale}
+                  notice={notice}
                   onAction={(action) => void execute(action)}
                   onReasonChange={setReason}
                   reason={reason}
@@ -551,6 +552,7 @@ function CaseWorkspace({
   copy,
   currentCase,
   locale,
+  notice,
   onAction,
   onReasonChange,
   reason,
@@ -560,6 +562,7 @@ function CaseWorkspace({
   copy: (typeof COPY)[Locale];
   currentCase: ServiceFlowCase;
   locale: Locale;
+  notice: { kind: "success" | "error"; key: NoticeKey } | null;
   onAction: (action: Exclude<BusyAction, "RESET">) => void;
   onReasonChange: (value: string) => void;
   reason: string;
@@ -659,8 +662,11 @@ function CaseWorkspace({
               onChange={(event) => onReasonChange(event.target.value)}
               placeholder={copy.reasonPlaceholder}
               value={reason}
+              aria-describedby="serviceflow-human-reason-help"
+              aria-invalid={notice?.key === "reasonRequired"}
+              required
             />
-            <small>{copy.reasonHelp}</small>
+            <small id="serviceflow-human-reason-help">{copy.reasonHelp}</small>
           </div>
           <ActionButtons
             busy={busy}

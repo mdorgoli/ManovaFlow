@@ -51,7 +51,7 @@ export function SiteHeader({ locale, copy }: { locale: HomeLocale; copy: HomeHea
             aria-current={locale === option.locale ? "page" : undefined}>{option.short}</a>)}
         </nav>
         <button ref={trigger} type="button" className={styles.menuTrigger} aria-label={copy.openMenu}
-          aria-expanded={open} aria-controls="home-navigation-menu" onClick={() => setOpen(true)}>
+          title={copy.openMenu} aria-expanded={open} aria-controls="home-navigation-menu" onClick={() => setOpen(true)}>
           <ListIcon size={28} weight="thin" aria-hidden="true" />
         </button>
       </div>
@@ -69,7 +69,7 @@ export function SiteHeader({ locale, copy }: { locale: HomeLocale; copy: HomeHea
             }}>
             <div className={styles.menuHeading}>
               <span>{copy.explore}</span>
-              <button type="button" aria-label={copy.closeMenu} onClick={() => setOpen(false)}>
+              <button type="button" aria-label={copy.closeMenu} title={copy.closeMenu} onClick={() => setOpen(false)}>
                 <XIcon size={26} weight="light" aria-hidden="true" />
               </button>
             </div>

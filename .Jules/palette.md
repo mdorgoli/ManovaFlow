@@ -1,0 +1,1 @@
+## 2023-11-01 - Selected State Accessibility\n**Learning:** The serviceflow demo queue buttons did not communicate their selected state to screen readers despite having visual styling for it.\n**Action:** Applied `aria-current="true"` to active queue items, providing screen reader users equivalent context to the visual `caseSelected` class.

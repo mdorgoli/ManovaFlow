@@ -502,6 +502,7 @@ export function ServiceFlowDemo({ initialSnapshot = null }: ServiceFlowDemoProps
                     const safetyLocked = isSafetyLocked(item);
                     return (
                       <button
+                        aria-current={selectedId === item.request.id ? "true" : undefined}
                         aria-label={`${title} — ${copy.states[item.request.state]}`}
                         className={`${styles.caseButton} ${selectedId === item.request.id ? styles.caseSelected : ""} ${safetyLocked ? styles.caseDanger : ""}`}
                         key={item.request.id}

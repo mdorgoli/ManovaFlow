@@ -656,11 +656,12 @@ function CaseWorkspace({
             <input
               autoComplete="off"
               id="serviceflow-human-reason"
+              aria-describedby="serviceflow-human-reason-help"
               onChange={(event) => onReasonChange(event.target.value)}
               placeholder={copy.reasonPlaceholder}
               value={reason}
             />
-            <small>{copy.reasonHelp}</small>
+            <small id="serviceflow-human-reason-help">{copy.reasonHelp}</small>
           </div>
           <ActionButtons
             busy={busy}

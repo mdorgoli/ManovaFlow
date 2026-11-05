@@ -654,13 +654,14 @@ function CaseWorkspace({
           <div className={styles.reasonField}>
             <label htmlFor="serviceflow-human-reason">{copy.reasonLabel}</label>
             <input
+              aria-describedby="serviceflow-reason-help"
               autoComplete="off"
               id="serviceflow-human-reason"
               onChange={(event) => onReasonChange(event.target.value)}
               placeholder={copy.reasonPlaceholder}
               value={reason}
             />
-            <small>{copy.reasonHelp}</small>
+            <small id="serviceflow-reason-help">{copy.reasonHelp}</small>
           </div>
           <ActionButtons
             busy={busy}
@@ -723,7 +724,7 @@ function ActionButtons({
       <div className={styles.buttonRow}>
         <ActionButton disabled={disabled} label={copy.pause} onClick={() => onAction("BLOCK")} />
         <ActionButton disabled={disabled} label={copy.addEvidence} onClick={() => onAction("ATTACH_EVIDENCE")} />
-        <ActionButton disabled={disabled || evidenceCount === 0} label={copy.complete} onClick={() => onAction("COMPLETE")} primary />
+        <ActionButton disabled={disabled || evidenceCount === 0} label={copy.complete} onClick={() => onAction("COMPLETE")} primary title={evidenceCount === 0 && !disabled ? copy.noEvidence : ""} />
       </div>
     );
   }
@@ -738,18 +739,21 @@ function ActionButton({
   disabled,
   label,
   onClick,
-  primary = false
+  primary = false,
+  title = ""
 }: {
   disabled: boolean;
   label: string;
   onClick: () => void;
   primary?: boolean;
+  title?: string;
 }) {
   return (
     <button
       className={primary ? styles.primaryButton : styles.secondaryButton}
       disabled={disabled}
       onClick={onClick}
+      {...(title ? { title } : {})}
       type="button"
     >
       {label}
